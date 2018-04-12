@@ -11,7 +11,7 @@ use yuncms\db\ActiveRecord;
 use yuncms\helpers\ArrayHelper;
 
 /**
- * This is the model class for table "{{%trade_charges}}".
+ * This is the model class for table "{{%transaction_charges}}".
  *
  * @property int $id
  * @property int $paid
@@ -43,7 +43,7 @@ class TransactionCharge extends ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%trade_charges}}';
+        return '{{%transaction_charges}}';
     }
 
     /**

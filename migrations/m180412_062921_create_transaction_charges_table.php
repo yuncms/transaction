@@ -47,6 +47,8 @@ class m180412_062921_create_transaction_charges_table extends Migration
             'description' => $this->string(255),//订单附加说明，最多 255 个 Unicode 字符。
             'created_at' => $this->unixTimestamp(),
         ], $tableOptions);
+
+        $this->addPrimaryKey('transaction_charges_pk', $this->tableName, 'id');
     }
 
     /**

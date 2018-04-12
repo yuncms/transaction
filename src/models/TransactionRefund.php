@@ -7,7 +7,7 @@ use yii\db\Query;
 use yuncms\db\ActiveRecord;
 
 /**
- * This is the model class for table "{{%trade_refunds}}".
+ * This is the model class for table "{{%transaction_refunds}}".
  *
  * @property int $id
  * @property int $amount
@@ -32,7 +32,7 @@ class TransactionRefund extends ActiveRecord
      */
     public static function tableName()
     {
-        return '{{%trade_refunds}}';
+        return '{{%transaction_refunds}}';
     }
 
     /**
