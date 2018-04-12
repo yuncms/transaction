@@ -11,7 +11,7 @@ use Yii;
 use yii\web\NotFoundHttpException;
 use yii\web\ServerErrorHttpException;
 use yuncms\rest\Controller;
-use yuncms\trade\models\TransactionRefund;
+use yuncms\transaction\rest\models\TransactionRefund;
 
 /**
  * Class RefundController

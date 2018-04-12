@@ -1,6 +1,6 @@
 <?php
 
-namespace yuncms\trade\models;
+namespace yuncms\transaction\models;
 
 use Yii;
 use yii\behaviors\AttributeBehavior;
