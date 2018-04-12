@@ -57,10 +57,10 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= DetailView::widget([
                 'model' => $model,
                 'attributes' => [
-                                'id',
-                    'paid',
-                    'refunded',
-                    'reversed',
+                    'id',
+                    'paid:boolean',
+                    'refunded:boolean',
+                    'reversed:boolean',
                     'channel',
                     'order_no',
                     'amount',
@@ -76,7 +76,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'failure_msg',
                     'metadata:ntext',
                     'description',
-                    'created_at',
+                    'created_at:datetime',
                 ],
             ]) ?>
             <?php Box::end(); ?>

@@ -8,11 +8,11 @@ use yuncms\admin\widgets\ActiveForm;
 ?>
 <?php $form = ActiveForm::begin(['layout'=>'horizontal', 'enableAjaxValidation' => true, 'enableClientValidation' => false,]); ?>
 
-    <?= $form->field($model, 'paid')->textInput() ?>    <div class="hr-line-dashed"></div>
+    <?= $form->field($model, 'paid')->inline(true)->boolean() ?>    <div class="hr-line-dashed"></div>
 
-    <?= $form->field($model, 'refunded')->textInput() ?>    <div class="hr-line-dashed"></div>
+    <?= $form->field($model, 'refunded')->inline(true)->boolean() ?>    <div class="hr-line-dashed"></div>
 
-    <?= $form->field($model, 'reversed')->textInput() ?>    <div class="hr-line-dashed"></div>
+    <?= $form->field($model, 'reversed')->inline(true)->boolean() ?>    <div class="hr-line-dashed"></div>
 
     <?= $form->field($model, 'order_no')->textInput(['maxlength' => true]) ?>    <div class="hr-line-dashed"></div>
 
