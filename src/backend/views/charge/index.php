@@ -67,7 +67,7 @@ $this->registerJs("jQuery(\"#batch_deletion\").on(\"click\", function () {
                     'paid',
                     'refunded',
                     'reversed',
-                    'channel_id',
+                    'channel',
                     // 'order_no',
                     // 'amount',
                     // 'currency',

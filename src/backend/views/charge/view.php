@@ -61,7 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'paid',
                     'refunded',
                     'reversed',
-                    'channel_id',
+                    'channel',
                     'order_no',
                     'amount',
                     'currency',
