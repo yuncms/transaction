@@ -27,7 +27,7 @@ class m180412_062921_create_transaction_charges_table extends Migration
             'paid' => $this->boolean()->defaultValue(false),//boolean 是否已付款
             'refunded' => $this->boolean()->defaultValue(false),//boolean 是否存在退款信息
             'reversed' => $this->boolean()->defaultValue(false),//boolean 订单是否撤销
-            'channel' => $this->string(50)->notNull(),//付款渠道
+            'channel_id' => $this->string(50)->notNull(),//付款渠道
             'order_no' => $this->string()->notNull(),//商户订单号，适配每个渠道对此参数的要求，必须在商户的系统内唯一
             'amount' => $this->unsignedInteger()->notNull(),//订单总金额（必须大于 0），单位为对应币种的最小货币单位，人民币为分
             'currency' => $this->string(3)->notNull(),//3 位 ISO 货币代码，人民币为  cny 。

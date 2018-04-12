@@ -23,15 +23,12 @@ class m180412_044554_create_transaction_channels_extra_table extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
         $this->createTable($this->tableName, [
-            'id' => $this->primaryKey()->comment('Id'),
-            'user_id' => $this->unsignedInteger()->notNull()->comment('User Id'),
             'channel_id' => $this->unsignedInteger()->notNull()->comment('Channel Id'),
             'extra' => $this->text(),
             'created_at' => $this->integer()->notNull()->comment('Created At'),//创建时间
             'updated_at' => $this->integer()->notNull()->comment('Updated At'),//更新时间
         ], $tableOptions);
 
-        $this->addForeignKey('transaction_channels_extra_fk_1', $this->tableName, 'user_id', '{{%user}}', 'id', 'CASCADE', 'RESTRICT');
         $this->addForeignKey('transaction_channels_extra_fk_2', $this->tableName, 'channel_id', '{{%transaction_channels}}', 'id', 'CASCADE', 'RESTRICT');
 
     }
