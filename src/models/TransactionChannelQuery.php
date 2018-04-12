@@ -7,7 +7,7 @@ use yii\db\ActiveQuery;
 /**
  * This is the ActiveQuery class for [[TransactionChannel]].
  *
- * @see TransactionChannel
+ * @see TransactionChannelSearch
  */
 class TransactionChannelQuery extends ActiveQuery
 {

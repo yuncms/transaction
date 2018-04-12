@@ -13,10 +13,9 @@ use yuncms\db\ActiveRecord;
  * @property string $identity Channel Identity
  * @property string $name Channel Name
  * @property string $className Channel Extra
+ * @property array $extra Channel extra
  * @property int $created_at Created At
  * @property int $updated_at Updated At
- *
- * @property TransactionChannelExtra[] $transactionChannelExtras
  */
 class TransactionChannel extends ActiveRecord
 {
@@ -62,17 +61,10 @@ class TransactionChannel extends ActiveRecord
             'identity' => Yii::t('yuncms/transaction', 'Channel Identity'),
             'name' => Yii::t('yuncms/transaction', 'Channel Name'),
             'className' => Yii::t('yuncms/transaction', 'Channel Extra'),
+            'extra' => Yii::t('yuncms/transaction', 'Channel Extra'),
             'created_at' => Yii::t('yuncms/transaction', 'Created At'),
             'updated_at' => Yii::t('yuncms/transaction', 'Updated At'),
         ];
-    }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
-    public function getTransactionChannelExtras()
-    {
-        return $this->hasMany(TransactionChannelExtra::class, ['channel_id' => 'id']);
     }
 
     /**
