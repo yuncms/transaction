@@ -23,9 +23,9 @@ use yuncms\db\ActiveRecord;
  * @property string $funding_source
  * @property int $created_at
  *
- * @property TransactionCharges $charge
+ * @property TransactionCharge $charge
  */
-class TransactionRefunds extends ActiveRecord
+class TransactionRefund extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -47,7 +47,7 @@ class TransactionRefunds extends ActiveRecord
             [['description', 'failure_code', 'failure_msg'], 'string', 'max' => 255],
             [['charge_order_no', 'transaction_no'], 'string', 'max' => 64],
             [['funding_source'], 'string', 'max' => 20],
-            [['charge_id'], 'exist', 'skipOnError' => true, 'targetClass' => TransactionCharges::class, 'targetAttribute' => ['charge_id' => 'id']],
+            [['charge_id'], 'exist', 'skipOnError' => true, 'targetClass' => TransactionCharge::class, 'targetAttribute' => ['charge_id' => 'id']],
         ];
     }
 
@@ -78,16 +78,16 @@ class TransactionRefunds extends ActiveRecord
      */
     public function getCharge()
     {
-        return $this->hasOne(TransactionCharges::class, ['id' => 'charge_id']);
+        return $this->hasOne(TransactionCharge::class, ['id' => 'charge_id']);
     }
 
     /**
      * {@inheritdoc}
-     * @return TransactionRefundsQuery the active query used by this AR class.
+     * @return TransactionRefundQuery the active query used by this AR class.
      */
     public static function find()
     {
-        return new TransactionRefundsQuery(get_called_class());
+        return new TransactionRefundQuery(get_called_class());
     }
 
     /**

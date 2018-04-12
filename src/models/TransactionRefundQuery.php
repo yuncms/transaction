@@ -7,9 +7,9 @@ use yii\db\ActiveQuery;
 /**
  * This is the ActiveQuery class for [[TradeRefunds]].
  *
- * @see TransactionRefunds
+ * @see TransactionRefund
  */
-class TransactionRefundsQuery extends ActiveQuery
+class TransactionRefundQuery extends ActiveQuery
 {
     /*public function active()
     {
@@ -18,7 +18,7 @@ class TransactionRefundsQuery extends ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return TransactionRefunds[]|array
+     * @return TransactionRefund[]|array
      */
     public function all($db = null)
     {
@@ -27,7 +27,7 @@ class TransactionRefundsQuery extends ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return TransactionRefunds|array|null
+     * @return TransactionRefund|array|null
      */
     public function one($db = null)
     {

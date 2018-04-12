@@ -7,9 +7,9 @@ use yii\db\ActiveQuery;
 /**
  * This is the ActiveQuery class for [[TradeCharges]].
  *
- * @see TransactionCharges
+ * @see TransactionCharge
  */
-class TransactionChargesQuery extends ActiveQuery
+class TransactionChargeQuery extends ActiveQuery
 {
     /*public function active()
     {
@@ -18,7 +18,7 @@ class TransactionChargesQuery extends ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return TransactionCharges[]|array
+     * @return TransactionCharge[]|array
      */
     public function all($db = null)
     {
@@ -27,7 +27,7 @@ class TransactionChargesQuery extends ActiveQuery
 
     /**
      * {@inheritdoc}
-     * @return TransactionCharges|array|null
+     * @return TransactionCharge|array|null
      */
     public function one($db = null)
     {

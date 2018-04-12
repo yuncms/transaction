@@ -36,7 +36,7 @@ use yuncms\helpers\ArrayHelper;
  * @property string $description
  * @property int $created_at
  */
-class TransactionCharges extends ActiveRecord
+class TransactionCharge extends ActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -131,11 +131,11 @@ class TransactionCharges extends ActiveRecord
 
     /**
      * {@inheritdoc}
-     * @return TransactionChargesQuery the active query used by this AR class.
+     * @return TransactionChargeQuery the active query used by this AR class.
      */
     public static function find()
     {
-        return new TransactionChargesQuery(get_called_class());
+        return new TransactionChargeQuery(get_called_class());
     }
 
     /**
