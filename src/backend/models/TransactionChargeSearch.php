@@ -5,7 +5,7 @@ namespace yuncms\transaction\backend\models;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yuncms\transaction\models\TransactionCharge;
-use yuncms\base\Model;
+use yii\base\Model;
 
 /**
  * TransactionChargeSearch represents the model behind the search form about `yuncms\transaction\models\TransactionCharge`.
@@ -18,7 +18,7 @@ class TransactionChargeSearch extends TransactionCharge
     public function rules()
     {
         return [
-            [['id', 'paid', 'refunded', 'reversed', 'channel_id', 'order_no', 'currency', 'subject', 'body', 'client_ip', 'transaction_no', 'failure_code', 'failure_msg', 'metadata', 'description'], 'safe'],
+            [['id', 'paid', 'refunded', 'reversed', 'channel', 'order_no', 'currency', 'subject', 'body', 'client_ip', 'transaction_no', 'failure_code', 'failure_msg', 'metadata', 'description'], 'safe'],
             [['amount', 'time_paid', 'time_expire', 'amount_refunded', 'created_at'], 'integer'],
         ];
     }
@@ -70,7 +70,7 @@ class TransactionChargeSearch extends TransactionCharge
             ->andFilterWhere(['like', 'paid', $this->paid])
             ->andFilterWhere(['like', 'refunded', $this->refunded])
             ->andFilterWhere(['like', 'reversed', $this->reversed])
-            ->andFilterWhere(['like', 'channel_id', $this->channel_id])
+            ->andFilterWhere(['like', 'channel', $this->channel])
             ->andFilterWhere(['like', 'order_no', $this->order_no])
             ->andFilterWhere(['like', 'currency', $this->currency])
             ->andFilterWhere(['like', 'subject', $this->subject])

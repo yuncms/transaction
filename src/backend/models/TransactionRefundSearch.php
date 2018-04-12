@@ -5,7 +5,7 @@ namespace yuncms\transaction\backend\models;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yuncms\transaction\models\TransactionRefund;
-use yuncms\base\Model;
+use yii\base\Model;
 
 /**
  * TransactionRefundSearch represents the model behind the search form about `yuncms\transaction\models\TransactionRefund`.

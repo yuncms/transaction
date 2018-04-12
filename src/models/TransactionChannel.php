@@ -4,6 +4,7 @@ namespace yuncms\transaction\models;
 
 use Yii;
 use yii\behaviors\TimestampBehavior;
+use yii\db\PdoValue;
 use yuncms\db\ActiveRecord;
 
 /**
@@ -68,6 +69,16 @@ class TransactionChannel extends ActiveRecord
             'created_at' => Yii::t('yuncms/transaction', 'Created At'),
             'updated_at' => Yii::t('yuncms/transaction', 'Updated At'),
         ];
+    }
+
+    /**
+     * 保存渠道配置
+     * @param array $configuration
+     * @return int
+     */
+    public function setConfiguration($configuration)
+    {
+        return $this->updateAttributes(['configuration' => new PdoValue($configuration, \PDO::PARAM_LOB)]);
     }
 
     /**

@@ -40,7 +40,7 @@ class m180412_062949_create_transaction_refunds_table extends Migration
             'created_at' => $this->unixTimestamp(),
         ], $tableOptions);
 
-        $this->addForeignKey('trade_refunds_fk_1', $this->tableName, 'charge_id', '{{%trade_charges}}', 'id', 'CASCADE', 'RESTRICT');
+        $this->addForeignKey('trade_refunds_fk_1', $this->tableName, 'charge_id', '{{%transaction_charges}}', 'id', 'CASCADE', 'RESTRICT');
     }
 
     /**
