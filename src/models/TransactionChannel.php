@@ -58,12 +58,12 @@ class TransactionChannel extends ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => Yii::t('app', 'Id'),
-            'identity' => Yii::t('app', 'Channel Identity'),
-            'name' => Yii::t('app', 'Channel Name'),
-            'className' => Yii::t('app', 'Channel Extra'),
-            'created_at' => Yii::t('app', 'Created At'),
-            'updated_at' => Yii::t('app', 'Updated At'),
+            'id' => Yii::t('yuncms', 'Id'),
+            'identity' => Yii::t('yuncms/transaction', 'Channel Identity'),
+            'name' => Yii::t('yuncms/transaction', 'Channel Name'),
+            'className' => Yii::t('yuncms/transaction', 'Channel Extra'),
+            'created_at' => Yii::t('yuncms/transaction', 'Created At'),
+            'updated_at' => Yii::t('yuncms/transaction', 'Updated At'),
         ];
     }
 
