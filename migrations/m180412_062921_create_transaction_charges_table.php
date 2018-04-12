@@ -38,7 +38,6 @@ class m180412_062921_create_transaction_charges_table extends Migration
             'time_paid' => $this->unixTimestamp(),//订单支付完成时的 Unix 时间戳。（银联支付成功时间为接收异步通知的时间）
             'time_expire' => $this->unixTimestamp(),//订单失效时间
             'transaction_no' => $this->string(64),//支付渠道返回的交易流水号。
-            //'refunds',//退款详情列表
             'amount_refunded' => $this->unsignedInteger()->notNull()->defaultValue(0),//已退款总金额，单位为对应币种的最小货币单位，例如：人民币为分。
             'failure_code' => $this->string(),//订单的错误码
             'failure_msg' => $this->string(),//订单的错误消息的描述。

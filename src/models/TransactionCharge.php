@@ -35,6 +35,8 @@ use yuncms\helpers\ArrayHelper;
  * @property string $metadata
  * @property string $description
  * @property int $created_at
+ *
+ * @property TransactionRefund[] $refunds
  */
 class TransactionCharge extends ActiveRecord
 {
@@ -136,6 +138,15 @@ class TransactionCharge extends ActiveRecord
     public static function find()
     {
         return new TransactionChargeQuery(get_called_class());
+    }
+
+    /**
+     * 获取退款
+     * @return \yii\db\ActiveQuery
+     */
+    public function getRefunds()
+    {
+        return $this->hasMany(TransactionRefund::class, ['charge_id' => 'id']);
     }
 
     /**
