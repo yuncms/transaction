@@ -19,7 +19,7 @@ class TransactionChannelSearch extends TransactionChannelModel
     {
         return [
             [['id', 'created_at', 'updated_at'], 'integer'],
-            [['identity', 'name', 'className', 'extra'], 'safe'],
+            [['identity', 'name', 'className', 'title'], 'safe'],
         ];
     }
 
@@ -67,7 +67,7 @@ class TransactionChannelSearch extends TransactionChannelModel
         $query->andFilterWhere(['like', 'identity', $this->identity])
             ->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'className', $this->className])
-            ->andFilterWhere(['like', 'extra', $this->extra]);
+            ->andFilterWhere(['like', 'title', $this->title]);
 
         return $dataProvider;
     }

@@ -42,7 +42,7 @@ $this->registerJs("jQuery(\"#batch_deletion\").on(\"click\", function () {
                         ],
                         [
                             'options' => ['id' => 'batch_deletion', 'class'=>'btn btn-sm btn-danger'],
-                            'label' => Yii::t('yuncms/transaction', 'Batch Deletion'),
+                            'label' => Yii::t('yuncms', 'Batch Deletion'),
                             'url' => 'javascript:void(0);',
                         ]
                     ]]); ?>
@@ -66,10 +66,8 @@ $this->registerJs("jQuery(\"#batch_deletion\").on(\"click\", function () {
                     'id',
                     'identity',
                     'name',
-                    'className',
-                    'extra',
-                    // 'created_at',
-                    // 'updated_at',
+                     'created_at:datetime',
+                     'updated_at:datetime',
                     [
                         'class' => 'yuncms\grid\ActionColumn',
                         'template' => '{view} {update} {delete}',

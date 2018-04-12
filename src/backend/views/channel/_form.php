@@ -15,10 +15,16 @@ use yuncms\admin\widgets\ActiveForm;
 <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 <div class="hr-line-dashed"></div>
 
+<?= $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
+<div class="hr-line-dashed"></div>
+
+<?= $form->field($model, 'description')->textInput(['maxlength' => true]) ?>
+<div class="hr-line-dashed"></div>
+
 <?= $form->field($model, 'className')->textInput(['maxlength' => true]) ?>
 <div class="hr-line-dashed"></div>
 
-<?= $form->field($model, 'extra')->textInput(['maxlength' => true]) ?>
+<?= $form->field($model, 'configuration')->textInput(['maxlength' => true]) ?>
 <div class="hr-line-dashed"></div>
 
 <div class="form-group">

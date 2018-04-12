@@ -12,7 +12,9 @@ use yuncms\db\ActiveRecord;
  * @property int $id Id
  * @property string $identity Channel Identity
  * @property string $name Channel Name
- * @property string $className Channel Extra
+ * @property string $title Channel Title
+ * @property string $description Channel Description
+ * @property string $className Channel className
  * @property array $extra Channel extra
  * @property int $created_at Created At
  * @property int $updated_at Updated At
@@ -44,10 +46,9 @@ class TransactionChannel extends ActiveRecord
     public function rules()
     {
         return [
-            [['identity', 'name'], 'required'],
-            [['created_at', 'updated_at'], 'integer'],
-            [['identity', 'name'], 'string', 'max' => 64],
-            [['className'], 'string', 'max' => 255],
+            [['identity', 'name', 'title'], 'required'],
+            [['identity', 'name', 'title'], 'string', 'max' => 64],
+            [['className', 'description'], 'string', 'max' => 255],
         ];
     }
 
@@ -60,8 +61,10 @@ class TransactionChannel extends ActiveRecord
             'id' => Yii::t('yuncms', 'Id'),
             'identity' => Yii::t('yuncms/transaction', 'Channel Identity'),
             'name' => Yii::t('yuncms/transaction', 'Channel Name'),
-            'className' => Yii::t('yuncms/transaction', 'Channel Extra'),
-            'extra' => Yii::t('yuncms/transaction', 'Channel Extra'),
+            'title' => Yii::t('yuncms/transaction', 'Channel Title'),
+            'description' => Yii::t('yuncms/transaction', 'Description'),
+            'className' => Yii::t('yuncms/transaction', 'Channel ClassName'),
+            'configuration' => Yii::t('yuncms/transaction', 'Configuration'),
             'created_at' => Yii::t('yuncms/transaction', 'Created At'),
             'updated_at' => Yii::t('yuncms/transaction', 'Updated At'),
         ];

@@ -61,9 +61,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     'identity',
                     'name',
                     'className',
-                    'extra',
-                    'created_at',
-                    'updated_at',
+                    'title',
+                    'description',
+                    'created_at:datetime',
+                    'updated_at:datetime',
                 ],
             ]) ?>
             <?php Box::end(); ?>
