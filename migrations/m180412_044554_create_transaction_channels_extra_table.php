@@ -28,9 +28,8 @@ class m180412_044554_create_transaction_channels_extra_table extends Migration
             'created_at' => $this->integer()->notNull()->comment('Created At'),//创建时间
             'updated_at' => $this->integer()->notNull()->comment('Updated At'),//更新时间
         ], $tableOptions);
-
+        $this->addPrimaryKey('transaction_channels_extra_pk', $this->tableName, 'channel_id');
         $this->addForeignKey('transaction_channels_extra_fk_2', $this->tableName, 'channel_id', '{{%transaction_channels}}', 'id', 'CASCADE', 'RESTRICT');
-
     }
 
     /**

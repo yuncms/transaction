@@ -58,17 +58,17 @@ class TransactionRefunds extends ActiveRecord
     {
         return [
             'id' => Yii::t('yuncms', 'ID'),
-            'amount' => Yii::t('yuncms', 'Amount'),
-            'succeed' => Yii::t('yuncms', 'Succeed'),
-            'status' => Yii::t('yuncms', 'Status'),
-            'time_succeed' => Yii::t('yuncms', 'Time Succeed'),
-            'description' => Yii::t('yuncms', 'Description'),
-            'failure_code' => Yii::t('yuncms', 'Failure Code'),
-            'failure_msg' => Yii::t('yuncms', 'Failure Msg'),
-            'charge_id' => Yii::t('yuncms', 'Charge ID'),
-            'charge_order_no' => Yii::t('yuncms', 'Charge Order No'),
-            'transaction_no' => Yii::t('yuncms', 'Transaction No'),
-            'funding_source' => Yii::t('yuncms', 'Funding Source'),
+            'amount' => Yii::t('yuncms/transaction', 'Amount'),
+            'succeed' => Yii::t('yuncms/transaction', 'Succeed'),
+            'status' => Yii::t('yuncms/transaction', 'Status'),
+            'time_succeed' => Yii::t('yuncms/transaction', 'Time Succeed'),
+            'description' => Yii::t('yuncms/transaction', 'Description'),
+            'failure_code' => Yii::t('yuncms/transaction', 'Failure Code'),
+            'failure_msg' => Yii::t('yuncms/transaction', 'Failure Msg'),
+            'charge_id' => Yii::t('yuncms/transaction', 'Charge ID'),
+            'charge_order_no' => Yii::t('yuncms/transaction', 'Charge Order No'),
+            'transaction_no' => Yii::t('yuncms/transaction', 'Transaction No'),
+            'funding_source' => Yii::t('yuncms/transaction', 'Funding Source'),
             'created_at' => Yii::t('yuncms', 'Created At'),
         ];
     }
