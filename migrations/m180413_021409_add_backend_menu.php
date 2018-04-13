@@ -4,9 +4,9 @@ use yii\db\Query;
 use yuncms\db\Migration;
 
 /**
- * Class m180412_093133_add_backend_menu
+ * Class m180413_021409_add_backend_menu
  */
-class m180412_093133_add_backend_menu extends Migration
+class m180413_021409_add_backend_menu extends Migration
 {
     /*
      * @var string the table name.

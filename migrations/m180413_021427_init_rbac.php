@@ -3,9 +3,9 @@
 use yuncms\db\Migration;
 
 /**
- * Class m180412_093134_init_rbac
+ * Class m180413_021427_init_rbac
  */
-class m180412_093134_init_rbac extends Migration
+class m180413_021427_init_rbac extends Migration
 {
 
 
@@ -171,6 +171,7 @@ class m180412_093134_init_rbac extends Migration
             ['提现管理', '提现修改'],
             ['提现管理', '提现列表'],
         ]);
+
         $this->insert('{{%admin_auth_item_child}}', ['parent' => 'Super Financial', 'child' => '支付渠道管理']);
         $this->insert('{{%admin_auth_item_child}}', ['parent' => 'Super Financial', 'child' => '支付管理']);
         $this->insert('{{%admin_auth_item_child}}', ['parent' => 'Super Financial', 'child' => '充值管理']);
