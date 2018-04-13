@@ -5,7 +5,7 @@ use yuncms\db\Migration;
 /**
  * Handles the creation of table `transaction_recharges`.
  */
-class m180413_021358_create_transaction_recharges_table extends Migration
+class m180413_021258_create_transaction_recharges_table extends Migration
 {
     /**
      * @var string The table name.

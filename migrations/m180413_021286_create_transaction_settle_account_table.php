@@ -3,14 +3,14 @@
 use yuncms\db\Migration;
 
 /**
- * Handles the creation of table `transaction_withdrawal_channels`.
+ * Handles the creation of table `transaction_settle_account.
  */
-class m180413_021366_create_transaction_withdrawals_channels_table extends Migration
+class m180413_021286_create_transaction_settle_account_table extends Migration
 {
     /**
      * @var string The table name.
      */
-    public $tableName = '{{%transaction_withdrawals_channels}}';
+    public $tableName = '{{%transaction_settle_account}}';
 
     /**
      * {@inheritdoc}
