@@ -16,7 +16,7 @@ use yuncms\db\ActiveRecord;
  * @property string $title Channel Title
  * @property string $description Channel Description
  * @property string $className Channel className
- * @property array $extra Channel extra
+ * @property array $configuration Channel configuration
  * @property int $created_at Created At
  * @property int $updated_at Updated At
  */
@@ -50,6 +50,7 @@ class TransactionChannel extends ActiveRecord
             [['identity', 'name', 'title'], 'required'],
             [['identity', 'name', 'title'], 'string', 'max' => 64],
             [['className', 'description'], 'string', 'max' => 255],
+            //['configuration','safe']
         ];
     }
 
@@ -79,6 +80,42 @@ class TransactionChannel extends ActiveRecord
     public function setConfiguration($configuration)
     {
         return $this->updateAttributes(['configuration' => new PdoValue($configuration, \PDO::PARAM_LOB)]);
+    }
+
+    /**
+     * 获取渠道配置
+     * @return array
+     */
+    public function getConfiguration()
+    {
+        return $this->configuration;
+    }
+
+    /**
+     * 保存前执行
+     * @param bool $insert
+     * @return bool
+     */
+    public function beforeSave($insert)
+    {
+        return parent::beforeSave($insert);
+    }
+
+    /**
+     * 保存后执行
+     * @param bool $insert
+     * @param array $changedAttributes
+     */
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+
+//        if ($insert) {
+//            $this->configuration = [];
+//        }
+//        if (!$insert) {
+//
+//        }
     }
 
     /**

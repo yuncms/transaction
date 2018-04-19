@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
             </div>
 
-            <?= $this->render('_form', [
+            <?= $this->render('_create', [
                 'model' => $model,
             ]) ?>
             <?php Box::end(); ?>

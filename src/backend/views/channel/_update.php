@@ -24,7 +24,9 @@ use yuncms\admin\widgets\ActiveForm;
 <?= $form->field($model, 'className')->textInput(['maxlength' => true]) ?>
 <div class="hr-line-dashed"></div>
 
-<?= $form->field($model, 'configuration')->textInput(['maxlength' => true]) ?>
+
+<?= $this->render('_configuration_' . $model->identity, ['model' => $model, 'form' => $form]) ?>
+
 <div class="hr-line-dashed"></div>
 
 <div class="form-group">
