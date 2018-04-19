@@ -5,68 +5,61 @@
  * @license http://www.tintsoft.com/license/
  */
 
-namespace yuncms\transaction\channels;
+namespace yuncms\transaction\traits;
 
 use Yii;
-use yii\base\Component;
 use yii\helpers\Inflector;
 use yuncms\helpers\StringHelper;
-use yuncms\transaction\contracts\ChannelInterface;
 
 /**
- * Class Channel
- *
- * @author Tongle Xu <xutongle@gmail.com>
- * @since 3.0
+ * Trait ChannelTrait
+ * @package yuncms\transaction\traits
  */
-abstract class Channel extends Component implements ChannelInterface
+trait ChannelTrait
 {
-    //连接超时
-    const DEFAULT_TIMEOUT = 5.0;
-
     /**
      * @var float 连接超时时间
      */
     private $_timeout;
 
     /**
-     * @var string gateway service id.
+     * @var string channel identity.
      * This value mainly used as HTTP request parameter.
      */
-    private $_id;
+    private $_identity;
 
     /**
-     * @var string auth service name.
+     * @var string auth channel name.
      * This value may be used in database records, CSS files and so on.
      */
     private $_name;
 
     /**
-     * @var string auth service title to display in views.
+     * @var string auth channel title to display in views.
      */
     private $_title;
 
     /**
-     * @param string $id service id.
+     * @param string $id service identity.
      */
-    public function setId($id)
+    public function setIdentity($id)
     {
-        $this->_id = $id;
+        $this->_identity = $id;
     }
 
     /**
-     * @return string service id
+     * @return string channel identity
      */
-    public function getId()
+    public function getIdentity()
     {
-        if (empty($this->_id)) {
-            $this->_id = $this->getName();
+        if (empty($this->_identity)) {
+            $this->_identity = $this->getName();
         }
-        return $this->_id;
+        return $this->_identity;
     }
 
     /**
-     * @param string $name service name.
+     * @param string $name channel name.
      */
     public function setName($name)
     {
@@ -74,7 +67,7 @@ abstract class Channel extends Component implements ChannelInterface
     }
 
     /**
-     * @return string service name.
+     * @return string channel name.
      */
     public function getName()
     {
@@ -85,7 +78,7 @@ abstract class Channel extends Component implements ChannelInterface
     }
 
     /**
-     * @param string $title service title.
+     * @param string $title channel title.
      */
     public function setTitle($title)
     {
@@ -93,7 +86,7 @@ abstract class Channel extends Component implements ChannelInterface
     }
 
     /**
-     * @return string service title.
+     * @return string channel title.
      */
     public function getTitle()
     {
@@ -104,8 +97,8 @@ abstract class Channel extends Component implements ChannelInterface
     }
 
     /**
-     * Generates service name.
-     * @return string service name.
+     * Generates channel name.
+     * @return string channel name.
      */
     protected function defaultName()
     {
@@ -113,8 +106,8 @@ abstract class Channel extends Component implements ChannelInterface
     }
 
     /**
-     * Generates service title.
-     * @return string service title.
+     * Generates channel title.
+     * @return string channel title.
      */
     protected function defaultTitle()
     {
@@ -128,7 +121,7 @@ abstract class Channel extends Component implements ChannelInterface
      */
     public function getTimeout()
     {
-        return $this->_timeout ?: self::DEFAULT_TIMEOUT;
+        return $this->_timeout ?: 5.0;
     }
 
     /**
@@ -142,11 +135,6 @@ abstract class Channel extends Component implements ChannelInterface
     {
         $this->_timeout = floatval($timeout);
         return $this;
-    }
-
-    public static function getI()
-    {
-
     }
 
     /**
