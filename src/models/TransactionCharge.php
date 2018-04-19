@@ -3,6 +3,8 @@
 namespace yuncms\transaction\models;
 
 use Yii;
+use yii\base\InvalidConfigException;
+use yii\base\UnknownClassException;
 use yii\behaviors\AttributeBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Query;
@@ -87,7 +89,7 @@ class TransactionCharge extends ActiveRecord
     {
         return [
             [['paid', 'refunded', 'reversed', 'amount', 'time_paid', 'time_expire', 'amount_refunded'], 'integer'],
-            [[ 'order_no', 'amount', 'currency', 'subject', 'body'], 'required'],
+            [['order_no', 'amount', 'currency', 'subject', 'body'], 'required'],
             [['metadata'], 'string'],
             [['channel'], 'string', 'max' => 50],
             [['order_no', 'failure_code', 'failure_msg', 'description'], 'string', 'max' => 255],
@@ -137,9 +139,12 @@ class TransactionCharge extends ActiveRecord
      */
     public function channelExists()
     {
-        if (!TransactionChannel::find()->where(['identity' => $this->channel])->exists()) {
-            $message = Yii::t('yuncms', "Unknown channel '{channel}'", ['class' => $this->channel]);
-            $this->addError('channel', $message);
+        try {
+            TransactionChannel::getChannelByIdentity($this->channel);
+        } catch (InvalidConfigException $e) {
+            $this->addError('channel', $e->getMessage());
+        } catch (UnknownClassException $e) {
+            $this->addError('channel', $e->getMessage());
         }
     }
 
