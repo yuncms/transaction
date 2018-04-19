@@ -3,6 +3,7 @@
 namespace yuncms\transaction\backend\controllers;
 
 use Yii;
+use yii\base\DynamicModel;
 use yii\filters\VerbFilter;
 use yii\bootstrap\ActiveForm;
 use yii\web\NotFoundHttpException;
@@ -115,8 +116,9 @@ class ChannelController extends Controller
      */
     public function actionConfiguration($id)
     {
-        $model = $this->findModel($id);
-        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
+        $channel = $this->findModel($id);
+        $model = new DynamicModel();
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post(), '')) {
             Yii::$app->response->format = Response::FORMAT_JSON;
             return ActiveForm::validate($model);
         }

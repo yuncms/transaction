@@ -144,6 +144,11 @@ abstract class Channel extends Component implements ChannelInterface
         return $this;
     }
 
+    public static function getI()
+    {
+
+    }
+
     /**
      * 生成一个指定长度的随机字符串
      * @param int $length

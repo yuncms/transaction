@@ -7,6 +7,7 @@ use yii\behaviors\TimestampBehavior;
 use yuncms\behaviors\JsonBehavior;
 use yuncms\helpers\Json;
 use yuncms\db\ActiveRecord;
+use yuncms\transaction\Channel;
 use yuncms\validators\JsonValidator;
 
 /**
@@ -55,7 +56,8 @@ class TransactionChannel extends ActiveRecord
         return [
             [['identity', 'name', 'title'], 'required'],
             [['identity', 'name', 'title'], 'string', 'max' => 64],
-            [['className', 'description'], 'string', 'max' => 255],
+            [['description'], 'string', 'max' => 255],
+            [['className'], 'classExists'],
             [['configuration'], JsonValidator::class],
         ];
     }
@@ -76,6 +78,23 @@ class TransactionChannel extends ActiveRecord
             'created_at' => Yii::t('yuncms/transaction', 'Created At'),
             'updated_at' => Yii::t('yuncms/transaction', 'Updated At'),
         ];
+    }
+
+    /**
+     * Validate class exists
+     */
+    public function classExists()
+    {
+        if (!class_exists($this->className)) {
+            $message = Yii::t('yuncms', "Unknown class '{class}'", ['class' => $this->className]);
+            $this->addError('className', $message);
+            return;
+        }
+        if (!is_subclass_of($this->className, Channel::class)) {
+            $message = Yii::t('yuncms/transaction', "'{class}' must extend from 'yuncms\\transaction\\Channel' or its child class", [
+                'class' => $this->className]);
+            $this->addError('className', $message);
+        }
     }
 
     /**
