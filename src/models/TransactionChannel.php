@@ -5,9 +5,8 @@ namespace yuncms\transaction\models;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yuncms\behaviors\JsonBehavior;
-use yuncms\helpers\Json;
 use yuncms\db\ActiveRecord;
-use yuncms\transaction\Channel;
+use yuncms\transaction\channels\Channel;
 use yuncms\validators\JsonValidator;
 
 /**
@@ -91,7 +90,7 @@ class TransactionChannel extends ActiveRecord
             return;
         }
         if (!is_subclass_of($this->className, Channel::class)) {
-            $message = Yii::t('yuncms/transaction', "'{class}' must extend from 'yuncms\\transaction\\Channel' or its child class", [
+            $message = Yii::t('yuncms/transaction', "'{class}' must extend from 'yuncms\\transaction\\channels\\Channel' or its child class", [
                 'class' => $this->className]);
             $this->addError('className', $message);
         }

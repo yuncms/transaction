@@ -13,7 +13,7 @@ namespace yuncms\transaction\channels;
  * @author Tongle Xu <xutongle@gmail.com>
  * @since 3.0
  */
-class Alipay
+class Alipay extends Channel
 {
 
 }

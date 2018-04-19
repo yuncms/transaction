@@ -5,7 +5,7 @@
  * @license http://www.tintsoft.com/license/
  */
 
-namespace yuncms\transaction;
+namespace yuncms\transaction\channels;
 
 use Yii;
 use yii\base\Component;
