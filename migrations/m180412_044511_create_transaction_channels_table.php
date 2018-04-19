@@ -28,8 +28,8 @@ class m180412_044511_create_transaction_channels_table extends Migration
             'name' => $this->string(64)->notNull()->comment('Channel Name'),
             'title' => $this->string(64)->notNull()->comment('Channel Title'),
             'description' => $this->string(255)->notNull()->comment('Channel Description'),
-            'className' => $this->string()->comment('Channel Extra'),
-            'configuration' => $this->binary(),
+            'className' => $this->string()->comment('Channel ClassName'),
+            'configuration' => $this->text()->comment('Channel Config'),
             'created_at' => $this->integer()->notNull()->comment('Created At'),//创建时间
             'updated_at' => $this->integer()->notNull()->comment('Updated At'),//更新时间
         ], $tableOptions);

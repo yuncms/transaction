@@ -4,8 +4,10 @@ namespace yuncms\transaction\models;
 
 use Yii;
 use yii\behaviors\TimestampBehavior;
-use yii\db\PdoValue;
+use yuncms\behaviors\JsonBehavior;
+use yuncms\helpers\Json;
 use yuncms\db\ActiveRecord;
+use yuncms\validators\JsonValidator;
 
 /**
  * This is the model class for table "{{%transaction_channels}}".
@@ -38,6 +40,10 @@ class TransactionChannel extends ActiveRecord
     {
         return [
             'timestamp' => TimestampBehavior::class,
+            'configuration' => [
+                'class' => JsonBehavior::class,
+                'attributes' => ['configuration'],
+            ],
         ];
     }
 
@@ -50,7 +56,7 @@ class TransactionChannel extends ActiveRecord
             [['identity', 'name', 'title'], 'required'],
             [['identity', 'name', 'title'], 'string', 'max' => 64],
             [['className', 'description'], 'string', 'max' => 255],
-            //['configuration','safe']
+            [['configuration'], JsonValidator::class],
         ];
     }
 
@@ -73,25 +79,6 @@ class TransactionChannel extends ActiveRecord
     }
 
     /**
-     * 保存渠道配置
-     * @param array $configuration
-     * @return int
-     */
-    public function setConfiguration($configuration)
-    {
-        return $this->updateAttributes(['configuration' => new PdoValue($configuration, \PDO::PARAM_LOB)]);
-    }
-
-    /**
-     * 获取渠道配置
-     * @return array
-     */
-    public function getConfiguration()
-    {
-        return $this->configuration;
-    }
-
-    /**
      * 保存前执行
      * @param bool $insert
      * @return bool
@@ -109,13 +96,6 @@ class TransactionChannel extends ActiveRecord
     public function afterSave($insert, $changedAttributes)
     {
         parent::afterSave($insert, $changedAttributes);
-
-//        if ($insert) {
-//            $this->configuration = [];
-//        }
-//        if (!$insert) {
-//
-//        }
     }
 
     /**
