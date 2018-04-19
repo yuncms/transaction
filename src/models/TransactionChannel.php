@@ -3,6 +3,8 @@
 namespace yuncms\transaction\models;
 
 use Yii;
+use yii\base\InvalidConfigException;
+use yii\base\UnknownClassException;
 use yii\behaviors\TimestampBehavior;
 use yuncms\behaviors\JsonBehavior;
 use yuncms\db\ActiveRecord;
@@ -93,6 +95,26 @@ class TransactionChannel extends ActiveRecord
             $message = Yii::t('yuncms/transaction', "'{class}' must extend from 'yuncms\\transaction\\channels\\Channel' or its child class", [
                 'class' => $this->className]);
             $this->addError('className', $message);
+        }
+    }
+
+    /**
+     * 获取支付网关实例
+     * @param string $identity
+     * @return object
+     * @throws InvalidConfigException
+     * @throws UnknownClassException
+     */
+    public static function getChannelByIdentity($identity)
+    {
+        if (($channel = static::findOne(['identity' => $identity])) != null) {
+            if (is_array($channel->configuration)) {
+                return Yii::createObject($channel->className, $channel->configuration);
+            } else {
+                throw new InvalidConfigException('The gateway is not enabled yet.');
+            }
+        } else {
+            throw new UnknownClassException (Yii::t('yii', 'The channel does not exist.'));
         }
     }
 
