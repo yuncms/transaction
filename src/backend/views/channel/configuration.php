@@ -7,8 +7,8 @@ use yuncms\admin\widgets\Alert;
 use yuncms\admin\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model yuncms\transaction\models\TransactionChannel */
-
+/* @var $model yuncms\transaction\models\SettingsModel */
+/* @var $channel yuncms\transaction\models\TransactionChannel */
 $this->title = Yii::t('yuncms/transaction', 'Configuration Transaction Channel');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('yuncms/transaction', 'Manage Transaction Channel'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
