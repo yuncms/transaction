@@ -2,6 +2,7 @@
 
 use yuncms\admin\widgets\ActiveForm;
 use yuncms\helpers\Html;
+use yuncms\transaction\channels\wechat\Wechat;
 
 /* @var \yii\web\View $this */
 /* @var ActiveForm $form */
@@ -19,13 +20,16 @@ use yuncms\helpers\Html;
 <?= $form->field($model, 'mchId')->textInput(['maxlength' => true]) ?>
 <div class="hr-line-dashed"></div>
 
+<?= $form->field($model, 'signType')->dropDownList([
+    'MD5' => Wechat::SIGNATURE_METHOD_MD5,
+    'HMAC-SHA256' => Wechat::SIGNATURE_METHOD_SHA256
+]) ?>
+<div class="hr-line-dashed"></div>
+
 <?= $form->field($model, 'privateKey')->textarea() ?>
 <div class="hr-line-dashed"></div>
 
 <?= $form->field($model, 'publicKey')->textarea() ?>
-<div class="hr-line-dashed"></div>
-
-<?= $form->field($model, 'signType')->textarea() ?>
 <div class="hr-line-dashed"></div>
 
 

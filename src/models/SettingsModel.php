@@ -24,6 +24,8 @@ class SettingsModel extends Model
     /** @var string */
     public $title;
 
+    public $class;
+
     /** @var TransactionChannel */
     private $_channel;
 
@@ -33,7 +35,7 @@ class SettingsModel extends Model
     public function rules()
     {
         return [
-            [['identity', 'name', 'title'], 'string'],
+            [['identity', 'name', 'title','class'], 'string'],
         ];
     }
 
@@ -44,6 +46,12 @@ class SettingsModel extends Model
     public function setChannel($channel)
     {
         $this->_channel = $channel;
+        $this->setAttributes([
+            'identity' => $channel->identity,
+            'name' => $channel->name,
+            'title' => $channel->title,
+            'class' => $channel->className
+        ]);
     }
 
     /**

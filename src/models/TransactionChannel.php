@@ -109,8 +109,8 @@ class TransactionChannel extends ActiveRecord
     public static function getChannelByIdentity($identity)
     {
         if (($channel = static::findOne(['identity' => $identity])) != null) {
-            if (is_array($channel->configuration)) {
-                return Yii::createObject($channel->className, $channel->configuration);
+            if ($channel->configuration) {
+                return Yii::createObject($channel->configuration->toArray());
             } else {
                 throw new InvalidConfigException('The channel is not enabled yet.');
             }
@@ -131,13 +131,7 @@ class TransactionChannel extends ActiveRecord
         $model = $channelClass::getSettingsModel();
         $model->setChannel($this);
         if ($this->configuration) {
-            $model->setAttributes($this->configuration->toArray(),false);
-        } else {
-            $model->setAttributes([
-                'identity' => $this->identity,
-                'name' => $this->name,
-                'title' => $this->title,
-            ]);
+            $model->setAttributes($this->configuration->toArray(), false);
         }
         return $model;
     }

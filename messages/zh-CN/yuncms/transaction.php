@@ -17,11 +17,18 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
+    'App Id' => '',
+    'MchId' => '商户号',
     'Amount' => '金额',
+    'PrivateKey' => '私钥',
+    'PublicKey' => '公钥',
+    'Sign Type' => '签名类型',
     'Amount Refunded' => '退款金额',
     'Amount Settle' => '',
+    'Configuration Transaction Channel' => '渠道参数配置',
     'Batch Deletion' => '批量删除',
     'Body' => '',
+    'Configuration success.' => '配置成功！',
     'Channel Name' => '渠道名称',
     'Charge ID' => '支付ID',
     'Charge Order No' => '订单号',

@@ -7,6 +7,7 @@
 
 namespace yuncms\transaction\channels\wechat;
 
+use Yii;
 use yuncms\helpers\ArrayHelper;
 
 /**
@@ -44,5 +45,21 @@ class SettingsModel extends \yuncms\transaction\models\SettingsModel
             'string' => [['appId', 'apiKey', 'mchId', 'privateKey', 'publicKey', 'signType'], 'string'],
             're' => [['appId', 'apiKey', 'mchId', 'privateKey', 'publicKey', 'signType'], 'required'],
         ]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+        return [
+            'appId' => Yii::t('yuncms/transaction', 'App Id'),
+            'apiKey' => Yii::t('yuncms/transaction', 'Api Key'),
+            'mchId' => Yii::t('yuncms/transaction', 'MchId'),
+            'privateKey' => Yii::t('yuncms/transaction', 'PrivateKey'),
+            'publicKey' => Yii::t('yuncms/transaction', 'PublicKey'),
+            'signType' => Yii::t('yuncms/transaction', 'Sign Type'),
+
+        ];
     }
 }
