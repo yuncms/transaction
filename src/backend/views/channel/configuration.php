@@ -4,11 +4,12 @@ use yuncms\helpers\Html;
 use yuncms\admin\widgets\Box;
 use yuncms\admin\widgets\Toolbar;
 use yuncms\admin\widgets\Alert;
+use yuncms\admin\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $model yuncms\transaction\models\TransactionChannel */
 
-$this->title = Yii::t('yuncms/transaction', 'Create Transaction Channel');
+$this->title = Yii::t('yuncms/transaction', 'Configuration Transaction Channel');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('yuncms/transaction', 'Manage Transaction Channel'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -36,10 +37,20 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 </div>
             </div>
+            <?php $form = ActiveForm::begin(['layout' => 'horizontal', 'enableAjaxValidation' => true, 'enableClientValidation' => false,]); ?>
 
-            <?= $this->render('_form', [
+            <?= $this->render('_configuration_' . $model->identity, [
                 'model' => $model,
+                'form' => $form,
             ]) ?>
+
+            <div class="form-group">
+                <div class="col-sm-4 col-sm-offset-2">
+                    <?= Html::submitButton(Yii::t('yuncms', 'Save'), ['class' => 'btn btn-primary']) ?>
+                </div>
+            </div>
+
+            <?php ActiveForm::end(); ?>
             <?php Box::end(); ?>
         </div>
     </div>
