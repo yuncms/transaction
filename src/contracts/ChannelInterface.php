@@ -8,37 +8,37 @@
 namespace yuncms\transaction\contracts;
 
 /**
- * GatewayInterface declares basic interface all Gateway clients should follow.
+ * ChannelInterface declares basic interface all Channel clients should follow.
  */
 interface ChannelInterface
 {
     /**
-     * @param string $id service id.
+     * @param string $id channel id.
      */
-    public function setId($id);
+    public function setIdentity($id);
 
     /**
-     * @return string service id
+     * @return string channel id
      */
-    public function getId();
+    public function getIdentity();
 
     /**
-     * @return string service name.
+     * @return string channel name.
      */
     public function getName();
 
     /**
-     * @param string $name service name.
+     * @param string $name channel name.
      */
     public function setName($name);
 
     /**
-     * @return string service title.
+     * @return string channel title.
      */
     public function getTitle();
 
     /**
-     * @param string $title service title.
+     * @param string $title channel title.
      */
     public function setTitle($title);
 }

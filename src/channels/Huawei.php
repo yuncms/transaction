@@ -8,7 +8,10 @@
 namespace yuncms\transaction\channels;
 
 
-class Huawei extends Channel
-{
+use yuncms\transaction\contracts\ChannelInterface;
+use yuncms\transaction\traits\ChannelTrait;
 
+class Huawei implements ChannelInterface
+{
+    use ChannelTrait;
 }

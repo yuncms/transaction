@@ -7,13 +7,16 @@
 
 namespace yuncms\transaction\channels;
 
+use yuncms\transaction\contracts\ChannelInterface;
+use yuncms\transaction\traits\ChannelTrait;
+
 /**
  * Class Apple
  *
  * @author Tongle Xu <xutongle@gmail.com>
  * @since 3.0
  */
-abstract class Apple extends Channel
+abstract class Apple implements ChannelInterface
 {
-
+    use ChannelTrait;
 }

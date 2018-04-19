@@ -7,13 +7,16 @@
 
 namespace yuncms\transaction\channels;
 
+use yuncms\transaction\contracts\ChannelInterface;
+use yuncms\transaction\traits\ChannelTrait;
+
 /**
  * Class Wechat
  *
  * @author Tongle Xu <xutongle@gmail.com>
  * @since 3.0
  */
-abstract class Wechat extends Channel
+abstract class Wechat implements ChannelInterface
 {
-
+    use ChannelTrait;
 }
