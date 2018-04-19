@@ -63,4 +63,5 @@ return [
     'Manage Transaction Charge' => '支付管理',
     'Manage Transaction Refund' => '退款管理',
     'Updated At' => '更新时间',
+    '\'{class}\' must extend from \'yuncms\\transaction\\contracts\\ChannelInterface\' or its child class' => '\'{class}\' 必须从 \'yuncms\\transaction\\contracts\\ChannelInterface\' 或其子类继承'
 ];

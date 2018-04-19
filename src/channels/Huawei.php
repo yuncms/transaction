@@ -11,7 +11,5 @@ namespace yuncms\transaction\channels;
 use yuncms\transaction\contracts\ChannelInterface;
 use yuncms\transaction\traits\ChannelTrait;
 
-class Huawei implements ChannelInterface
-{
-    use ChannelTrait;
+class Huawei {
 }

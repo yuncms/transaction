@@ -8,7 +8,6 @@ use yii\base\UnknownClassException;
 use yii\behaviors\TimestampBehavior;
 use yuncms\behaviors\JsonBehavior;
 use yuncms\db\ActiveRecord;
-use yuncms\transaction\channels\Channel;
 use yuncms\validators\JsonValidator;
 
 /**
@@ -91,8 +90,8 @@ class TransactionChannel extends ActiveRecord
             $this->addError('className', $message);
             return;
         }
-        if (!is_subclass_of($this->className, Channel::class)) {
-            $message = Yii::t('yuncms/transaction', "'{class}' must extend from 'yuncms\\transaction\\channels\\Channel' or its child class", [
+        if (!is_subclass_of($this->className, 'yuncms\transaction\contracts\ChannelInterface')) {
+            $message = Yii::t('yuncms/transaction', "'{class}' must extend from 'yuncms\\transaction\\contracts\\ChannelInterface' or its child class", [
                 'class' => $this->className]);
             $this->addError('className', $message);
         }
