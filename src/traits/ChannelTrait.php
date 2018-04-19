@@ -20,7 +20,7 @@ trait ChannelTrait
     /**
      * @var float 连接超时时间
      */
-    private $_timeout;
+    public $timeout;
 
     /**
      * @var string channel identity.
@@ -50,7 +50,7 @@ trait ChannelTrait
     /**
      * @return string channel identity
      */
-    public function getIdentity()
+    public function getIdentity(): string
     {
         if (empty($this->_identity)) {
             $this->_identity = $this->getName();
@@ -69,7 +69,7 @@ trait ChannelTrait
     /**
      * @return string channel name.
      */
-    public function getName()
+    public function getName(): string
     {
         if ($this->_name === null) {
             $this->_name = $this->defaultName();
@@ -88,7 +88,7 @@ trait ChannelTrait
     /**
      * @return string channel title.
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         if ($this->_title === null) {
             $this->_title = $this->defaultTitle();
@@ -100,7 +100,7 @@ trait ChannelTrait
      * Generates channel name.
      * @return string channel name.
      */
-    protected function defaultName()
+    protected function defaultName(): string
     {
         return Inflector::camel2id(StringHelper::basename(get_class($this)));
     }
@@ -109,7 +109,7 @@ trait ChannelTrait
      * Generates channel title.
      * @return string channel title.
      */
-    protected function defaultTitle()
+    protected function defaultTitle(): string
     {
         return StringHelper::basename(get_class($this));
     }
@@ -119,9 +119,9 @@ trait ChannelTrait
      *
      * @return int|mixed
      */
-    public function getTimeout()
+    public function getTimeout(): float
     {
-        return $this->_timeout ?: 5.0;
+        return $this->timeout ?: 5.0;
     }
 
     /**
@@ -133,7 +133,7 @@ trait ChannelTrait
      */
     public function setTimeout($timeout)
     {
-        $this->_timeout = floatval($timeout);
+        $this->timeout = floatval($timeout);
         return $this;
     }
 
@@ -143,7 +143,7 @@ trait ChannelTrait
      * @return string
      * @throws \yii\base\Exception
      */
-    protected function generateRandomString($length = 32)
+    protected function generateRandomString($length = 32): string
     {
         return Yii::$app->security->generateRandomString($length);
     }

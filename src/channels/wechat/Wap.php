@@ -7,8 +7,6 @@
 
 namespace yuncms\transaction\channels\wechat;
 
-use yuncms\transaction\channels\Wechat;
-
 /**
  * Class Wap
  *

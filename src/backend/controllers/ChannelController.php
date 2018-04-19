@@ -7,6 +7,7 @@ use yii\base\DynamicModel;
 use yii\filters\VerbFilter;
 use yii\bootstrap\ActiveForm;
 use yii\web\NotFoundHttpException;
+use yuncms\transaction\contracts\ChannelInterface;
 use yuncms\transaction\models\TransactionChannel;
 use yuncms\transaction\backend\models\TransactionChannelSearch;
 use yuncms\web\Controller;
@@ -117,17 +118,18 @@ class ChannelController extends Controller
     public function actionConfiguration($id)
     {
         $channel = $this->findModel($id);
-        $model = new DynamicModel();
+        $model = $channel->getSettingsModel();
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post(), '')) {
             Yii::$app->response->format = Response::FORMAT_JSON;
             return ActiveForm::validate($model);
         }
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post(), '') && $model->save()) {
             Yii::$app->getSession()->setFlash('success', Yii::t('yuncms', 'Configuration success.'));
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['view', 'id' => $id]);
         } else {
             return $this->render('configuration', [
                 'model' => $model,
+                'channel' => $channel
             ]);
         }
     }

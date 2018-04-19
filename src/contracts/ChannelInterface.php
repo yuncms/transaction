@@ -7,6 +7,9 @@
 
 namespace yuncms\transaction\contracts;
 
+use yii\base\Model;
+use yuncms\transaction\models\TransactionCharge;
+
 /**
  * ChannelInterface declares basic interface all Channel clients should follow.
  */
@@ -20,12 +23,12 @@ interface ChannelInterface
     /**
      * @return string channel id
      */
-    public function getIdentity();
+    public function getIdentity(): string;
 
     /**
      * @return string channel name.
      */
-    public function getName();
+    public function getName(): string;
 
     /**
      * @param string $name channel name.
@@ -35,10 +38,30 @@ interface ChannelInterface
     /**
      * @return string channel title.
      */
-    public function getTitle();
+    public function getTitle(): string;
 
     /**
      * @param string $title channel title.
      */
     public function setTitle($title);
+
+    /**
+     * 获取设置模型
+     * @return Model
+     */
+    public static function getSettingsModel();
+
+    /**
+     * 关闭订单
+     * @param TransactionCharge $charge
+     * @return TransactionCharge
+     */
+    public function close(TransactionCharge $charge): TransactionCharge;
+
+    /**
+     * 查询订单
+     * @param TransactionCharge $charge
+     * @return TransactionCharge
+     */
+    public function query(TransactionCharge $charge): TransactionCharge;
 }

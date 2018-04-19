@@ -5,11 +5,14 @@
  * @license http://www.tintsoft.com/license/
  */
 
-namespace yuncms\transaction\channels;
+namespace yuncms\transaction\channels\huawei;
 
 
+use yii\base\BaseObject;
 use yuncms\transaction\contracts\ChannelInterface;
 use yuncms\transaction\traits\ChannelTrait;
 
-class Huawei {
+abstract class Huawei extends BaseObject implements ChannelInterface
+{
+    use ChannelTrait;
 }

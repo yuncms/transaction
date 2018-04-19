@@ -5,23 +5,19 @@
  * @license http://www.tintsoft.com/license/
  */
 
-namespace yuncms\transaction\channels;
+namespace yuncms\transaction\channels\apple;
 
 use yii\base\BaseObject;
 use yuncms\transaction\contracts\ChannelInterface;
 use yuncms\transaction\traits\ChannelTrait;
 
 /**
- * Class Alipay
+ * Class Apple
  *
  * @author Tongle Xu <xutongle@gmail.com>
  * @since 3.0
  */
-abstract class Alipay extends BaseObject implements ChannelInterface
+abstract class Apple extends BaseObject implements ChannelInterface
 {
     use ChannelTrait;
-
-    const SIGNATURE_METHOD_RSA = 'RSA';
-    const SIGNATURE_METHOD_RSA2 = 'RSA2';
-
 }

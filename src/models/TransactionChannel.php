@@ -6,8 +6,10 @@ use Yii;
 use yii\base\InvalidConfigException;
 use yii\base\UnknownClassException;
 use yii\behaviors\TimestampBehavior;
+use yuncms\base\JsonObject;
 use yuncms\behaviors\JsonBehavior;
 use yuncms\db\ActiveRecord;
+use yuncms\transaction\contracts\ChannelInterface;
 use yuncms\validators\JsonValidator;
 
 /**
@@ -19,7 +21,7 @@ use yuncms\validators\JsonValidator;
  * @property string $title Channel Title
  * @property string $description Channel Description
  * @property string $className Channel className
- * @property array $configuration Channel configuration
+ * @property JsonObject $configuration Channel configuration
  * @property int $created_at Created At
  * @property int $updated_at Updated At
  */
@@ -110,11 +112,34 @@ class TransactionChannel extends ActiveRecord
             if (is_array($channel->configuration)) {
                 return Yii::createObject($channel->className, $channel->configuration);
             } else {
-                throw new InvalidConfigException('The gateway is not enabled yet.');
+                throw new InvalidConfigException('The channel is not enabled yet.');
             }
         } else {
             throw new UnknownClassException (Yii::t('yii', 'The channel does not exist.'));
         }
+    }
+
+    /**
+     * 获取渠道设置模型
+     * @return SettingsModel
+     */
+    public function getSettingsModel()
+    {
+        /** @var ChannelInterface $channelClass */
+        $channelClass = $this->className;
+        /** @var SettingsModel $model */
+        $model = $channelClass::getSettingsModel();
+        $model->setChannel($this);
+        if ($this->configuration) {
+            $model->setAttributes($this->configuration->toArray(),false);
+        } else {
+            $model->setAttributes([
+                'identity' => $this->identity,
+                'name' => $this->name,
+                'title' => $this->title,
+            ]);
+        }
+        return $model;
     }
 
     /**

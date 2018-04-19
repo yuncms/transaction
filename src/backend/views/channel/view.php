@@ -1,6 +1,7 @@
 <?php
 
 use yuncms\helpers\Html;
+use yuncms\helpers\Json;
 use yuncms\widgets\DetailView;
 use yuncms\admin\widgets\Box;
 use yuncms\admin\widgets\Toolbar;
@@ -37,6 +38,11 @@ $this->params['breadcrumbs'][] = $this->title;
                             'options' => ['class' => 'btn btn-primary btn-sm']
                         ],
                         [
+                            'label' => Yii::t('yuncms/transaction', 'Configuration Transaction Channel'),
+                            'url' => ['configuration', 'id' => $model->id],
+                            'options' => ['class' => 'btn btn-primary btn-sm']
+                        ],
+                        [
                             'label' => Yii::t('yuncms/transaction', 'Delete Transaction Channel'),
                             'url' => ['delete', 'id' => $model->id],
                             'options' => [
@@ -57,12 +63,19 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= DetailView::widget([
                 'model' => $model,
                 'attributes' => [
-                                'id',
+                    'id',
                     'identity',
                     'name',
                     'className',
                     'title',
                     'description',
+                    [
+                        'attribute' => 'configuration',
+                        'value' => function ($model) {
+                            return Json::encode($model->configuration);
+                        },
+                        'label' => Yii::t('yuncms', 'Configuration'),
+                    ],
                     'created_at:datetime',
                     'updated_at:datetime',
                 ],

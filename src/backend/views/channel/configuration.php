@@ -37,18 +37,16 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 </div>
             </div>
+
             <?php $form = ActiveForm::begin(['layout' => 'horizontal', 'enableAjaxValidation' => true, 'enableClientValidation' => false,]); ?>
-
-            <?= $this->render('_configuration_' . $model->identity, [
-                'model' => $model,
+            <?= $form->field($model, 'identity')->hiddenInput()->label(false) ?>
+            <?= $form->field($model, 'name')->hiddenInput()->label(false) ?>
+            <?= $form->field($model, 'title')->hiddenInput()->label(false) ?>
+            <?= $this->render('_configuration_' . $channel->identity, [
                 'form' => $form,
+                'model' => $model,
+                'channel' => $channel
             ]) ?>
-
-            <div class="form-group">
-                <div class="col-sm-4 col-sm-offset-2">
-                    <?= Html::submitButton(Yii::t('yuncms', 'Save'), ['class' => 'btn btn-primary']) ?>
-                </div>
-            </div>
 
             <?php ActiveForm::end(); ?>
             <?php Box::end(); ?>
