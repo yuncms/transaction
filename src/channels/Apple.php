@@ -8,13 +8,12 @@
 namespace yuncms\transaction\channels;
 
 /**
- * Class Alipay
+ * Class Apple
  *
  * @author Tongle Xu <xutongle@gmail.com>
  * @since 3.0
  */
-abstract class Alipay extends Channel
+abstract class Apple extends Channel
 {
-
 
 }

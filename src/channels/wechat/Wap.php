@@ -5,16 +5,17 @@
  * @license http://www.tintsoft.com/license/
  */
 
-namespace yuncms\transaction\channels;
+namespace yuncms\transaction\channels\wechat;
+
+use yuncms\transaction\channels\Wechat;
 
 /**
- * Class Alipay
+ * Class Wap
  *
  * @author Tongle Xu <xutongle@gmail.com>
  * @since 3.0
  */
-abstract class Alipay extends Channel
+class Wap extends Wechat
 {
-
 
 }

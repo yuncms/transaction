@@ -5,16 +5,17 @@
  * @license http://www.tintsoft.com/license/
  */
 
-namespace yuncms\transaction\channels;
+namespace yuncms\transaction\channels\huawei;
+
+use yuncms\transaction\channels\Huawei;
 
 /**
- * Class Alipay
+ * Class App
  *
  * @author Tongle Xu <xutongle@gmail.com>
  * @since 3.0
  */
-abstract class Alipay extends Channel
+class App extends Huawei
 {
-
 
 }

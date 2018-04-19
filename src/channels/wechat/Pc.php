@@ -5,17 +5,17 @@
  * @license http://www.tintsoft.com/license/
  */
 
-namespace yuncms\transaction\backend\models;
+namespace yuncms\transaction\channels\wechat;
 
-use yii\base\Model;
+use yuncms\transaction\channels\Wechat;
 
 /**
- * Class ChannelConfiguration
+ * Class Pc
  *
  * @author Tongle Xu <xutongle@gmail.com>
  * @since 3.0
  */
-class ChannelConfiguration extends Model
+class Pc extends Wechat
 {
 
 }

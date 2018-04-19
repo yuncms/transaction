@@ -17,5 +17,9 @@ use yii\base\DynamicModel;
  */
 class ChannelModel extends DynamicModel
 {
+    public function __construct(array $attributes = [], array $config = [])
+    {
+        parent::__construct($attributes, $config);
+    }
 
 }

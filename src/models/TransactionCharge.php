@@ -87,7 +87,7 @@ class TransactionCharge extends ActiveRecord
     {
         return [
             [['paid', 'refunded', 'reversed', 'amount', 'time_paid', 'time_expire', 'amount_refunded'], 'integer'],
-            [['channel', 'order_no', 'amount', 'currency', 'subject', 'body'], 'required'],
+            [[ 'order_no', 'amount', 'currency', 'subject', 'body'], 'required'],
             [['metadata'], 'string'],
             [['channel'], 'string', 'max' => 50],
             [['order_no', 'failure_code', 'failure_msg', 'description'], 'string', 'max' => 255],
@@ -95,6 +95,7 @@ class TransactionCharge extends ActiveRecord
             [['currency'], 'string', 'max' => 3],
             [['subject'], 'string', 'max' => 32],
             [['body'], 'string', 'max' => 128],
+            [['channel'], 'channelExists'],
             ['amount_refunded', 'default', 'value' => 0],
             [['transaction_no'], 'string', 'max' => 64],
         ];
@@ -129,6 +130,17 @@ class TransactionCharge extends ActiveRecord
             'description' => Yii::t('yuncms/transaction', 'Description'),
             'created_at' => Yii::t('yuncms', 'Created At'),
         ];
+    }
+
+    /**
+     * Validate channel exists
+     */
+    public function channelExists()
+    {
+        if (!TransactionChannel::find()->where(['identity' => $this->channel])->exists()) {
+            $message = Yii::t('yuncms', "Unknown channel '{channel}'", ['class' => $this->channel]);
+            $this->addError('channel', $message);
+        }
     }
 
     /**
