@@ -5,15 +5,15 @@
  * @license http://www.tintsoft.com/license/
  */
 
-namespace yuncms\transaction\channels\wechat;
+namespace yuncms\transaction;
 
 /**
- * Class Pc
+ * Class Exception
  *
  * @author Tongle Xu <xutongle@gmail.com>
  * @since 3.0
  */
-class Pc extends Wechat
+class Exception extends \yii\base\Exception
 {
 
 }

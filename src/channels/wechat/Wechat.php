@@ -8,10 +8,11 @@
 namespace yuncms\transaction\channels\wechat;
 
 use Yii;
-use yii\base\BaseObject;
 use yii\base\InvalidConfigException;
+use yii\httpclient\Client;
+use yii\httpclient\RequestEvent;
 use yuncms\web\Request;
-use yuncms\base\HasHttpRequest;
+use yuncms\transaction\Exception;
 use yuncms\transaction\contracts\ChannelInterface;
 use yuncms\transaction\models\TransactionCharge;
 use yuncms\transaction\traits\ChannelTrait;
@@ -22,10 +23,9 @@ use yuncms\transaction\traits\ChannelTrait;
  * @author Tongle Xu <xutongle@gmail.com>
  * @since 3.0
  */
-abstract class Wechat extends BaseObject implements ChannelInterface
+abstract class Wechat extends Client implements ChannelInterface
 {
     use ChannelTrait;
-    use HasHttpRequest;
 
     const SIGNATURE_METHOD_MD5 = 'MD5';
     const SIGNATURE_METHOD_SHA256 = 'HMAC-SHA256';
@@ -89,6 +89,26 @@ abstract class Wechat extends BaseObject implements ChannelInterface
         if (empty ($this->publicKey)) {
             throw new InvalidConfigException ('The "publicKey" property must be set.');
         }
+        $this->requestConfig['format'] = Client::FORMAT_XML;
+        $this->responseConfig['format'] = Client::FORMAT_XML;
+        $this->on(Client::EVENT_BEFORE_SEND, [$this, 'RequestEvent']);
+    }
+
+    /**
+     * 请求事件
+     * @param RequestEvent $event
+     * @return void
+     * @throws \yii\base\Exception
+     */
+    public function RequestEvent(RequestEvent $event)
+    {
+        $params = $event->request->getData();
+        $params['appid'] = $this->appId;
+        $params['mch_id'] = $this->mchId;
+        $params['nonce_str'] = $this->generateRandomString(32);
+        $params['sign_type'] = $this->signType;
+        $params['sign'] = $this->generateSignature($params);
+        $event->request->setData($params);
     }
 
     /**
@@ -112,32 +132,67 @@ abstract class Wechat extends BaseObject implements ChannelInterface
      * 关闭订单
      * @param TransactionCharge $charge
      * @return TransactionCharge
-     * @throws InvalidConfigException
-     * @throws \yii\base\Exception
+     * @throws Exception
      */
-    public function close(TransactionCharge $charge): TransactionCharge
+    public function close(TransactionCharge $charge)
     {
-        $params = $this->buildParams([
-            'out_trade_no' => $charge->id,
+        $response = $this->request('POST', 'pay/closeorder', [
+            'out_trade_no' => $charge->outTradeNo,
         ]);
-        $response = $this->post('pay/closeorder', $params);
-        return $charge;
+        if ($response['return_code'] == 'SUCCESS') {
+            $charge->setReversed();
+            return $charge;
+        } else {
+            throw new Exception($response['return_msg']);
+        }
     }
 
     /**
-     * 查询订单号
+     * 查询支付号
      * @param TransactionCharge $charge
      * @return TransactionCharge
-     * @throws InvalidConfigException
-     * @throws \yii\base\Exception
+     * @throws Exception
      */
-    public function query(TransactionCharge $charge): TransactionCharge
+    public function query(TransactionCharge $charge)
     {
-        $params = $this->buildParams([
-            'out_trade_no' => $charge->id,
+        $response = $this->request('POST', 'pay/orderquery', [
+            'out_trade_no' => $charge->outTradeNo,
         ]);
-        $response = $this->post('pay/orderquery', $params);
-        return $charge;
+        if ($response['return_code'] == 'SUCCESS') {
+            return $charge;
+        } else {
+            throw new Exception($response['return_msg']);
+        }
+    }
+
+    /**
+     * 发送请求
+     * @param string $method
+     * @param array|string $url
+     * @param null $data
+     * @param array $headers
+     * @param array $options
+     * @return array
+     * @throws Exception
+     */
+    public function request($method, $url, $data = null, $headers = [], $options = [])
+    {
+        $request = $this->createRequest()
+            ->setMethod($method)
+            ->setHeaders($headers)
+            ->setOptions($options)
+            ->setUrl($url);
+        if (is_array($data)) {
+            $request->setData($data);
+        } else {
+            $request->setContent($data);
+        }
+        $response = $request->send();
+        if ($response->isOk) {
+            return $response->data;
+        } else {
+            throw new Exception ('Http request failed.');
+        }
     }
 
     /**
@@ -182,23 +237,6 @@ abstract class Wechat extends BaseObject implements ChannelInterface
     public function callback(Request $request, &$paymentId, &$money, &$message, &$payId)
     {
         return;
-    }
-
-    /**
-     * 编译参数
-     * @param array $params
-     * @return array
-     * @throws InvalidConfigException
-     * @throws \yii\base\Exception
-     */
-    protected function buildParams($params = [])
-    {
-        $params['appid'] = $this->appId;
-        $params['mch_id'] = $this->mchId;
-        $params['nonce_str'] = $this->generateRandomString(32);
-        $params['sign_type'] = $this->signType;
-        $params['sign'] = $this->generateSignature($params);
-        return $params;
     }
 
     /**

@@ -12,6 +12,7 @@ use yuncms\behaviors\IpBehavior;
 use yuncms\behaviors\JsonBehavior;
 use yuncms\db\ActiveRecord;
 use yuncms\helpers\ArrayHelper;
+use yuncms\helpers\Json;
 use yuncms\user\models\User;
 use yuncms\validators\JsonValidator;
 
@@ -90,7 +91,7 @@ class TransactionCharge extends ActiveRecord
                     ActiveRecord::EVENT_BEFORE_INSERT => ['client_ip']
                 ],
             ],
-            'json' => [
+            'jsonAttributes' => [
                 'class' => JsonBehavior::class,
                 'attributes' => ['extra', 'credential', 'metadata'],
             ],
@@ -215,6 +216,50 @@ class TransactionCharge extends ActiveRecord
     }
 
     /**
+     * 设置交易凭证
+     * @param string $transactionNo 支付渠道返回的交易流水号。
+     * @param array $credential 支付凭证
+     * @return bool
+     */
+    public function setTransactionCredential($transactionNo, $credential)
+    {
+        return (bool)$this->updateAttributes(['transaction_no' => $transactionNo, 'credential' => Json::encode($credential)]);
+    }
+
+    /**
+     * 设置订单状态以撤销
+     * @return bool
+     */
+    public function setReversed()
+    {
+        return (bool)$this->updateAttributes(['reversed' => true, 'credential' => null]);
+    }
+
+    /**
+     * 关闭支付
+     * @return TransactionCharge
+     * @throws InvalidConfigException
+     * @throws UnknownClassException
+     */
+    public function setClose()
+    {
+        $channel = TransactionChannel::getChannelByIdentity($this->channel);
+        return $channel->close($this);
+    }
+
+    /**
+     * 查询渠道
+     * @return TransactionCharge
+     * @throws InvalidConfigException
+     * @throws UnknownClassException
+     */
+    public function queryChannel()
+    {
+        $channel = TransactionChannel::getChannelByIdentity($this->channel);
+        return $channel->query($this);
+    }
+
+    /**
      * @param bool $insert
      * @param array $changedAttributes
      */
@@ -225,8 +270,9 @@ class TransactionCharge extends ActiveRecord
         if ($insert) {
             try {
                 $channel = TransactionChannel::getChannelByIdentity($this->channel);
-                $this->credential = $channel->charge($this);
+                $channel->charge($this);
             } catch (InvalidConfigException $e) {
+
             } catch (UnknownClassException $e) {
             }
         }

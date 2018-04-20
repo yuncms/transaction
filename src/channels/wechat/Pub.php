@@ -12,18 +12,21 @@ use yuncms\transaction\Exception;
 use yuncms\transaction\models\TransactionCharge;
 
 /**
- * 微信H5支付
+ * 公众号付款
  *
  * @author Tongle Xu <xutongle@gmail.com>
  * @since 3.0
  */
-class Wap extends Wechat
+class Pub extends Wechat
 {
+
     /**
      * 发起支付
      * @param TransactionCharge $charge
      * @return TransactionCharge
      * @throws Exception
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
      */
     public function charge(TransactionCharge $charge)
     {
@@ -32,17 +35,22 @@ class Wap extends Wechat
             'out_trade_no' => $charge->outTradeNo,
             'total_fee' => $charge->amount,
             'fee_type' => $charge->currency,
-            'trade_type' => 'MWEB',
+            'trade_type' => 'APP',
             'notify_url' => $this->getNoticeUrl(),
             'spbill_create_ip' => Yii::$app->request->isConsoleRequest ? '127.0.0.1' : Yii::$app->request->userIP,
             'device_info' => 'WEB',
             'attach' => $charge->extra,
+            'openid' => $charge->metadata['openid']///TODO 获取Openid
         ]);
         if ($response['return_code'] == 'SUCCESS') {
             $tradeParams = [
-                'mweb_url' => $response['mweb_url'],
-                'prepayid' => $response['prepay_id'],
+                'appId' => $this->appId,
+                'timeStamp' => time(),
+                'nonceStr' => $this->generateRandomString(32),
+                'package' => 'prepay_id=' . $response['prepay_id'],
+                'signType' => 'MD5',
             ];
+            $tradeParams['paySign'] = $this->generateSignature($tradeParams);
             $charge->setTransactionCredential($response['prepay_id'], $tradeParams);
             return $charge;
         } else {

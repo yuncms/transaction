@@ -12,18 +12,21 @@ use yuncms\transaction\Exception;
 use yuncms\transaction\models\TransactionCharge;
 
 /**
- * 微信H5支付
+ * 微信扫码支付
  *
  * @author Tongle Xu <xutongle@gmail.com>
  * @since 3.0
  */
-class Wap extends Wechat
+class Scan extends Wechat
 {
+
     /**
      * 发起支付
      * @param TransactionCharge $charge
      * @return TransactionCharge
-     * @throws Exception
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\httpclient\Exception
      */
     public function charge(TransactionCharge $charge)
     {
@@ -32,7 +35,7 @@ class Wap extends Wechat
             'out_trade_no' => $charge->outTradeNo,
             'total_fee' => $charge->amount,
             'fee_type' => $charge->currency,
-            'trade_type' => 'MWEB',
+            'trade_type' => 'NATIVE',
             'notify_url' => $this->getNoticeUrl(),
             'spbill_create_ip' => Yii::$app->request->isConsoleRequest ? '127.0.0.1' : Yii::$app->request->userIP,
             'device_info' => 'WEB',
@@ -40,7 +43,7 @@ class Wap extends Wechat
         ]);
         if ($response['return_code'] == 'SUCCESS') {
             $tradeParams = [
-                'mweb_url' => $response['mweb_url'],
+                'code_url' => $response['code_url'],
                 'prepayid' => $response['prepay_id'],
             ];
             $charge->setTransactionCredential($response['prepay_id'], $tradeParams);

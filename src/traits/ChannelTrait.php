@@ -9,6 +9,8 @@ namespace yuncms\transaction\traits;
 
 use Yii;
 use yii\helpers\Inflector;
+use yii\helpers\Url;
+use yii\httpclient\Client;
 use yuncms\helpers\StringHelper;
 
 /**
@@ -38,6 +40,19 @@ trait ChannelTrait
      * @var string auth channel title to display in views.
      */
     private $_title;
+
+    /**
+     * @var string URL, which user will be redirected after authentication at the Payment provider web site.
+     * Note: this should be absolute URL (with http:// or https:// leading).
+     * By default current URL will be used.
+     */
+    private $_returnUrl;
+
+    /**
+     * @var string 后端通知地址
+     */
+    private $_noticeUrl;
+
 
     /**
      * @param string $id service identity.
@@ -135,6 +150,94 @@ trait ChannelTrait
     {
         $this->timeout = floatval($timeout);
         return $this;
+    }
+
+    /**
+     * @param string $returnUrl return URL
+     */
+    public function setReturnUrl($returnUrl)
+    {
+        $this->_returnUrl = $returnUrl;
+    }
+
+    /**
+     * @return string return URL.
+     */
+    public function getReturnUrl()
+    {
+        if ($this->_returnUrl === null) {
+            $this->_returnUrl = $this->defaultReturnUrl();
+        }
+        return Url::to([$this->_returnUrl, 'channel' => $this->getIdentity()], true);
+    }
+
+    /**
+     * @param string $noticeUrl return URL
+     */
+    public function setNoticeUrl($noticeUrl)
+    {
+        $this->_noticeUrl = $noticeUrl;
+    }
+
+    /**
+     * @return string return URL.
+     */
+    public function getNoticeUrl()
+    {
+        if ($this->_noticeUrl === null) {
+            $this->_noticeUrl = $this->defaultNoticeUrl();
+        }
+        return Url::to([$this->_noticeUrl, 'channel' => $this->getIdentity()], true);
+    }
+
+    /**
+     * 获取BaseUri
+     * @return string|null
+     */
+    public function getBaseUri()
+    {
+        if (property_exists($this, 'timeout')) {
+            return $this->baseUrl;
+        }
+        return null;
+    }
+
+    /**
+     * Composes URL from base URL and GET params.
+     * @param string $url base URL.
+     * @param array $params GET params.
+     * @return string composed URL.
+     */
+    protected function composeUrl($url, array $params = [])
+    {
+        if (!empty($params)) {
+            if (strpos($url, '?') === false) {
+                $url .= '?';
+            } else {
+                $url .= '&';
+            }
+            $url .= http_build_query($params, '', '&', PHP_QUERY_RFC3986);
+        }
+        return $url;
+    }
+
+
+    /**
+     * Composes default [[returnUrl]] value.
+     * @return string return URL.
+     */
+    public function defaultReturnUrl()
+    {
+        return '/transaction/response/return';
+    }
+
+    /**
+     * Composes default [[noticeUrl]] value.
+     * @return string return URL.
+     */
+    public function defaultNoticeUrl()
+    {
+        return '/transaction/response/notice';
     }
 
     /**

@@ -11,7 +11,7 @@ use Yii;
 use yii\web\NotFoundHttpException;
 use yii\web\ServerErrorHttpException;
 use yuncms\rest\Controller;
-use yuncms\transaction\rest\models\TransactionCharge;
+use yuncms\transaction\models\TransactionCharge;
 
 /**
  * Class ChargeController
@@ -38,6 +38,34 @@ class ChargeController extends Controller
             throw new ServerErrorHttpException('Failed to create the object for unknown reason.');
         }
         return $model;
+    }
+
+    /**
+     * 关闭支付
+     * @param integer $id
+     * @return TransactionCharge
+     * @throws NotFoundHttpException
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\base\UnknownClassException
+     */
+    public function actionClose($id)
+    {
+        $model = $this->findModel($id);
+        return $model->setClose();
+    }
+
+    /**
+     * 查询渠道状态
+     * @param integer $id
+     * @return TransactionCharge
+     * @throws NotFoundHttpException
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\base\UnknownClassException
+     */
+    public function actionQuery($id)
+    {
+        $model = $this->findModel($id);
+        return $model->queryChannel();
     }
 
     /**

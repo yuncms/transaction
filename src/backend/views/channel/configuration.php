@@ -43,6 +43,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= $form->field($model, 'name')->hiddenInput()->label(false) ?>
             <?= $form->field($model, 'title')->hiddenInput()->label(false) ?>
             <?= $form->field($model, 'class')->hiddenInput()->label(false) ?>
+            <?= $form->field($model, 'timeout')->textInput() ?>
             <?= $this->render('configuration/' . $channel->identity, [
                 'form' => $form,
                 'model' => $model,

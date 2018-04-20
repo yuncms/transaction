@@ -8,11 +8,18 @@
 namespace yuncms\transaction\models;
 
 
+use Yii;
 use yii\base\Model;
 
+/**
+ * 渠道配置基类
+ *
+ * @author Tongle Xu <xutongle@gmail.com>
+ * @since 3.0
+ */
 class SettingsModel extends Model
 {
-    /** @var float */
+    /** @var integer */
     public $timeout;
 
     /** @var string */
@@ -35,7 +42,9 @@ class SettingsModel extends Model
     public function rules()
     {
         return [
-            [['identity', 'name', 'title','class'], 'string'],
+            [['identity', 'name', 'title', 'class'], 'string'],
+            [['timeout'], 'number', 'max' => 30, 'min' => 1],
+            [['timeout'], 'default', 'value' => 5]
         ];
     }
 
@@ -62,6 +71,16 @@ class SettingsModel extends Model
     {
         $this->_channel->configuration = $this->getAttributes();
         return $this->_channel->save();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+        return [
+            'timeout' => Yii::t('yuncms/transaction', 'Timeout'),
+        ];
     }
 
     /**

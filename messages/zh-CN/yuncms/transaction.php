@@ -38,6 +38,7 @@ return [
     'Funding Source' => '资金来源',
     'Metadata' => '',
     'Order No' => '订单号',
+    'Timeout' => '超时时间',
     'Channel Configuration' => '渠道配置',
     'Paid' => '已付款',
     'Refunded' => '存在退款',

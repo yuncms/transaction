@@ -33,7 +33,6 @@ class TransactionCharge extends \yuncms\transaction\models\TransactionCharge
             'body',
             'amount',
             'amount_refunded',
-            'refunds',
             'credential',
             'metadata',
             'extra'

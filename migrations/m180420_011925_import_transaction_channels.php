@@ -14,11 +14,13 @@ class m180420_011925_import_transaction_channels extends Migration
         $this->batchInsert('{{%transaction_channels}}', ['identity', 'name', 'title', 'description', 'className', 'created_at', 'updated_at'], [
             //微信
             ['wechat', '微信', '微信App支付', '微信App支付', 'yuncms\transaction\channels\wechat\App', $time, $time],
+            ['wechat_scan', '微信', '微信公众号支付', '微信公众号支付', 'yuncms\transaction\channels\wechat\Scan', $time, $time],
             ['wechat_pub', '微信', '微信公众号支付', '微信公众号支付', 'yuncms\transaction\channels\wechat\Pub', $time, $time],
             ['wechat_wap', '微信', '微信H5支付', '微信H5支付', 'yuncms\transaction\channels\wechat\Wap', $time, $time],
             ['wechat_lite', '微信', '微信小程序支付', '微信小程序支付', 'yuncms\transaction\channels\wechat\Lite', $time, $time],
             ['wechat_pub_qr', '微信', '微信公众号扫码支付', '微信公众号扫码支付', 'yuncms\transaction\channels\wechat\PubQr', $time, $time],
             ['wechat_pub_scan', '微信', '微信公众号刷卡支付', '微信公众号刷卡支付', 'yuncms\transaction\channels\wechat\PubScan', $time, $time],
+
             //支付宝
             ['alipay', '支付宝', '支付宝App支付', '支付宝App支付', 'yuncms\transaction\channels\alipay\App', $time, $time],
             ['alipay_wap', '支付宝', '支付宝手机网站支付', '支付宝手机网站支付', 'yuncms\transaction\channels\alipay\Wap', $time, $time],
