@@ -64,7 +64,6 @@ $this->registerJs("jQuery(\"#batch_deletion\").on(\"click\", function () {
                     'name',
                     'title',
                     'description',
-                    'created_at:datetime',
                     'updated_at:datetime',
                     [
                         'class' => 'yuncms\grid\ActionColumn',
