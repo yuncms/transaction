@@ -84,7 +84,19 @@ $this->registerJs("jQuery(\"#batch_deletion\").on(\"click\", function () {
                     // 'failure_msg',
                     // 'metadata:ntext',
                     // 'description',
-                    // 'created_at',
+                    [
+                        'attribute' => 'created_at',
+                        'format' => 'datetime',
+                        'filter' => \yii\jui\DatePicker::widget([
+                            'model' => $searchModel,
+                            'options' => [
+                                'class' => 'form-control'
+                            ],
+                            'attribute' => 'created_at',
+                            'name' => 'created_at',
+                            'dateFormat' => 'yyyy-MM-dd'
+                        ]),
+                    ],
                     [
                         'class' => 'yuncms\grid\ActionColumn',
                         'template' => '{view} {update} {delete}',

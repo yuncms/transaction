@@ -18,8 +18,8 @@ class TransactionChargeSearch extends TransactionCharge
     public function rules()
     {
         return [
-            [['id', 'paid', 'refunded', 'reversed', 'channel', 'order_no', 'currency', 'subject', 'body', 'client_ip', 'transaction_no', 'failure_code', 'failure_msg', 'metadata', 'description'], 'safe'],
-            [['amount', 'time_paid', 'time_expire', 'amount_refunded', 'created_at'], 'integer'],
+            [['id', 'paid', 'refunded', 'reversed', 'channel', 'order_no', 'currency', 'subject', 'body', 'client_ip', 'transaction_no', 'failure_code', 'failure_msg', 'metadata', 'description', 'created_at'], 'safe'],
+            [['amount', 'time_paid', 'time_expire', 'amount_refunded'], 'integer'],
         ];
     }
 
@@ -63,8 +63,12 @@ class TransactionChargeSearch extends TransactionCharge
             'time_paid' => $this->time_paid,
             'time_expire' => $this->time_expire,
             'amount_refunded' => $this->amount_refunded,
-            'created_at' => $this->created_at,
         ]);
+
+        if ($this->created_at !== null) {
+            $date = strtotime($this->created_at);
+            $query->andWhere(['between', 'created_at', $date, $date + 3600 * 24]);
+        }
 
         $query->andFilterWhere(['like', 'id', $this->id])
             ->andFilterWhere(['like', 'paid', $this->paid])

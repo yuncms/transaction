@@ -18,8 +18,8 @@ class TransactionRefundSearch extends TransactionRefund
     public function rules()
     {
         return [
-            [['id', 'amount', 'time_succeed', 'created_at'], 'integer'],
-            [['succeed', 'status', 'description', 'failure_code', 'failure_msg', 'charge_id', 'charge_order_no', 'transaction_no', 'funding_source'], 'safe'],
+            [['id', 'amount', 'time_succeed'], 'integer'],
+            [['succeed', 'status', 'description', 'failure_code', 'failure_msg', 'charge_id', 'charge_order_no', 'transaction_no', 'funding_source', 'created_at'], 'safe'],
         ];
     }
 
@@ -62,8 +62,12 @@ class TransactionRefundSearch extends TransactionRefund
             'id' => $this->id,
             'amount' => $this->amount,
             'time_succeed' => $this->time_succeed,
-            'created_at' => $this->created_at,
         ]);
+
+        if ($this->created_at !== null) {
+            $date = strtotime($this->created_at);
+            $query->andWhere(['between', 'created_at', $date, $date + 3600 * 24]);
+        }
 
         $query->andFilterWhere(['like', 'succeed', $this->succeed])
             ->andFilterWhere(['like', 'status', $this->status])
