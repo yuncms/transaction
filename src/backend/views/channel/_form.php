@@ -9,9 +9,6 @@ use yuncms\admin\widgets\ActiveForm;
 ?>
 <?php $form = ActiveForm::begin(['layout' => 'horizontal', 'enableAjaxValidation' => true, 'enableClientValidation' => false,]); ?>
 
-<?= $form->field($model, 'identity')->textInput(['maxlength' => true]) ?>
-<div class="hr-line-dashed"></div>
-
 <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 <div class="hr-line-dashed"></div>
 

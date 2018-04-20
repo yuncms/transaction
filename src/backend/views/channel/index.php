@@ -60,14 +60,10 @@ $this->registerJs("jQuery(\"#batch_deletion\").on(\"click\", function () {
                 'layout' => "{items}\n{summary}\n{pager}",
                 'filterModel' => $searchModel,
                 'columns' => [
-                    [
-                        'class' => 'yii\grid\CheckboxColumn',
-                        "name" => "id",
-                    ],
-                    //['class' => 'yii\grid\SerialColumn'],
-                    'id',
                     'identity',
                     'name',
+                    'title',
+                    'description',
                     'created_at:datetime',
                     'updated_at:datetime',
                     [
