@@ -43,21 +43,13 @@ use yuncms\validators\JsonValidator;
  * @property array $credential
  * @property int $created_at
  *
+ *
+ * @property-read string outTradeNo
+ *
  * @property TransactionRefund[] $refunds
  */
 class TransactionCharge extends ActiveRecord
 {
-    //交易状态
-    const STATE_NOT_PAY = 0b0;//未支付
-    const STATE_SUCCESS = 0b1;//支付成功
-    const STATE_FAILED = 0b10;//支付失败
-    const STATE_CLOSED = 0b100;//已关闭
-    const STATE_REVOKED = 0b101;//已撤销
-    const STATE_ERROR = 0b110;//错误
-    const STATE_REFUND = 0b111;//转入退款
-    const STATE_REFUND_SUCCESS = 0b11;//转入退款
-    const STATE_REFUND_FAILED = 0b11;//转入退款
-
     //支付成功触发事件
     const EVENT_AFTER_SUCCEEDED = 'charge.succeeded';
 
