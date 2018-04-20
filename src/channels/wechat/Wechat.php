@@ -211,12 +211,6 @@ abstract class Wechat extends Client implements ChannelInterface
             $params = $this->convertXmlToArray($xml);
             if ($params['return_code'] == 'SUCCESS' && $params['sign'] == $this->generateSignature($params)) {
                 $response->content = '<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>';
-
-                $tradeId = $params['out_trade_no'];
-                $money = $params['total_fee'];
-                $message = $params['return_code'];
-                $payId = $params['transaction_id'];
-
                 $charge = $this->getChargeById($params['out_trade_no']);
                 $charge->setPaid($params['transaction_id']);
             }
