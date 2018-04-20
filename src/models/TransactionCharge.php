@@ -213,7 +213,9 @@ class TransactionCharge extends ActiveRecord
      */
     public function setPaid($transactionNo)
     {
-        return (bool)$this->updateAttributes(['transaction_no' => $transactionNo, 'time_paid' => time(), 'paid' => true]);
+        $paid = (bool)$this->updateAttributes(['transaction_no' => $transactionNo, 'time_paid' => time(), 'paid' => true]);
+        $this->trigger(self::EVENT_AFTER_SUCCEEDED);
+        return $paid;
     }
 
     /**
