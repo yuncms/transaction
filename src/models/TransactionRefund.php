@@ -27,6 +27,9 @@ use yuncms\db\ActiveRecord;
  */
 class TransactionRefund extends ActiveRecord
 {
+    //退款成功触发
+    const EVENT_AFTER_SUCCEEDED = 'refund.succeeded';
+
     /**
      * {@inheritdoc}
      */

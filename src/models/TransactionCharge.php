@@ -12,6 +12,7 @@ use yuncms\behaviors\IpBehavior;
 use yuncms\behaviors\JsonBehavior;
 use yuncms\db\ActiveRecord;
 use yuncms\helpers\ArrayHelper;
+use yuncms\user\models\User;
 use yuncms\validators\JsonValidator;
 
 /**
@@ -46,6 +47,20 @@ use yuncms\validators\JsonValidator;
  */
 class TransactionCharge extends ActiveRecord
 {
+    //交易状态
+    const STATE_NOT_PAY = 0b0;//未支付
+    const STATE_SUCCESS = 0b1;//支付成功
+    const STATE_FAILED = 0b10;//支付失败
+    const STATE_CLOSED = 0b100;//已关闭
+    const STATE_REVOKED = 0b101;//已撤销
+    const STATE_ERROR = 0b110;//错误
+    const STATE_REFUND = 0b111;//转入退款
+    const STATE_REFUND_SUCCESS = 0b11;//转入退款
+    const STATE_REFUND_FAILED = 0b11;//转入退款
+
+    //支付成功触发事件
+    const EVENT_AFTER_SUCCEEDED = 'charge.succeeded';
+
     /**
      * {@inheritdoc}
      */
@@ -85,7 +100,7 @@ class TransactionCharge extends ActiveRecord
             ],
             'json' => [
                 'class' => JsonBehavior::class,
-                'attributes' => ['extra','credential','metadata'],
+                'attributes' => ['extra', 'credential', 'metadata'],
             ],
         ]);
     }
@@ -113,7 +128,7 @@ class TransactionCharge extends ActiveRecord
             [['transaction_no'], 'string', 'max' => 64],
 
             //支付凭证
-            [['credential','metadata','extra'], JsonValidator::class],
+            [['credential', 'metadata', 'extra'], JsonValidator::class],
         ];
     }
 
@@ -172,12 +187,57 @@ class TransactionCharge extends ActiveRecord
     }
 
     /**
+     * 商户订单号
+     * @return int
+     */
+    public function getOutTradeNo()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(User::class, ['id' => 'user_id']);
+    }
+
+    /**
      * 获取退款
      * @return \yii\db\ActiveQuery
      */
     public function getRefunds()
     {
         return $this->hasMany(TransactionRefund::class, ['charge_id' => 'id']);
+    }
+
+    /**
+     * 设置已付款状态
+     * @param string $transactionNo 支付渠道返回的交易流水号。
+     * @return bool
+     */
+    public function setPaid($transactionNo)
+    {
+        return (bool)$this->updateAttributes(['transaction_no' => $transactionNo, 'time_paid' => time(), 'paid' => true]);
+    }
+
+    /**
+     * @param bool $insert
+     * @param array $changedAttributes
+     */
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+        //保存完成以后去支付平台下单
+        if ($insert) {
+            try {
+                $channel = TransactionChannel::getChannelByIdentity($this->channel);
+                $this->credential = $channel->charge($this);
+            } catch (InvalidConfigException $e) {
+            } catch (UnknownClassException $e) {
+            }
+        }
     }
 
     /**

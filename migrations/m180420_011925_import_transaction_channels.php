@@ -34,9 +34,9 @@ class m180420_011925_import_transaction_channels extends Migration
             ['jdpay_wap', '京东支付', '京东手机网页支付', '京东手机网页支付', 'yuncms\transaction\channels\jdpay\Wap', $time, $time],
 
             //银联支付
-            ['upacp', '银联支付', '银联App支付', '银联支付，即银联 App 支付（2015 年 1 月 1 日后的银联新商户使用。）', 'yuncms\transaction\channels\upacp\App', $time, $time],
-            ['upacp_pc', '银联支付', '银联PC支付', '银联网关支付，即银联 PC 网页支付', 'yuncms\transaction\channels\upacp\Pc', $time, $time],
-            ['upacp_wap', '银联支付', '银联手机网页支付', '银联手机网页支付（2015 年 1 月 1 日后的银联新商户使用。）', 'yuncms\transaction\channels\upacp\Wap', $time, $time],
+            ['unionpay', '银联支付', '银联App支付', '银联支付，即银联 App 支付（2015 年 1 月 1 日后的银联新商户使用。）', 'yuncms\transaction\channels\unionpay\App', $time, $time],
+            ['unionpay_pc', '银联支付', '银联PC支付', '银联网关支付，即银联 PC 网页支付', 'yuncms\transaction\channels\unionpay\Pc', $time, $time],
+            ['unionpay_wap', '银联支付', '银联手机网页支付', '银联手机网页支付（2015 年 1 月 1 日后的银联新商户使用。）', 'yuncms\transaction\channels\unionpay\Wap', $time, $time],
 
             //苹果支付
             ['applepay_upacp', 'Apple Pay', 'Apple Pay', 'Apple Pay', 'yuncms\transaction\channels\apple\Upacp', $time, $time],

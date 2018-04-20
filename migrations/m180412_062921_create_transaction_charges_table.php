@@ -24,6 +24,7 @@ class m180412_062921_create_transaction_charges_table extends Migration
         }
         $this->createTable($this->tableName, [
             'id' => $this->string(50)->notNull()->comment('ID'),
+            'user_id' => $this->unsignedInteger()->notNull()->comment('User Id'),
             'paid' => $this->boolean()->defaultValue(false),//boolean 是否已付款
             'refunded' => $this->boolean()->defaultValue(false),//boolean 是否存在退款信息
             'reversed' => $this->boolean()->defaultValue(false),//boolean 订单是否撤销
@@ -34,7 +35,7 @@ class m180412_062921_create_transaction_charges_table extends Migration
             'subject' => $this->string(32)->notNull(),//商品标题，该参数最长为 32 个 Unicode 字符
             'body' => $this->string(128)->notNull(),//商品描述信息，该参数最长为 128 个 Unicode 字符
             'client_ip' => $this->ipAddress(),//发起支付请求客户端的 IP 地址
-            'extra'=>$this->text(),//特定渠道发起交易时需要的额外参数，以及部分渠道支付成功返回的额外参数
+            'extra' => $this->text(),//特定渠道发起交易时需要的额外参数，以及部分渠道支付成功返回的额外参数
             'time_paid' => $this->unixTimestamp(),//订单支付完成时的 Unix 时间戳。（银联支付成功时间为接收异步通知的时间）
             'time_expire' => $this->unixTimestamp(),//订单失效时间
             'transaction_no' => $this->string(64),//支付渠道返回的交易流水号。
