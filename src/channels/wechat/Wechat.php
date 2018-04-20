@@ -136,7 +136,7 @@ abstract class Wechat extends Client implements ChannelInterface
      */
     public function close(TransactionCharge $charge)
     {
-        $response = $this->request('POST', 'pay/closeorder', [
+        $response = $this->sendRequest('POST', 'pay/closeorder', [
             'out_trade_no' => $charge->outTradeNo,
         ]);
         if ($response['return_code'] == 'SUCCESS') {
@@ -155,7 +155,7 @@ abstract class Wechat extends Client implements ChannelInterface
      */
     public function query(TransactionCharge $charge)
     {
-        $response = $this->request('POST', 'pay/orderquery', [
+        $response = $this->sendRequest('POST', 'pay/orderquery', [
             'out_trade_no' => $charge->outTradeNo,
         ]);
         if ($response['return_code'] == 'SUCCESS') {
@@ -175,7 +175,7 @@ abstract class Wechat extends Client implements ChannelInterface
      * @return array
      * @throws Exception
      */
-    public function request($method, $url, $data = null, $headers = [], $options = [])
+    public function sendRequest($method, $url, $data = null, $headers = [], $options = [])
     {
         $request = $this->createRequest()
             ->setMethod($method)

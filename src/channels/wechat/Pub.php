@@ -30,7 +30,7 @@ class Pub extends Wechat
      */
     public function charge(TransactionCharge $charge)
     {
-        $response = $this->request('POST', 'pay/unifiedorder', [
+        $params = [
             'body' => $charge->body,
             'out_trade_no' => $charge->outTradeNo,
             'total_fee' => $charge->amount,
@@ -40,8 +40,16 @@ class Pub extends Wechat
             'spbill_create_ip' => Yii::$app->request->isConsoleRequest ? '127.0.0.1' : Yii::$app->request->userIP,
             'device_info' => 'WEB',
             'attach' => $charge->extra,
-            'openid' => $charge->metadata['openid']///TODO 获取Openid
-        ]);
+        ];
+        if (isset($charge->metadata['openid'])) {
+            $params['openid'] = $charge->metadata['openid'];
+        } else if (isset($trade->user->socialAccounts['wechat'])) {
+            $weParams = $charge->user->socialAccounts['wechat']->getDecodedData();
+            $params['openid'] = $weParams['openid'];
+        } else {
+            throw new Exception ('Non-WeChat authorized login.');
+        }
+        $response = $this->sendRequest('POST', 'pay/unifiedorder',$params);
         if ($response['return_code'] == 'SUCCESS') {
             $tradeParams = [
                 'appId' => $this->appId,

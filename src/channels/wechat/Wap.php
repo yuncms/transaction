@@ -27,7 +27,7 @@ class Wap extends Wechat
      */
     public function charge(TransactionCharge $charge)
     {
-        $response = $this->request('POST', 'pay/unifiedorder', [
+        $response = $this->sendRequest('POST', 'pay/unifiedorder', [
             'body' => $charge->body,
             'out_trade_no' => $charge->outTradeNo,
             'total_fee' => $charge->amount,
