@@ -8,6 +8,7 @@ use yuncms\admin\widgets\Toolbar;
 use yuncms\admin\widgets\Alert;
 use yuncms\grid\GridView;
 use yii\widgets\Pjax;
+use yuncms\transaction\models\TransactionChannel;
 
 /* @var $this yii\web\View */
 /* @var $searchModel yuncms\transaction\backend\models\TransactionChannelSearch */
@@ -64,7 +65,31 @@ $this->registerJs("jQuery(\"#batch_deletion\").on(\"click\", function () {
                     'name',
                     'title',
                     'description',
-                    'updated_at:datetime',
+                    [
+                        'attribute' => 'status',
+                        'value' => function ($model) {
+                            return $model->status == TransactionChannel::STATUS_ACTIVE ? Yii::t('yuncms', 'Active') : Yii::t('yuncms', 'Disable');
+                        },
+                        'label' => Yii::t('yuncms', 'Status'),
+                        'filter' => [
+                            TransactionChannel::STATUS_ACTIVE => Yii::t('yuncms', 'Active'),
+                            TransactionChannel::STATUS_DISABLED => Yii::t('yuncms', 'Disable')
+                        ]
+                    ],
+                    [
+                        'attribute' => 'updated_at',
+                        'format' => 'datetime',
+                        'filter' => \yii\jui\DatePicker::widget([
+                            'model' => $searchModel,
+                            'options' => [
+                                'class' => 'form-control'
+                            ],
+                            'attribute' => 'updated_at',
+                            'name' => 'updated_at',
+                            'dateFormat' => 'yyyy-MM-dd'
+                        ]),
+                    ],
+
                     [
                         'class' => 'yuncms\grid\ActionColumn',
                         'template' => '{configuration} {view} {update} {delete}',

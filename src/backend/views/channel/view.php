@@ -74,7 +74,14 @@ $this->params['breadcrumbs'][] = $this->title;
                         'value' => function ($model) {
                             return Json::encode($model->configuration);
                         },
-                        'label' => Yii::t('yuncms', 'Configuration'),
+                        'label' => Yii::t('yuncms/transaction', 'Channel Configuration'),
+                    ],
+                    [
+                        'attribute' => 'status',
+                        'value' => function ($model) {
+                            return $model->status == \yuncms\transaction\models\TransactionChannel::STATUS_ACTIVE ? Yii::t('yuncms', 'Active') : Yii::t('yuncms', 'Disable');
+                        },
+                        'label' => Yii::t('yuncms', 'Status'),
                     ],
                     'created_at:datetime',
                     'updated_at:datetime',

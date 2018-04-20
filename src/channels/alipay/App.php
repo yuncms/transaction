@@ -6,10 +6,16 @@
  */
 
 namespace yuncms\transaction\channels\alipay;
+use yuncms\transaction\models\TransactionCharge;
 
-use yuncms\transaction\channels\Alipay;
-
+/**
+ * Class App
+ *
+ * @author Tongle Xu <xutongle@gmail.com>
+ * @since 3.0
+ */
 class App extends Alipay
 {
+
 
 }

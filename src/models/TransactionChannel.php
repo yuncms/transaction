@@ -22,11 +22,15 @@ use yuncms\validators\JsonValidator;
  * @property string $description Channel Description
  * @property string $className Channel className
  * @property JsonObject $configuration Channel configuration
+ * @property boolean $status
  * @property int $created_at Created At
  * @property int $updated_at Updated At
  */
 class TransactionChannel extends ActiveRecord
 {
+    const STATUS_ACTIVE = 0b0;
+    const STATUS_DISABLED = 0b1;
+
     /**
      * @inheritdoc
      */
@@ -61,6 +65,9 @@ class TransactionChannel extends ActiveRecord
             [['description'], 'string', 'max' => 255],
             [['className'], 'classExists'],
             [['configuration'], JsonValidator::class],
+
+            ['status', 'default', 'value' => self::STATUS_DISABLED],
+            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DISABLED]],
         ];
     }
 
@@ -76,7 +83,8 @@ class TransactionChannel extends ActiveRecord
             'title' => Yii::t('yuncms/transaction', 'Channel Title'),
             'description' => Yii::t('yuncms/transaction', 'Description'),
             'className' => Yii::t('yuncms/transaction', 'Channel ClassName'),
-            'configuration' => Yii::t('yuncms/transaction', 'Configuration'),
+            'configuration' => Yii::t('yuncms/transaction', 'Channel Configuration'),
+            'status' => Yii::t('yuncms', 'Status'),
             'created_at' => Yii::t('yuncms/transaction', 'Created At'),
             'updated_at' => Yii::t('yuncms/transaction', 'Updated At'),
         ];
@@ -109,10 +117,14 @@ class TransactionChannel extends ActiveRecord
     public static function getChannelByIdentity($identity)
     {
         if (($channel = static::findOne(['identity' => $identity])) != null) {
-            if ($channel->configuration) {
-                return Yii::createObject($channel->configuration->toArray());
+            if ($channel->status == self::STATUS_ACTIVE) {
+                if ($channel->configuration) {
+                    return Yii::createObject($channel->configuration->toArray());
+                } else {
+                    throw new InvalidConfigException('The channel is not enabled yet.');
+                }
             } else {
-                throw new InvalidConfigException('The channel is not enabled yet.');
+                throw new InvalidConfigException('The channel lacks configuration.');
             }
         } else {
             throw new UnknownClassException (Yii::t('yii', 'The channel does not exist.'));

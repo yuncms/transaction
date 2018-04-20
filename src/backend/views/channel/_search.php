@@ -2,6 +2,7 @@
 
 use yuncms\helpers\Html;
 use yuncms\admin\widgets\ActiveForm;
+use yuncms\transaction\models\TransactionChannel;
 
 /* @var $this yii\web\View */
 /* @var $model yuncms\transaction\backend\models\TransactionChannelSearch */
@@ -16,13 +17,20 @@ use yuncms\admin\widgets\ActiveForm;
         'method' => 'get',
     ]); ?>
 
-    <?= $form->field($model, 'id') ?>
+    <?// echo $form->field($model, 'id') ?>
 
     <?= $form->field($model, 'identity') ?>
 
     <?= $form->field($model, 'name') ?>
 
     <?php // echo $form->field($model, 'className') ?>
+
+    <?= $form->field($model, 'status')->dropDownList([
+        TransactionChannel::STATUS_ACTIVE => Yii::t('yuncms', 'Active'),
+        TransactionChannel::STATUS_DISABLED => Yii::t('yuncms', 'Disable')
+    ], [
+        'prompt' => Yii::t('yuncms', 'Status')
+    ]) ?>
 
     <?php // echo $form->field($model, 'extra') ?>
 

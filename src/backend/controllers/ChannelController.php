@@ -124,7 +124,7 @@ class ChannelController extends Controller
             return ActiveForm::validate($model);
         }
         if ($model->load(Yii::$app->request->post(), '') && $model->save()) {
-            Yii::$app->getSession()->setFlash('success', Yii::t('yuncms', 'Configuration success.'));
+            Yii::$app->getSession()->setFlash('success', Yii::t('yuncms/transaction', 'Configuration success.'));
             return $this->redirect(['view', 'id' => $id]);
         } else {
             return $this->render('configuration', [

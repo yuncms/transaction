@@ -18,8 +18,8 @@ class TransactionChannelSearch extends TransactionChannelModel
     public function rules()
     {
         return [
-            [['id', 'created_at', 'updated_at'], 'integer'],
-            [['identity', 'name', 'className', 'title'], 'safe'],
+            [['id', 'status'], 'integer'],
+            [['identity', 'name', 'className', 'title', 'created_at', 'updated_at'], 'safe'],
         ];
     }
 
@@ -60,9 +60,18 @@ class TransactionChannelSearch extends TransactionChannelModel
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at,
+            'status' => $this->status,
         ]);
+
+        if ($this->created_at !== null) {
+            $date = strtotime($this->created_at);
+            $query->andWhere(['between', 'created_at', $date, $date + 3600 * 24]);
+        }
+
+        if ($this->updated_at !== null) {
+            $date = strtotime($this->updated_at);
+            $query->andWhere(['between', 'updated_at', $date, $date + 3600 * 24]);
+        }
 
         $query->andFilterWhere(['like', 'identity', $this->identity])
             ->andFilterWhere(['like', 'name', $this->name])

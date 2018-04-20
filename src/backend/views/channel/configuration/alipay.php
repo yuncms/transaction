@@ -1,28 +1,28 @@
 <?php
 
 use yuncms\admin\widgets\ActiveForm;
+use yuncms\transaction\channels\alipay\Alipay;
 
 /* @var \yii\web\View $this */
 /* @var ActiveForm $form */
 ?>
 
-<?= $form->field($model, 'fee_rate')->textInput(['maxlength' => true]) ?>
+<?= $form->field($model, 'appId')->textInput(['maxlength' => true]) ?>
 <div class="hr-line-dashed"></div>
 
-<?= $form->field($model, 'alipay_app_id')->textInput(['maxlength' => true]) ?>
+<?= $form->field($model, 'pid')->textInput(['maxlength' => true]) ?>
 <div class="hr-line-dashed"></div>
 
-<?= $form->field($model, 'alipay_pid')->textInput(['maxlength' => true]) ?>
+<?= $form->field($model, 'alipayAccount')->textInput(['maxlength' => true]) ?>
 <div class="hr-line-dashed"></div>
 
-<?= $form->field($model, 'alipay_account')->textInput(['maxlength' => true]) ?>
+<?= $form->field($model, 'signType')->dropDownList([
+    'RSA' => Alipay::SIGNATURE_METHOD_RSA,
+    'RSA2' => Alipay::SIGNATURE_METHOD_RSA2
+]) ?>
+
+<?= $form->field($model, 'privateKey')->textarea() ?>
 <div class="hr-line-dashed"></div>
 
-<?= $form->field($model, 'encryptVersion')->textInput(['maxlength' => true]) ?>
-<div class="hr-line-dashed"></div>
-
-<?= $form->field($model, 'alipay_app_public_key')->textInput(['maxlength' => true]) ?>
-<div class="hr-line-dashed"></div>
-
-<?= $form->field($model, 'alipay_mer_app_private_key')->textInput(['maxlength' => true]) ?>
+<?= $form->field($model, 'publicKey')->textarea() ?>
 <div class="hr-line-dashed"></div>

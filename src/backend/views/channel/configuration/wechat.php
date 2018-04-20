@@ -1,14 +1,10 @@
 <?php
 
 use yuncms\admin\widgets\ActiveForm;
-use yuncms\helpers\Html;
 use yuncms\transaction\channels\wechat\Wechat;
-use yuncms\transaction\models\TransactionChannel;
 
 /* @var \yii\web\View $this */
 /* @var ActiveForm $form */
-/* @var  TransactionChannel $channel */
-
 ?>
 
 <?= $form->field($model, 'appId')->textInput(['maxlength' => true]) ?>
@@ -31,10 +27,3 @@ use yuncms\transaction\models\TransactionChannel;
 
 <?= $form->field($model, 'publicKey')->textarea() ?>
 <div class="hr-line-dashed"></div>
-
-
-<div class="form-group">
-    <div class="col-sm-4 col-sm-offset-2">
-        <?= Html::submitButton(Yii::t('yuncms', 'Save'), ['class' => 'btn btn-primary']) ?>
-    </div>
-</div>

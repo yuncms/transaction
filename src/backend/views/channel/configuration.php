@@ -48,7 +48,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 'model' => $model,
                 'channel' => $channel
             ]) ?>
-
+            <div class="form-group">
+                <div class="col-sm-4 col-sm-offset-2">
+                    <?= Html::submitButton(Yii::t('yuncms', 'Save'), ['class' => 'btn btn-primary']) ?>
+                </div>
+            </div>
             <?php ActiveForm::end(); ?>
             <?php Box::end(); ?>
         </div>

@@ -20,6 +20,11 @@ use yuncms\admin\widgets\ActiveForm;
 
 <?= $form->field($model, 'className')->textInput(['maxlength' => true]) ?>
 <div class="hr-line-dashed"></div>
+
+<?= $form->field($model, 'status')->inline(true)->radioList([
+    '0' => Yii::t('yuncms', 'Active'),
+    '1' => Yii::t('yuncms', 'Disable')
+]) ?>
 <div class="hr-line-dashed"></div>
 
 <div class="form-group">
