@@ -24,7 +24,7 @@ class m180412_044511_create_transaction_channels_table extends Migration
         }
         $this->createTable($this->tableName, [
             'id' => $this->primaryKey()->unsigned()->comment('Id'),
-            'identity' => $this->string(64)->notNull()->comment('Channel Identity'),
+            'identity' => $this->string(64)->notNull()->unique()->comment('Channel Identity'),
             'name' => $this->string(64)->notNull()->comment('Channel Name'),
             'title' => $this->string(64)->notNull()->comment('Channel Title'),
             'description' => $this->string(255)->notNull()->comment('Channel Description'),
