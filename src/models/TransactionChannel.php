@@ -110,7 +110,7 @@ class TransactionChannel extends ActiveRecord
     /**
      * 获取支付网关实例
      * @param string $identity
-     * @return object
+     * @return object|ChannelInterface
      * @throws InvalidConfigException
      * @throws UnknownClassException
      */

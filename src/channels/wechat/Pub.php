@@ -49,17 +49,21 @@ class Pub extends Wechat
         } else {
             throw new Exception ('Non-WeChat authorized login.');
         }
-        $response = $this->sendRequest('POST', 'pay/unifiedorder',$params);
+        $response = $this->sendRequest('POST', 'pay/unifiedorder', $params);
         if ($response['return_code'] == 'SUCCESS') {
-            $tradeParams = [
-                'appId' => $this->appId,
-                'timeStamp' => time(),
-                'nonceStr' => $this->generateRandomString(32),
-                'package' => 'prepay_id=' . $response['prepay_id'],
-                'signType' => 'MD5',
-            ];
-            $tradeParams['paySign'] = $this->generateSignature($tradeParams);
-            $charge->setTransactionCredential($response['prepay_id'], $tradeParams);
+            if ($response['result_code'] == 'SUCCESS') {
+                $tradeParams = [
+                    'appId' => $this->appId,
+                    'timeStamp' => time(),
+                    'nonceStr' => $this->generateRandomString(32),
+                    'package' => 'prepay_id=' . $response['prepay_id'],
+                    'signType' => 'MD5',
+                ];
+                $tradeParams['paySign'] = $this->generateSignature($tradeParams);
+                $charge->setTransactionCredential($response['prepay_id'], $tradeParams);
+            } else {
+                $charge->setFailure($response['err_code'], $response['err_code_des']);
+            }
             return $charge;
         } else {
             throw new Exception($response['return_msg']);

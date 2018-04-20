@@ -16,6 +16,7 @@ use yuncms\transaction\Exception;
 use yuncms\transaction\contracts\ChannelInterface;
 use yuncms\transaction\models\TransactionCharge;
 use yuncms\transaction\traits\ChannelTrait;
+use yuncms\web\Response;
 
 /**
  * Class Wechat
@@ -98,7 +99,7 @@ abstract class Wechat extends Client implements ChannelInterface
      * 请求事件
      * @param RequestEvent $event
      * @return void
-     * @throws \yii\base\Exception
+     * @throws InvalidConfigException
      */
     public function RequestEvent(RequestEvent $event)
     {
@@ -198,43 +199,40 @@ abstract class Wechat extends Client implements ChannelInterface
     /**
      * 服务端通知
      * @param Request $request
-     * @param string $tradeId
-     * @param float $money
-     * @param string $message
-     * @param string $payId
-     * @return mixed
+     * @param Response $response
+     * @return void
      */
-    public function notice(Request $request, &$tradeId, &$money, &$message, &$payId)
+    public function notice(Request $request, Response $response)
     {
+        $response->format = Response::FORMAT_XML;
         $xml = $request->getRawBody();
         //如果返回成功则验证签名
         try {
             $params = $this->convertXmlToArray($xml);
-            $tradeId = $params['out_trade_no'];
-            $money = $params['total_fee'];
-            $message = $params['return_code'];
-            $payId = $params['transaction_id'];
             if ($params['return_code'] == 'SUCCESS' && $params['sign'] == $this->generateSignature($params)) {
-                echo '<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>';
-                return true;
+                $response->content = '<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>';
+
+                $tradeId = $params['out_trade_no'];
+                $money = $params['total_fee'];
+                $message = $params['return_code'];
+                $payId = $params['transaction_id'];
+
+                $charge = $this->getChargeById($params['out_trade_no']);
+                $charge->setPaid($params['transaction_id']);
             }
         } catch (\Exception $e) {
             Yii::error($e->getMessage(), __CLASS__);
         }
-        echo '<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[FAIL]]></return_msg></xml>';
-        return false;
+        $response->content = '<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[Signature verification failed.]]></return_msg></xml>';
     }
 
     /**
      * 支付响应
      * @param Request $request
-     * @param string $paymentId
-     * @param $money
-     * @param $message
-     * @param $payId
-     * @return mixed
+     * @param Response $response
+     * @return void
      */
-    public function callback(Request $request, &$paymentId, &$money, &$message, &$payId)
+    public function callback(Request $request, Response $response)
     {
         return;
     }

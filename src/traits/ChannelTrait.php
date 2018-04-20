@@ -8,10 +8,14 @@
 namespace yuncms\transaction\traits;
 
 use Yii;
+use yii\base\Exception;
 use yii\helpers\Inflector;
 use yii\helpers\Url;
 use yii\httpclient\Client;
+use yii\web\NotFoundHttpException;
 use yuncms\helpers\StringHelper;
+use yuncms\transaction\models\TransactionCharge;
+use yuncms\transaction\models\TransactionRefund;
 
 /**
  * Trait ChannelTrait
@@ -228,7 +232,7 @@ trait ChannelTrait
      */
     public function defaultReturnUrl()
     {
-        return '/transaction/response/return';
+        return '/transaction/response/callback';
     }
 
     /**
@@ -241,13 +245,49 @@ trait ChannelTrait
     }
 
     /**
+     * 获取支付单
+     * @param int $id
+     * @return TransactionCharge
+     * @throws NotFoundHttpException
+     */
+    public function getChargeById($id)
+    {
+        if (($model = TransactionCharge::findOne(['id' => $id])) !== null) {
+            return $model;
+        } else {
+            throw new NotFoundHttpException('The requested charge does not exist.');
+        }
+    }
+
+    /**
+     * 获取退款单
+     * @param int $id
+     * @return TransactionRefund
+     * @throws NotFoundHttpException
+     */
+    public function getRefundById($id)
+    {
+        if (($model = TransactionRefund::findOne(['id' => $id])) !== null) {
+            return $model;
+        } else {
+            throw new NotFoundHttpException('The requested refund does not exist.');
+        }
+    }
+
+    /**
      * 生成一个指定长度的随机字符串
      * @param int $length
      * @return string
-     * @throws \yii\base\Exception
      */
     protected function generateRandomString($length = 32): string
     {
-        return Yii::$app->security->generateRandomString($length);
+        try {
+            return Yii::$app->security->generateRandomString($length);
+        } catch (Exception $e) {
+            $str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
+            $randStr = str_shuffle($str);
+            $rands = substr($randStr, 0, $length);
+            return $rands;
+        }
     }
 }

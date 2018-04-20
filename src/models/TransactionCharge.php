@@ -13,6 +13,7 @@ use yuncms\behaviors\JsonBehavior;
 use yuncms\db\ActiveRecord;
 use yuncms\helpers\ArrayHelper;
 use yuncms\helpers\Json;
+use yuncms\transaction\contracts\ChannelInterface;
 use yuncms\user\models\User;
 use yuncms\validators\JsonValidator;
 
@@ -227,6 +228,17 @@ class TransactionCharge extends ActiveRecord
     }
 
     /**
+     * 设置支付错误
+     * @param string $code
+     * @param string $msg
+     * @return bool
+     */
+    public function setFailure($code, $msg)
+    {
+        return (bool)$this->updateAttributes(['failure_code' => $code, 'failure_msg' => $msg]);
+    }
+
+    /**
      * 设置订单状态以撤销
      * @return bool
      */
@@ -243,8 +255,7 @@ class TransactionCharge extends ActiveRecord
      */
     public function setClose()
     {
-        $channel = TransactionChannel::getChannelByIdentity($this->channel);
-        return $channel->close($this);
+        return $this->getChannelObject()->close($this);
     }
 
     /**
@@ -255,8 +266,18 @@ class TransactionCharge extends ActiveRecord
      */
     public function queryChannel()
     {
-        $channel = TransactionChannel::getChannelByIdentity($this->channel);
-        return $channel->query($this);
+        return $this->getChannelObject()->query($this);
+    }
+
+    /**
+     * 获取渠道对象
+     * @return ChannelInterface
+     * @throws InvalidConfigException
+     * @throws UnknownClassException
+     */
+    public function getChannelObject()
+    {
+        return TransactionChannel::getChannelByIdentity($this->channel);
     }
 
     /**

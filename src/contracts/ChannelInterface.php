@@ -10,6 +10,8 @@ namespace yuncms\transaction\contracts;
 use yii\base\Model;
 use yuncms\transaction\models\TransactionCharge;
 use yuncms\transaction\models\TransactionRefund;
+use yuncms\web\Request;
+use yuncms\web\Response;
 
 /**
  * ChannelInterface declares basic interface all Channel clients should follow.
@@ -72,4 +74,20 @@ interface ChannelInterface
      * @return TransactionCharge
      */
     public function query(TransactionCharge $charge);
+
+    /**
+     * 支付回跳
+     * @param Request $request
+     * @param Response $response
+     * @return mixed
+     */
+    public function callback(Request $request, Response $response);
+
+    /**
+     * 服务端通知
+     * @param Request $request 请求实例类
+     * @param Response $response
+     * @return mixed
+     */
+    public function notice(Request $request, Response $response);
 }

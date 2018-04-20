@@ -39,11 +39,15 @@ class Wap extends Wechat
             'attach' => $charge->extra,
         ]);
         if ($response['return_code'] == 'SUCCESS') {
-            $tradeParams = [
-                'mweb_url' => $response['mweb_url'],
-                'prepayid' => $response['prepay_id'],
-            ];
-            $charge->setTransactionCredential($response['prepay_id'], $tradeParams);
+            if ($response['result_code'] == 'SUCCESS') {
+                $tradeParams = [
+                    'mweb_url' => $response['mweb_url'],
+                    'prepayid' => $response['prepay_id'],
+                ];
+                $charge->setTransactionCredential($response['prepay_id'], $tradeParams);
+            } else {
+                $charge->setFailure($response['err_code'], $response['err_code_des']);
+            }
             return $charge;
         } else {
             throw new Exception($response['return_msg']);
