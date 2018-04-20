@@ -11,10 +11,13 @@ use yii\db\ActiveQuery;
  */
 class TransactionChannelQuery extends ActiveQuery
 {
-    /*public function active()
+    /**
+     * @return $this
+     */
+    public function active()
     {
-        return $this->andWhere('[[status]]=1');
-    }*/
+        return $this->andWhere(['status' => TransactionChannel::STATUS_ACTIVE]);
+    }
 
     /**
      * @inheritdoc

@@ -100,7 +100,6 @@ abstract class Wechat extends BaseObject implements ChannelInterface
         return new SettingsModel();
     }
 
-
     /**
      * @return string
      */

@@ -12,7 +12,7 @@ use yuncms\transaction\contracts\ChannelInterface;
 use yuncms\transaction\traits\ChannelTrait;
 
 /**
- * Class Apple
+ * 苹果支付基类
  *
  * @author Tongle Xu <xutongle@gmail.com>
  * @since 3.0
@@ -20,4 +20,6 @@ use yuncms\transaction\traits\ChannelTrait;
 abstract class Apple extends BaseObject implements ChannelInterface
 {
     use ChannelTrait;
+
+
 }

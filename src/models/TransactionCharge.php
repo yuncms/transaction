@@ -9,8 +9,10 @@ use yii\behaviors\AttributeBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Query;
 use yuncms\behaviors\IpBehavior;
+use yuncms\behaviors\JsonBehavior;
 use yuncms\db\ActiveRecord;
 use yuncms\helpers\ArrayHelper;
+use yuncms\validators\JsonValidator;
 
 /**
  * This is the model class for table "{{%transaction_charges}}".
@@ -27,6 +29,7 @@ use yuncms\helpers\ArrayHelper;
  * @property string $currency
  * @property string $subject
  * @property string $body
+ * @property array $extra
  * @property int $time_paid
  * @property int $time_expire
  * @property int $time_settle
@@ -34,8 +37,9 @@ use yuncms\helpers\ArrayHelper;
  * @property int $amount_refunded
  * @property string $failure_code
  * @property string $failure_msg
- * @property string $metadata
+ * @property array $metadata
  * @property string $description
+ * @property array $credential
  * @property int $created_at
  *
  * @property TransactionRefund[] $refunds
@@ -78,7 +82,11 @@ class TransactionCharge extends ActiveRecord
                 'attributes' => [
                     ActiveRecord::EVENT_BEFORE_INSERT => ['client_ip']
                 ],
-            ]
+            ],
+            'json' => [
+                'class' => JsonBehavior::class,
+                'attributes' => ['extra','credential','metadata'],
+            ],
         ]);
     }
 
@@ -88,7 +96,10 @@ class TransactionCharge extends ActiveRecord
     public function rules()
     {
         return [
-            [['paid', 'refunded', 'reversed', 'amount', 'time_paid', 'time_expire', 'amount_refunded'], 'integer'],
+            [['paid', 'refunded', 'reversed',], 'boolean'],
+            [['paid', 'refunded', 'reversed',], 'default', 'value' => false],
+
+            [['amount', 'time_paid', 'time_expire', 'amount_refunded'], 'integer'],
             [['order_no', 'amount', 'currency', 'subject', 'body'], 'required'],
             [['metadata'], 'string'],
             [['channel'], 'string', 'max' => 50],
@@ -100,6 +111,9 @@ class TransactionCharge extends ActiveRecord
             [['channel'], 'channelExists'],
             ['amount_refunded', 'default', 'value' => 0],
             [['transaction_no'], 'string', 'max' => 64],
+
+            //支付凭证
+            [['credential','metadata','extra'], JsonValidator::class],
         ];
     }
 

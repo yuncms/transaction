@@ -23,6 +23,9 @@ class TransactionCharge extends \yuncms\transaction\models\TransactionCharge
     {
         return [
             'id',
+            'paid',
+            'refunded',
+            'reversed',
             'channel',
             'order_no',
             'currency',
@@ -30,7 +33,10 @@ class TransactionCharge extends \yuncms\transaction\models\TransactionCharge
             'body',
             'amount',
             'amount_refunded',
-            'refunds'
+            'refunds',
+            'credential',
+            'metadata',
+            'extra'
         ];
     }
 

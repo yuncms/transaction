@@ -34,15 +34,15 @@ class m180412_062921_create_transaction_charges_table extends Migration
             'subject' => $this->string(32)->notNull(),//商品标题，该参数最长为 32 个 Unicode 字符
             'body' => $this->string(128)->notNull(),//商品描述信息，该参数最长为 128 个 Unicode 字符
             'client_ip' => $this->ipAddress(),//发起支付请求客户端的 IP 地址
-            //'extra',//特定渠道发起交易时需要的额外参数，以及部分渠道支付成功返回的额外参数
+            'extra'=>$this->text(),//特定渠道发起交易时需要的额外参数，以及部分渠道支付成功返回的额外参数
             'time_paid' => $this->unixTimestamp(),//订单支付完成时的 Unix 时间戳。（银联支付成功时间为接收异步通知的时间）
             'time_expire' => $this->unixTimestamp(),//订单失效时间
             'transaction_no' => $this->string(64),//支付渠道返回的交易流水号。
             'amount_refunded' => $this->unsignedInteger()->notNull()->defaultValue(0),//已退款总金额，单位为对应币种的最小货币单位，例如：人民币为分。
             'failure_code' => $this->string(),//订单的错误码
             'failure_msg' => $this->string(),//订单的错误消息的描述。
-            'metadata' => $this->text(),
-            // 'credential',//支付凭证，用于客户端发起支付。
+            'metadata' => $this->text(),//metadata 参数 数组，一些源数据。
+            'credential' => $this->text(),//支付凭证，用于客户端发起支付。
             'description' => $this->string(255),//订单附加说明，最多 255 个 Unicode 字符。
             'created_at' => $this->unixTimestamp(),
         ], $tableOptions);
