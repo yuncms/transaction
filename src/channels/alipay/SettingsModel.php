@@ -68,7 +68,7 @@ class SettingsModel extends \yuncms\transaction\models\SettingsModel
             'pid' => Yii::t('yuncms/transaction', 'Alipay Pid'),
             'alipayAccount' => Yii::t('yuncms/transaction', 'Alipay Account'),
             'privateKey' => Yii::t('yuncms/transaction', 'PrivateKey'),
-            'publicKey' => Yii::t('yuncms/transaction', 'PublicKey'),
+            'publicKey' => Yii::t('yuncms/transaction', 'Alipay PublicKey'),
             'signType' => Yii::t('yuncms/transaction', 'Sign Type'),
 
         ]);

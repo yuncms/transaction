@@ -50,6 +50,9 @@ class m180412_062921_create_transaction_charges_table extends Migration
 
         $this->addPrimaryKey('transaction_charges_pk', $this->tableName, 'id');
 
+        $this->createIndex('transaction_charges_index_paid', $this->tableName, 'paid');
+        $this->createIndex('transaction_charges_index_refunded', $this->tableName, 'refunded');
+
         $this->addForeignKey('transaction_charges_fk_1', $this->tableName, 'user_id', '{{%user}}', 'id', 'CASCADE', 'RESTRICT');
         $this->addForeignKey('transaction_charges_fk_2', $this->tableName, 'channel', '{{%transaction_channels}}', 'identity', 'CASCADE', 'RESTRICT');
     }

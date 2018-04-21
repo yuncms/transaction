@@ -3,8 +3,15 @@
 namespace yuncms\transaction\models;
 
 use Yii;
+use yii\behaviors\AttributeBehavior;
+use yii\behaviors\BlameableBehavior;
+use yii\behaviors\TimestampBehavior;
 use yii\db\Query;
+use yuncms\behaviors\JsonBehavior;
 use yuncms\db\ActiveRecord;
+use yuncms\helpers\ArrayHelper;
+use yuncms\helpers\Json;
+use yuncms\validators\JsonValidator;
 
 /**
  * This is the model class for table "{{%transaction_refunds}}".
@@ -30,6 +37,15 @@ class TransactionRefund extends ActiveRecord
     //退款成功触发
     const EVENT_AFTER_SUCCEEDED = 'refund.succeeded';
 
+    //退款状态
+    const STATUS_PENDING = 0b0;
+    const STATUS_SUCCEEDED = 0b1;
+    const STATUS_FAILED = 0b10;
+
+    //退款资金来源
+    const FUNDING_SOURCE_UNSETTLED = 'unsettled_funds';//使用未结算资金退款
+    const FUNDING_SOURCE_RECHARGE = 'recharge_funds';//使用可用余额退款
+
     /**
      * {@inheritdoc}
      */
@@ -39,19 +55,90 @@ class TransactionRefund extends ActiveRecord
     }
 
     /**
+     * 定义行为
+     * @return array
+     */
+    public function behaviors()
+    {
+        $behaviors = parent::behaviors();
+        return ArrayHelper::merge($behaviors, [
+            'id' => [
+                'class' => AttributeBehavior::class,
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'id',
+                ],
+                'value' => function ($event) {
+                    return $event->sender->generateId();
+                }
+            ],
+            'timestamp' => [
+                'class' => TimestampBehavior::class,
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['created_at']
+                ],
+            ],
+            'jsonAttributes' => [
+                'class' => JsonBehavior::class,
+                'attributes' => ['extra', 'metadata'],
+            ],
+            'user' => [
+                'class' => BlameableBehavior::class,
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => 'user_id',
+                ],
+            ]
+        ]);
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
             [['amount', 'description', 'charge_id'], 'required'],
-            [['amount', 'succeed', 'time_succeed', 'charge_id'], 'integer'],
-            [['status'], 'string', 'max' => 10],
-            [['description', 'failure_code', 'failure_msg'], 'string', 'max' => 255],
-            [['charge_order_no', 'transaction_no'], 'string', 'max' => 64],
-            [['funding_source'], 'string', 'max' => 20],
-            [['charge_id'], 'exist', 'skipOnError' => true, 'targetClass' => TransactionCharge::class, 'targetAttribute' => ['charge_id' => 'id']],
+            [['amount', 'charge_id'], 'integer'],
+
+            [['description'], 'string', 'max' => 255],
+
+            //退款资金来源
+            [['funding_source'], 'string'],
+            ['funding_source', 'default', 'value' => self::FUNDING_SOURCE_UNSETTLED],
+            ['funding_source', 'in', 'range' => [self::FUNDING_SOURCE_UNSETTLED, self::FUNDING_SOURCE_RECHARGE]],
+
+            //付款单检测
+            [['charge_id'], 'chargeValidate'],
+
+
+            //附加信息
+            [['metadata', 'extra'], JsonValidator::class],
+
+            //退款是否成功
+            ['succeed', 'boolean'],
+            ['succeed', 'default', 'value' => false],
+
+            //退款状态
+            ['status', 'default', 'value' => self::STATUS_PENDING],
+            ['status', 'in', 'range' => [self::STATUS_PENDING, self::STATUS_SUCCEEDED, self::STATUS_FAILED]],
         ];
+    }
+
+    /**
+     * Validate charge
+     */
+    public function chargeValidate()
+    {
+        if (($charge = TransactionCharge::findOne(['id' => $this->charge_id])) != null) {
+            if (bcsub($charge->amount, $charge->amount_refunded) < $this->amount) {
+                $message = Yii::t('yuncms/transaction', 'Exceeded the maximum refund amount.');
+                $this->addError('className', $message);
+            } else {
+                $this->charge_order_no = $charge->order_no;
+            }
+        } else {
+            $message = Yii::t('yuncms/transaction', "Unknown charge '{charge}'", ['charge' => $this->charge_id]);
+            $this->addError('className', $message);
+        }
     }
 
     /**
@@ -82,6 +169,43 @@ class TransactionRefund extends ActiveRecord
     public function getCharge()
     {
         return $this->hasOne(TransactionCharge::class, ['id' => 'charge_id']);
+    }
+
+    /**
+     * 设置退款错误
+     * @param string $code
+     * @param string $msg
+     * @return bool
+     */
+    public function setFailure($code, $msg)
+    {
+        return (bool)$this->updateAttributes(['status' => self::STATUS_FAILED, 'failure_code' => $code, 'failure_msg' => $msg]);
+    }
+
+    /**
+     * 设置退款凭证
+     * @param string $transactionNo 支付渠道返回的交易流水号。
+     * @param array $extra 退款凭证
+     * @return bool
+     */
+    public function setRefund($transactionNo, $extra)
+    {
+        return (bool)$this->updateAttributes(['transaction_no' => $transactionNo, 'extra' => Json::encode($extra)]);
+    }
+
+    /**
+     * @param bool $insert
+     * @param array $changedAttributes
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\base\UnknownClassException
+     */
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+        if ($insert) {
+            $this->charge->updateAttributes(['refunded' => true]);
+            $this->charge->getChannelObject()->refund($this);
+        }
     }
 
     /**

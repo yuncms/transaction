@@ -15,5 +15,12 @@ namespace yuncms\transaction\rest\models;
  */
 class TransactionRefund extends \yuncms\transaction\models\TransactionRefund
 {
-
+    /**
+     * 获取付款单
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCharge()
+    {
+        return $this->hasOne(TransactionCharge::class, ['id' => 'charge_id']);
+    }
 }

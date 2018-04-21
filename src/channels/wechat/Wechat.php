@@ -11,6 +11,7 @@ use Yii;
 use yii\base\InvalidConfigException;
 use yii\httpclient\Client;
 use yii\httpclient\RequestEvent;
+use yuncms\transaction\models\TransactionRefund;
 use yuncms\web\Request;
 use yuncms\transaction\Exception;
 use yuncms\transaction\contracts\ChannelInterface;
@@ -68,6 +69,12 @@ abstract class Wechat extends Client implements ChannelInterface
      */
     public $signType = self::SIGNATURE_METHOD_SHA256;
 
+    /** @var array 退款资金来源 */
+    protected $refundAccount = [
+        TransactionRefund::FUNDING_SOURCE_RECHARGE => 'REFUND_SOURCE_RECHARGE_FUNDS',//可用余额
+        TransactionRefund::FUNDING_SOURCE_UNSETTLED => 'REFUND_SOURCE_UNSETTLED_FUNDS',//未结算资金
+    ];
+
     /**
      * 初始化
      * @throws InvalidConfigException
@@ -87,12 +94,24 @@ abstract class Wechat extends Client implements ChannelInterface
         if (empty ($this->privateKey)) {
             throw new InvalidConfigException ('The "privateKey" property must be set.');
         }
+        $this->privateKey = Yii::getAlias($this->privateKey);
+        if (!is_file($this->privateKey)) {
+            throw new InvalidConfigException("Unable to read {$this->privateKey} file.");
+        }
         if (empty ($this->publicKey)) {
             throw new InvalidConfigException ('The "publicKey" property must be set.');
         }
-        $this->initPrivateKey();
-        $this->initPublicKey();
+        $this->publicKey = Yii::getAlias($this->publicKey);
+        if (!is_file($this->publicKey)) {
+            throw new InvalidConfigException("Unable to read {$this->publicKey} file.");
+        }
+
         $this->requestConfig['format'] = Client::FORMAT_XML;
+        $this->requestConfig['options']['timeout'] = $this->timeout;
+        $this->requestConfig['options']['sslCafile'] = __DIR__ . '/ca.pem';
+        $this->requestConfig['options']['sslVerifyPeer'] = true;
+        $this->requestConfig['options']['sslLocalCert'] = $this->publicKey;
+        $this->requestConfig['options']['sslLocalPk'] = $this->privateKey;
         $this->responseConfig['format'] = Client::FORMAT_XML;
         $this->on(Client::EVENT_BEFORE_SEND, [$this, 'RequestEvent']);
     }
@@ -112,46 +131,6 @@ abstract class Wechat extends Client implements ChannelInterface
         $params['sign_type'] = $this->signType;
         $params['sign'] = $this->generateSignature($params);
         $event->request->setData($params);
-    }
-
-    /**
-     * 初始化私钥
-     * @throws InvalidConfigException
-     */
-    protected function initPrivateKey()
-    {
-        $privateKey = Yii::getAlias($this->privateKey);
-        if (is_file($privateKey)) {
-            $privateKey = "file://" . $privateKey;
-        } else {
-            $privateKey = "-----BEGIN RSA PRIVATE KEY-----\n" .
-                wordwrap($this->privateKey, 64, "\n", true) .
-                "\n-----END RSA PRIVATE KEY-----";
-        }
-        $this->privateKey = openssl_pkey_get_private($privateKey);
-        if ($this->privateKey === false) {
-            throw new InvalidConfigException(openssl_error_string());
-        }
-    }
-
-    /**
-     * 初始化公钥
-     * @throws InvalidConfigException
-     */
-    protected function initPublicKey()
-    {
-        $publicKey = Yii::getAlias($this->publicKey);
-        if (is_file($publicKey)) {
-            $publicKey = "file://" . $publicKey;
-        } else {
-            $publicKey = "-----BEGIN PUBLIC KEY-----\n" .
-                wordwrap($this->publicKey, 64, "\n", true) .
-                "\n-----END PUBLIC KEY-----";
-        }
-        $this->publicKey = openssl_pkey_get_public($publicKey);
-        if ($this->publicKey === false) {
-            throw new InvalidConfigException(openssl_error_string());
-        }
     }
 
     /**
@@ -209,6 +188,43 @@ abstract class Wechat extends Client implements ChannelInterface
     }
 
     /**
+     * 退款请求
+     * @param TransactionRefund $refund
+     * @return TransactionRefund
+     * @throws Exception
+     */
+    public function refund(TransactionRefund $refund)
+    {
+        $response = $this->sendRequest('POST', 'secapi/pay/refund', [
+            'out_trade_no' => $refund->charge_id,
+            'out_refund_no' => $refund->id,
+            'refund_account' => $this->getRefundAccount($refund->funding_source),
+            'total_fee' => 1,
+            'refund_fee' => 1,
+        ]);
+        if ($response['return_code'] == 'SUCCESS') {
+            if ($response['result_code'] == 'SUCCESS') {
+                $refund->setRefund($response['refund_id'], $response);
+            } else {
+                $refund->setFailure($response['err_code'], $response['err_code_des']);
+            }
+            return $refund;
+        } else {
+            throw new Exception($response['return_msg']);
+        }
+    }
+
+    /**
+     * 退款资金来源
+     * @param string $fundingSource
+     * @return mixed|string
+     */
+    public function getRefundAccount($fundingSource)
+    {
+        return isset($this->refundAccount[$fundingSource]) ? $this->refundAccount[$fundingSource] : 'REFUND_SOURCE_UNSETTLED_FUNDS';
+    }
+
+    /**
      * 发送请求
      * @param string $method
      * @param array|string $url
@@ -223,7 +239,7 @@ abstract class Wechat extends Client implements ChannelInterface
         $request = $this->createRequest()
             ->setMethod($method)
             ->setHeaders($headers)
-            ->setOptions($options)
+            ->addOptions($options)
             ->setUrl($url);
         if (is_array($data)) {
             $request->setData($data);

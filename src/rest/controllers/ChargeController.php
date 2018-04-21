@@ -69,6 +69,20 @@ class ChargeController extends Controller
     }
 
     /**
+     * 查询退款状态
+     * @param integer $id
+     * @return TransactionCharge
+     * @throws NotFoundHttpException
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\base\UnknownClassException
+     */
+    public function actionRefund($id)
+    {
+        $model = $this->findModel($id);
+        return $model->getChannelObject()->refund($model);
+    }
+
+    /**
      * 查看支付情况
      * @param string $id
      * @return TransactionCharge

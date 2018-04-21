@@ -8,10 +8,10 @@
 namespace yuncms\transaction\contracts;
 
 use yii\base\Model;
-use yuncms\transaction\models\TransactionCharge;
-use yuncms\transaction\models\TransactionRefund;
 use yuncms\web\Request;
 use yuncms\web\Response;
+use yuncms\transaction\models\TransactionCharge;
+use yuncms\transaction\models\TransactionRefund;
 
 /**
  * ChannelInterface declares basic interface all Channel clients should follow.
@@ -74,6 +74,13 @@ interface ChannelInterface
      * @return TransactionCharge
      */
     public function query(TransactionCharge $charge);
+
+    /**
+     * 发起退款
+     * @param TransactionRefund $refund
+     * @return TransactionRefund
+     */
+    public function refund(TransactionRefund $refund);
 
     /**
      * 支付回跳

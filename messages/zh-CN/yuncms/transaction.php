@@ -47,6 +47,7 @@ return [
     'Reversed' => '已撤销',
     'Status' => '状态',
     'Subject' => '',
+    'Alipay PublicKey' => '支付宝公钥',
     'Succeed' => '成功',
     'Time Expire' => '过期时间',
     'Time Paid' => '付款时间',
