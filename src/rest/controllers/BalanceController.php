@@ -24,24 +24,6 @@ class BalanceController extends Controller
 {
 
     /**
-     * 创建余额增送
-     * @return TransactionBalanceBonus
-     * @throws ServerErrorHttpException
-     * @throws \yii\base\InvalidConfigException
-     */
-    public function actionBonus()
-    {
-        $model = new TransactionBalanceBonus();
-        $model->load(Yii::$app->getRequest()->getBodyParams(), '');
-        if (($model->save()) != false) {
-            Yii::$app->getResponse()->setStatusCode(201);
-        } elseif (!$model->hasErrors()) {
-            throw new ServerErrorHttpException('Failed to create the object for unknown reason.');
-        }
-        return $model;
-    }
-
-    /**
      * 获取钱包明细
      * @return ActiveDataProvider
      * @throws \yii\base\InvalidConfigException
@@ -62,5 +44,38 @@ class BalanceController extends Controller
                 ]
             ],
         ]);
+    }
+
+    /**
+     * 余额增送
+     * @return TransactionBalanceBonus
+     * @throws ServerErrorHttpException
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function actionBonus()
+    {
+        $model = new TransactionBalanceBonus();
+        $model->load(Yii::$app->getRequest()->getBodyParams(), '');
+        if (($model->save()) != false) {
+            Yii::$app->getResponse()->setStatusCode(201);
+        } elseif (!$model->hasErrors()) {
+            throw new ServerErrorHttpException('Failed to create the object for unknown reason.');
+        }
+        return $model;
+    }
+
+    /**
+     * 余额转账
+     */
+    public function actionTransfer()
+    {
+        $model = new TransactionBalanceBonus();
+        $model->load(Yii::$app->getRequest()->getBodyParams(), '');
+        if (($model->save()) != false) {
+            Yii::$app->getResponse()->setStatusCode(201);
+        } elseif (!$model->hasErrors()) {
+            throw new ServerErrorHttpException('Failed to create the object for unknown reason.');
+        }
+        return $model;
     }
 }

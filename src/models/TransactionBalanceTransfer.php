@@ -4,17 +4,14 @@ namespace yuncms\transaction\models;
 
 use Yii;
 use yii\db\ActiveRecord;
-use yii\db\Connection;
-use yii\caching\DbDependency;
-use yii\caching\ChainedDependency;
 use yii\behaviors\TimestampBehavior;
 use yii\behaviors\BlameableBehavior;
-use yuncms\helpers\DateHelper;
 use yuncms\helpers\ArrayHelper;
 use yuncms\user\models\User;
 
 /**
  * This is the model class for table "{{%transaction_balance_transfer}}".
+ * 余额转账
  *
  * @property integer $id
  * @property integer $user_id
@@ -35,22 +32,10 @@ use yuncms\user\models\User;
  * @property-read boolean $isDraft 是否草稿
  * @property-read boolean $isPublished 是否发布
  */
-class TransactionBalanceTransfer extends ActiveRecord{
-
-    //场景定义
-    const SCENARIO_CREATE = 'create';//创建
-    const SCENARIO_UPDATE = 'update';//更新
-    //状态定义
-    const STATUS_DRAFT = 0b0;//草稿
-    const STATUS_REVIEW = 0b1;//待审核
-    const STATUS_REJECTED = 0b10;//拒绝
-    const STATUS_PUBLISHED = 0b11;//发布
-
-    //事件定义
-    const BEFORE_PUBLISHED = 'beforePublished';
-    const AFTER_PUBLISHED = 'afterPublished';
-    const BEFORE_REJECTED = 'beforeRejected';
-    const AFTER_REJECTED = 'afterRejected';
+class TransactionBalanceTransfer extends ActiveRecord
+{
+    const STATUS_SUCCEEDED = 0b0; //成功
+    const STATUS_FAILURE = 0b1;//失败
 
     /**
      * @inheritdoc
@@ -68,15 +53,9 @@ class TransactionBalanceTransfer extends ActiveRecord{
     {
         $behaviors = parent::behaviors();
         $behaviors['timestamp'] = [
-            'class' => TimestampBehavior::className(),
+            'class' => TimestampBehavior::class,
             'attributes' => [
                 ActiveRecord::EVENT_BEFORE_INSERT => ['created_at']
-            ],
-        ];
-        $behaviors['user'] = [
-            'class' => BlameableBehavior::className(),
-            'attributes' => [
-                ActiveRecord::EVENT_BEFORE_INSERT => ['user_id']
             ],
         ];
         return $behaviors;
@@ -85,32 +64,36 @@ class TransactionBalanceTransfer extends ActiveRecord{
     /**
      * @inheritdoc
      */
-    public function scenarios()
-    {
-        $scenarios = parent::scenarios();
-        return ArrayHelper::merge($scenarios, [
-            static::SCENARIO_CREATE => [],
-            static::SCENARIO_UPDATE => [],
-        ]);
-    }
-
-
-    /**
-     * @inheritdoc
-     */
     public function rules()
     {
         return [
-            [['user_id', 'recipient_id', 'amount', 'created_at'], 'required'],
-            [['user_id', 'recipient_id', 'status', 'user_balance_transaction_id', 'recipient_balance_transaction', 'created_at'], 'integer'],
+            [['user_id', 'recipient_id', 'amount'], 'required'],
+            [['user_id', 'recipient_id', 'user_balance_transaction_id', 'recipient_balance_transaction'], 'integer'],
             [['amount', 'user_fee'], 'number'],
             [['metadata'], 'string'],
             [['order_no'], 'string', 'max' => 64],
             [['description'], 'string', 'max' => 60],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['user_id'], 'balanceValidate'],
+            [['recipient_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
             // status rule
-            ['status', 'default', 'value' => self::STATUS_REVIEW],
-            ['status', 'in', 'range' => [self::STATUS_DRAFT, self::STATUS_REVIEW, self::STATUS_REJECTED, self::STATUS_PUBLISHED]],        ];
+            ['status', 'default', 'value' => self::STATUS_SUCCEEDED],
+            ['status', 'in', 'range' => [self::STATUS_SUCCEEDED, self::STATUS_FAILURE]],];
+    }
+
+    /**
+     * 可转账余额验证
+     */
+    public function balanceValidate()
+    {
+        if (($user = User::findOne(['id' => $this->user_id])) != null) {
+            if ($user->withdrawable_balance < $this->amount) {
+                $message = Yii::t('yuncms/transaction', 'Exceeded the maximum transfer amount.');
+                $this->addError('className', $message);
+            }
+        } else {
+            $message = Yii::t('yuncms/transaction', "Unknown User '{user}'", ['user' => $this->user_id]);
+            $this->addError('className', $message);
+        }
     }
 
     /**
@@ -139,7 +122,7 @@ class TransactionBalanceTransfer extends ActiveRecord{
      */
     public function getUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
     /**
@@ -152,87 +135,31 @@ class TransactionBalanceTransfer extends ActiveRecord{
     }
 
     /**
-     * 是否是作者
-     * @return bool
-     */
-    public function getIsAuthor()
-    {
-        return $this->user_id == Yii::$app->user->id;
-    }
-    /**
-     * 是否草稿状态
-     * @return bool
-     */
-    public function isDraft()
-    {
-        return $this->status == static::STATUS_DRAFT;
-    }
-
-    /**
-     * 是否发布状态
-     * @return bool
-     */
-    public function isPublished()
-    {
-        return $this->status == static::STATUS_PUBLISHED;
-    }
-
-    /**
-     * 审核通过
-     * @return int
-     */
-    public function setPublished()
-    {
-        $this->trigger(self::BEFORE_PUBLISHED);
-        $rows = $this->updateAttributes(['status' => static::STATUS_PUBLISHED, 'published_at' => time()]);
-        $this->trigger(self::AFTER_PUBLISHED);
-        return $rows;
-    }
-
-    /**
-     * 拒绝通过
-     * @param string $failedReason 拒绝原因
-     * @return int
-     */
-    public function setRejected($failedReason)
-    {
-        $this->trigger(self::BEFORE_REJECTED);
-        $rows = $this->updateAttributes(['status' => static::STATUS_REJECTED, 'failed_reason' => $failedReason]);
-        $this->trigger(self::AFTER_REJECTED);
-        return $rows;
-    }
-
-    /**
-     * 获取状态列表
-     * @return array
-     */
-    public static function getStatusList()
-    {
-        return [
-            self::STATUS_DRAFT => Yii::t('yuncms/transaction', 'Draft'),
-            self::STATUS_REVIEW => Yii::t('yuncms/transaction', 'Review'),
-            self::STATUS_REJECTED => Yii::t('yuncms/transaction', 'Rejected'),
-            self::STATUS_PUBLISHED => Yii::t('yuncms/transaction', 'Published'),
-        ];
-    }
-//    public function afterFind()
-//    {
-//        parent::afterFind();
-//        // ...custom code here...
-//    }
-
-    /**
+     * 保存前
      * @inheritdoc
      */
-//    public function beforeSave($insert)
-//    {
-//        if (!parent::beforeSave($insert)) {
-//            return false;
-//        }
-//
-//        // ...custom code here...
-//        return true;
-//    }
+    public function beforeSave($insert)
+    {
+        if (!parent::beforeSave($insert)) {
+            return false;
+        }
+        //从源用户余额扣钱
+        $withdrawableBalance = bcsub($this->user->withdrawable_balance, $this->amount);
+        if (($balanceTransaction = TransactionBalanceTransaction::create([
+            'user_id' => $this->user_id,
+            'type' => TransactionBalanceTransaction::TYPE_TRANSFER,
+            'description' => $this->description,
+            'source' => $this->id,
+            'amount' => $this->amount,
+            'available_balance' => $withdrawableBalance
+        ]))) {
+            $this->user->updateAttributes(['withdrawable_balance' => $withdrawableBalance]);
+            $this->updateAttributes(['paid' => true, 'time_paid' => time(), 'balance_transaction_id' => $balanceTransaction->id]);
+        }
+
+        // ...custom code here...
+        return true;
+    }
 
     /**
      * @inheritdoc
@@ -246,28 +173,6 @@ class TransactionBalanceTransfer extends ActiveRecord{
 //            'scenario' => $this->isNewRecord ? 'new' : 'edit',
 //            'category'=>'',
 //        ]));
-//        // ...custom code here...
-//    }
-
-    /**
-     * @inheritdoc
-     */
-//    public function beforeDelete()
-//    {
-//        if (!parent::beforeDelete()) {
-//            return false;
-//        }
-//        // ...custom code here...
-//        return true;
-//    }
-
-    /**
-     * @inheritdoc
-     */
-//    public function afterDelete()
-//    {
-//        parent::afterDelete();
-//
 //        // ...custom code here...
 //    }
 }
