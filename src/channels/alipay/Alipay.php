@@ -188,7 +188,7 @@ abstract class Alipay extends Client implements ChannelInterface
         if ($response->isOk) {
             return $response->data;
         } else {
-            //throw new Exception ($response->content);
+            throw new Exception ('Http request failed.');
         }
     }
 
@@ -221,7 +221,7 @@ abstract class Alipay extends Client implements ChannelInterface
                 throw new Exception('Signature verification error.');
             }
         } else {
-            //throw new Exception ($event->response->content);
+            throw new Exception ('Http request failed.');
         }
     }
 
@@ -251,20 +251,41 @@ abstract class Alipay extends Client implements ChannelInterface
      * 关闭订单
      * @param TransactionCharge $charge
      * @return TransactionCharge
+     * @throws Exception
      */
     public function close(TransactionCharge $charge): TransactionCharge
     {
-        // TODO: Implement close() method.
+        $response = $this->sendRequest('POST', ['method' => 'alipay.trade.close', 'biz_content' => [
+            'out_trade_no' => $charge->outTradeNo,//商户订单号
+        ]]);
+
+        if ($response['return_code'] == 'SUCCESS') {
+            $charge->setReversed();
+            return $charge;
+        } else {
+            throw new Exception($response['return_msg']);
+        }
     }
 
     /**
      * 查询订单
      * @param TransactionCharge $charge
      * @return TransactionCharge
+     * @throws Exception
      */
     public function query(TransactionCharge $charge): TransactionCharge
     {
-        // TODO: Implement query() method.
+        $response = $this->sendRequest('POST', ['method' => 'alipay.trade.query', 'biz_content' => [
+            'out_trade_no' => $charge->outTradeNo,//商户订单号
+        ]]);
+        print_r($response);
+        exit;
+
+        if ($response['return_code'] == 'SUCCESS') {
+            return $charge;
+        } else {
+            throw new Exception($response['return_msg']);
+        }
     }
 
     /**
