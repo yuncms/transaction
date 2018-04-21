@@ -63,7 +63,7 @@ class SettingsModel extends \yuncms\transaction\models\SettingsModel
      */
     public function attributeLabels()
     {
-        return [
+        return ArrayHelper::merge(parent::attributeLabels(), [
             'appId' => Yii::t('yuncms/transaction', 'App Id'),
             'pid' => Yii::t('yuncms/transaction', 'Alipay Pid'),
             'alipayAccount' => Yii::t('yuncms/transaction', 'Alipay Account'),
@@ -71,6 +71,6 @@ class SettingsModel extends \yuncms\transaction\models\SettingsModel
             'publicKey' => Yii::t('yuncms/transaction', 'PublicKey'),
             'signType' => Yii::t('yuncms/transaction', 'Sign Type'),
 
-        ];
+        ]);
     }
 }

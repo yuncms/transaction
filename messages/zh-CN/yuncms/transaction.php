@@ -17,7 +17,8 @@
  * NOTE: this file must be saved in UTF-8 encoding.
  */
 return [
-    'App Id' => '',
+    'App Id' => '应用ID',
+    'Alipay Pid' => '支付宝合作者PID',
     'MchId' => '商户号',
     'Amount' => '金额',
     'PrivateKey' => '私钥',
@@ -36,9 +37,10 @@ return [
     'Failure Code' => '失败代码',
     'Failure Msg' => '失败消息',
     'Funding Source' => '资金来源',
+    'Alipay Account' => '支付宝账号',
     'Metadata' => '',
     'Order No' => '订单号',
-    'Timeout' => '超时时间',
+    'Timeout' => '连接超时时间',
     'Channel Configuration' => '渠道配置',
     'Paid' => '已付款',
     'Refunded' => '存在退款',
