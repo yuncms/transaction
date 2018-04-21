@@ -26,9 +26,9 @@ class m180413_013158_create_transaction_balance_transaction_table extends Migrat
         $this->createTable($this->tableName, [
             'id' => $this->bigPrimaryKey()->unsigned(),
             'user_id' => $this->unsignedInteger()->notNull()->comment('User Id'),
-            'amount' => $this->unsignedInteger()->notNull(),//订单总金额（必须大于 0），单位为对应币种的最小货币单位，人民币为分
+            'amount' => $this->decimal(12, 2)->notNull(),//订单总金额（必须大于 0），单位为对应币种的最小货币单位，人民币为分
             'available_balance' => $this->decimal(12, 2),//该笔交易发生后，用户的可用余额。
-            'description' => $this->string(255)->notNull(),
+            'description' => $this->string(255),
             'source' => $this->unsignedBigInteger()->notNull()->comment('Source Id'),//关联对象的 ID
             'type' => $this->string(30)->notNull()->comment('Transaction Type'),//交易类型 交易类型。
             //充值： recharge ，充值退款： recharge_refund ，
@@ -39,7 +39,7 @@ class m180413_013158_create_transaction_balance_transaction_table extends Migrat
             //赠送： receipts_extra ，分润/收到分润： royalty ，
             //入账： credited ，入账退款： credited_refund ，
             //入账退款失败： credited_refund_failed 。
-            'created_at' => $this->integer()->notNull()->comment('Created At'),//创建时间
+            'created_at' => $this->unixTimestamp()->comment('Created At'),//创建时间
         ], $tableOptions);
 
         $this->addForeignKey('transaction_balance_transaction_fk_1', $this->tableName, 'user_id', '{{%user}}', 'id', 'CASCADE', 'RESTRICT');

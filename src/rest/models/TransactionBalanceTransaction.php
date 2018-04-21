@@ -10,27 +10,19 @@ namespace yuncms\transaction\rest\models;
 use yuncms\rest\models\User;
 
 /**
- * Class TransactionRefund
+ * 余额明细
  *
  * @author Tongle Xu <xutongle@gmail.com>
  * @since 3.0
  */
-class TransactionRefund extends \yuncms\transaction\models\TransactionRefund
+class TransactionBalanceTransaction extends \yuncms\transaction\models\TransactionBalanceTransaction
 {
+
     /**
      * @return \yii\db\ActiveQuery
      */
     public function getUser()
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
-    }
-
-    /**
-     * 获取付款单
-     * @return \yii\db\ActiveQuery
-     */
-    public function getCharge()
-    {
-        return $this->hasOne(TransactionCharge::class, ['id' => 'charge_id']);
     }
 }

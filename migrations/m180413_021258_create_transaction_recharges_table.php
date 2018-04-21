@@ -25,13 +25,13 @@ class m180413_021258_create_transaction_recharges_table extends Migration
         //创建充值表
         $this->createTable($this->tableName, [
             'id' => $this->primaryKey(),
-            'user_id' => $this->unsignedInteger()->notNull()->comment('User Id'),
-            'user_fee' => $this->decimal(12, 2),//用户手续费
-            'balance_bonus' => '',
-            'from_user' => '',
-            'balance_transaction_id' => $this->bigInteger()->unsigned()->notNull(),//关联的余额明细表ID
+            'user_id' => $this->unsignedInteger()->notNull()->comment('User Id'),//充值目标  user 对象的  id ，64 位以内。
+            'user_fee' => $this->decimal(12, 2)->defaultValue(0),//用户手续费
+            'balance_bonus' => $this->decimal(12, 2)->defaultValue(0),//充值赠送的余额，不可和  user_fee 同时传，默认 0。
+            'balance_transaction_id' => $this->unsignedBigInteger(),//关联的余额明细表ID
             'description' => $this->string(),//附加说明，最多 255 个 Unicode 字符。
             'metadata' => $this->text(),//元数据
+            'created_at' => $this->unixTimestamp()->comment('Created At'),//创建时间
         ], $tableOptions);
 
         $this->addForeignKey('transaction_recharges_fk_1', $this->tableName, 'user_id', '{{%user}}', 'id', 'CASCADE', 'RESTRICT');

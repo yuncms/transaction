@@ -28,13 +28,12 @@ class m180413_021359_create_transaction_withdrawals_table extends Migration
             'user_id' => $this->unsignedInteger()->notNull()->comment('User Id'),
             'status' => $this->unsignedSmallInteger(1)->defaultValue(0),//提现状态，已申请： created ，处理中： pending ，完成： succeeded ，失败： failed ，取消： canceled 。
             'amount' => $this->decimal(12, 2)->notNull(),//提现扣除的余额
-            'channel' => '',//提现使用的付款渠道
-
+            'channel' => $this->string(64)->notNull(),//提现使用的付款渠道
             'metadata' => $this->text(),//元数据
             'extra' => $this->text(),//渠道参数
-            'created_at' => $this->integer()->notNull()->comment('Created At'),//创建时间
-            'canceled_at' => $this->integer()->notNull()->comment('Updated At'),//取消时间
-            'succeeded_at' => $this->integer()->notNull()->comment('Updated At'),//成功时间
+            'created_at' => $this->unixTimestamp()->comment('Created At'),//创建时间
+            'canceled_at' => $this->unixTimestamp()->comment('Updated At'),//取消时间
+            'succeeded_at' => $this->unixTimestamp()->comment('Updated At'),//成功时间
         ], $tableOptions);
 
         $this->addForeignKey('transaction_withdrawals_fk_1', $this->tableName, 'user_id', '{{%user}}', 'id', 'CASCADE', 'RESTRICT');

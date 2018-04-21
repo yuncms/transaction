@@ -7,6 +7,8 @@
 
 namespace yuncms\transaction\rest\models;
 
+use yuncms\rest\models\User;
+
 /**
  * Class TransactionCharge
  *
@@ -23,6 +25,7 @@ class TransactionCharge extends \yuncms\transaction\models\TransactionCharge
     {
         return [
             'id',
+            'user_id',
             'paid',
             'refunded',
             'reversed',
@@ -37,6 +40,14 @@ class TransactionCharge extends \yuncms\transaction\models\TransactionCharge
             'metadata',
             'extra'
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
     /**
