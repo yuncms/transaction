@@ -48,6 +48,17 @@ class SettingsModel extends \yuncms\transaction\models\SettingsModel
     }
 
     /**
+     * 验证前去除公钥私钥的换行
+     * @return bool
+     */
+    public function beforeValidate()
+    {
+        $this->privateKey = $this->deleteCRLF($this->privateKey);
+        $this->publicKey = $this->deleteCRLF($this->publicKey);
+        return parent::beforeValidate();
+    }
+
+    /**
      * @inheritdoc
      */
     public function attributeLabels()

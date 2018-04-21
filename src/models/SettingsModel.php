@@ -64,13 +64,26 @@ class SettingsModel extends Model
     }
 
     /**
+     * 删除换行
+     * @param string $str
+     * @return mixed
+     */
+    public function deleteCRLF($str)
+    {
+        return str_replace(["\r\n", "\n", "\r"], '', $str);
+    }
+
+    /**
      * 保存渠道配置
      * @return bool
      */
     public function save()
     {
-        $this->_channel->configuration = $this->getAttributes();
-        return $this->_channel->save();
+        if ($this->validate()) {
+            $this->_channel->configuration = $this->getAttributes();
+            return $this->_channel->save();
+        }
+        return false;
     }
 
     /**

@@ -18,10 +18,10 @@ use yuncms\helpers\ArrayHelper;
  */
 class SettingsModel extends \yuncms\transaction\models\SettingsModel
 {
-    /** @var string Appid*/
+    /** @var string Appid */
     public $appId;
 
-    /** @var string 合作者ID*/
+    /** @var string 合作者ID */
     public $pid;
 
     /** @var string 支付宝账号 */
@@ -45,6 +45,17 @@ class SettingsModel extends \yuncms\transaction\models\SettingsModel
             'string' => [['appId', 'pid', 'alipayAccount', 'privateKey', 'publicKey', 'signType'], 'string'],
             'required' => [['appId', 'pid', 'alipayAccount', 'privateKey', 'publicKey', 'signType'], 'required'],
         ]);
+    }
+
+    /**
+     * 验证前去除公钥私钥的换行
+     * @return bool
+     */
+    public function beforeValidate()
+    {
+        $this->privateKey = $this->deleteCRLF($this->privateKey);
+        $this->publicKey = $this->deleteCRLF($this->publicKey);
+        return parent::beforeValidate();
     }
 
     /**

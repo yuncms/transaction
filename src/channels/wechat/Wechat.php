@@ -90,6 +90,8 @@ abstract class Wechat extends Client implements ChannelInterface
         if (empty ($this->publicKey)) {
             throw new InvalidConfigException ('The "publicKey" property must be set.');
         }
+        $this->initPrivateKey();
+        $this->initPublicKey();
         $this->requestConfig['format'] = Client::FORMAT_XML;
         $this->responseConfig['format'] = Client::FORMAT_XML;
         $this->on(Client::EVENT_BEFORE_SEND, [$this, 'RequestEvent']);
@@ -110,6 +112,46 @@ abstract class Wechat extends Client implements ChannelInterface
         $params['sign_type'] = $this->signType;
         $params['sign'] = $this->generateSignature($params);
         $event->request->setData($params);
+    }
+
+    /**
+     * 初始化私钥
+     * @throws InvalidConfigException
+     */
+    protected function initPrivateKey()
+    {
+        $privateKey = Yii::getAlias($this->privateKey);
+        if (is_file($privateKey)) {
+            $privateKey = "file://" . $privateKey;
+        } else {
+            $privateKey = "-----BEGIN RSA PRIVATE KEY-----\n" .
+                wordwrap($this->privateKey, 64, "\n", true) .
+                "\n-----END RSA PRIVATE KEY-----";
+        }
+        $this->privateKey = openssl_pkey_get_private($privateKey);
+        if ($this->privateKey === false) {
+            throw new InvalidConfigException(openssl_error_string());
+        }
+    }
+
+    /**
+     * 初始化公钥
+     * @throws InvalidConfigException
+     */
+    protected function initPublicKey()
+    {
+        $publicKey = Yii::getAlias($this->publicKey);
+        if (is_file($publicKey)) {
+            $publicKey = "file://" . $publicKey;
+        } else {
+            $publicKey = "-----BEGIN PUBLIC KEY-----\n" .
+                wordwrap($this->publicKey, 64, "\n", true) .
+                "\n-----END PUBLIC KEY-----";
+        }
+        $this->publicKey = openssl_pkey_get_public($publicKey);
+        if ($this->publicKey === false) {
+            throw new InvalidConfigException(openssl_error_string());
+        }
     }
 
     /**
@@ -206,7 +248,6 @@ abstract class Wechat extends Client implements ChannelInterface
     {
         $response->format = Response::FORMAT_XML;
         $xml = $request->getRawBody();
-        //如果返回成功则验证签名
         try {
             $params = $this->convertXmlToArray($xml);
             if ($params['return_code'] == 'SUCCESS' && $params['sign'] == $this->generateSignature($params)) {

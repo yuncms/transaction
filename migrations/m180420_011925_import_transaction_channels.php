@@ -40,10 +40,7 @@ class m180420_011925_import_transaction_channels extends Migration
             ['unionpay_pc', '银联支付', '银联PC支付', '银联网关支付，即银联 PC 网页支付', 'yuncms\transaction\channels\unionpay\Pc', $time, $time],
             ['unionpay_wap', '银联支付', '银联手机网页支付', '银联手机网页支付（2015 年 1 月 1 日后的银联新商户使用。）', 'yuncms\transaction\channels\unionpay\Wap', $time, $time],
 
-            //苹果支付
-            ['applepay_upacp', 'Apple Pay', 'Apple Pay', 'Apple Pay', 'yuncms\transaction\channels\apple\Upacp', $time, $time],
-            ['apple', 'Apple Pay', 'Apple Pay', 'Apple Pay', 'yuncms\transaction\channels\apple\App', $time, $time],
-
+            //余额支付
             ['balance', '余额支付', '余额支付', '余额支付', 'yuncms\transaction\channels\balance\Balance', $time, $time],
         ]);
     }
