@@ -8,6 +8,7 @@ use yii\base\UnknownClassException;
 use yii\behaviors\AttributeBehavior;
 use yii\behaviors\TimestampBehavior;
 use yii\db\Query;
+use yuncms\base\JsonObject;
 use yuncms\behaviors\IpBehavior;
 use yuncms\behaviors\JsonBehavior;
 use yuncms\db\ActiveRecord;
@@ -32,7 +33,7 @@ use yuncms\validators\JsonValidator;
  * @property string $currency
  * @property string $subject
  * @property string $body
- * @property array $extra
+ * @property JsonObject $extra
  * @property int $time_paid
  * @property int $time_expire
  * @property int $time_settle
@@ -40,7 +41,7 @@ use yuncms\validators\JsonValidator;
  * @property int $amount_refunded
  * @property string $failure_code
  * @property string $failure_msg
- * @property array $metadata
+ * @property JsonObject $metadata
  * @property string $description
  * @property array $credential
  * @property int $created_at
@@ -108,7 +109,7 @@ class TransactionCharge extends ActiveRecord
             [['paid', 'refunded', 'reversed',], 'boolean'],
             [['paid', 'refunded', 'reversed',], 'default', 'value' => false],
 
-            [['amount', 'time_paid', 'time_expire', 'amount_refunded'], 'integer'],
+            [['amount', 'time_paid', 'amount_refunded'], 'integer'],
             [['order_no', 'amount', 'currency', 'subject', 'body'], 'required'],
             [['metadata'], 'string'],
             [['channel'], 'string', 'max' => 50],
@@ -123,6 +124,10 @@ class TransactionCharge extends ActiveRecord
 
             //支付凭证
             [['credential', 'metadata', 'extra'], JsonValidator::class],
+
+            //最晚付款时间
+            [['time_expire'], 'integer', 'min' => time() + 900],
+            [['time_expire'], 'default', 'value' => time() + 86400],
         ];
     }
 

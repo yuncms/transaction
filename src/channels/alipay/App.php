@@ -6,9 +6,10 @@
  */
 
 namespace yuncms\transaction\channels\alipay;
+
+use yuncms\helpers\ArrayHelper;
+use yuncms\transaction\Exception;
 use yuncms\transaction\models\TransactionCharge;
-use yuncms\web\Request;
-use yuncms\web\Response;
 
 /**
  * Class App
@@ -19,12 +20,11 @@ use yuncms\web\Response;
 class App extends Alipay
 {
 
-
     /**
      * 发起支付
      * @param TransactionCharge $charge
      * @return TransactionCharge
-     * @throws \yuncms\transaction\Exception
+     * @throws \yii\base\InvalidConfigException
      */
     public function charge(TransactionCharge $charge)
     {
@@ -32,36 +32,16 @@ class App extends Alipay
             'out_trade_no' => $charge->outTradeNo,//商户订单号
             'total_amount' => $charge->amount,//订单总金额
             'subject' => $charge->subject,//订单标题
+            'timeout_express' => (($charge->time_expire - time()) / 60) . 'm',
+            'product_code' => 'QUICK_MSECURITY_PAY',
         ];
-        $response = $this->sendRequest('POST',['method' => 'alipay.trade.app.pay', 'biz_content' => $bizContent]);
-        print_r($response);
+        $bizContent = ArrayHelper::merge($bizContent, $charge->extra->toArray());
+        $tradeParams = $this->buildRequestParameter(['method' => 'alipay.trade.app.pay', 'biz_content' => $bizContent]);
 
-
-        exit;
-
+        $charge->setTransactionCredential(null, [
+            'isShowPayLoading' => true,
+            'payInfo' => http_build_query($tradeParams)
+        ]);
         return $charge;
-        return ['orderInfo' => http_build_query($params)];
-    }
-
-    /**
-     * 支付回跳
-     * @param Request $request
-     * @param Response $response
-     * @return mixed
-     */
-    public function callback(Request $request, Response $response)
-    {
-        // TODO: Implement callback() method.
-    }
-
-    /**
-     * 服务端通知
-     * @param Request $request 请求实例类
-     * @param Response $response
-     * @return mixed
-     */
-    public function notice(Request $request, Response $response)
-    {
-        // TODO: Implement notice() method.
     }
 }

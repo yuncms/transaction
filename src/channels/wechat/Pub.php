@@ -40,6 +40,7 @@ class Pub extends Wechat
             'spbill_create_ip' => Yii::$app->request->isConsoleRequest ? '127.0.0.1' : Yii::$app->request->userIP,
             'device_info' => 'WEB',
             'attach' => $charge->extra,
+            'time_expire' => date('YmdHis', $charge->time_expire),
         ];
         if (isset($charge->metadata['openid'])) {
             $params['openid'] = $charge->metadata['openid'];

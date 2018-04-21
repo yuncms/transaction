@@ -17,6 +17,8 @@ use yuncms\transaction\contracts\ChannelInterface;
 use yuncms\transaction\Exception;
 use yuncms\transaction\models\TransactionCharge;
 use yuncms\transaction\traits\ChannelTrait;
+use yuncms\web\Request;
+use yuncms\web\Response;
 
 /**
  * Class Alipay
@@ -60,8 +62,8 @@ abstract class Alipay extends Client implements ChannelInterface
     /**
      * @var string 网关地址
      */
-    //public $baseUrl = 'https://openapi.alipay.com';
-    public $baseUrl = 'https://openapi.alipaydev.com';
+    public $baseUrl = 'https://openapi.alipay.com';
+    //public $baseUrl = 'https://openapi.alipaydev.com';
 
     /**
      * 初始化
@@ -130,6 +132,38 @@ abstract class Alipay extends Client implements ChannelInterface
     }
 
     /**
+     * 编译请求参数
+     * @param array $params
+     * @return array
+     * @throws InvalidConfigException
+     */
+    protected function buildRequestParameter($params = [])
+    {
+        if (!isset($params['method'])) {
+            throw new InvalidConfigException ('The "method" param must be set.');
+        }
+        $defaultParams = [
+            'app_id' => $this->appId,
+            'format' => 'JSON',
+            'charset' => 'utf-8',
+            'sign_type' => $this->signType,
+            'timestamp' => date('Y-m-d H:i:s'),
+            'version' => '1.0',
+            'notify_url' => $this->getNoticeUrl()
+        ];
+        $params['biz_content'] = Json::encode($params['biz_content']);
+        $params = ArrayHelper::merge($defaultParams, $params);
+        ksort($params);
+        //签名
+        if ($this->signType == self::SIGNATURE_METHOD_RSA2) {
+            $params['sign'] = openssl_sign($this->getSignContent($params), $sign, $this->privateKey, OPENSSL_ALGO_SHA256) ? base64_encode($sign) : null;
+        } elseif ($this->signType == self::SIGNATURE_METHOD_RSA) {
+            $params['sign'] = openssl_sign($this->getSignContent($params), $sign, $this->privateKey, OPENSSL_ALGO_SHA1) ? base64_encode($sign) : null;
+        }
+        return $params;
+    }
+
+    /**
      * 发送请求
      * @param string $method
      * @param null $data
@@ -154,45 +188,19 @@ abstract class Alipay extends Client implements ChannelInterface
         if ($response->isOk) {
             return $response->data;
         } else {
-            throw new Exception ('Http request failed.');
+            //throw new Exception ($response->content);
         }
-    }
-
-    /**
-     * 包装付款参数
-     * @param array $params
-     * @return array
-     */
-    public function buildPaymentParameter($params = [])
-    {
-        $defaultParams = [
-            'app_id' => $this->appId,
-            'format' => 'JSON',
-            'charset' => 'utf-8',
-            'sign_type' => $this->signType,
-            'timestamp' => date('Y-m-d H:i:s'),
-            'version' => '1.0',
-            'notify_url' => $this->getNoticeUrl()
-        ];
-        $params = ArrayHelper::merge($defaultParams, $params);
-        $params['biz_content'] = Json::encode($params['biz_content']);
-        //签名
-        if ($this->signType == self::SIGNATURE_METHOD_RSA2) {
-            $params['sign'] = openssl_sign($this->getSignContent($params), $sign, $this->privateKey, OPENSSL_ALGO_SHA256) ? base64_encode($sign) : null;
-        } elseif ($this->signType == self::SIGNATURE_METHOD_RSA) {
-            $params['sign'] = openssl_sign($this->getSignContent($params), $sign, $this->privateKey, OPENSSL_ALGO_SHA1) ? base64_encode($sign) : null;
-        }
-        return $params;
     }
 
     /**
      * 请求事件
      * @param RequestEvent $event
      * @return void
+     * @throws InvalidConfigException
      */
     public function RequestEvent(RequestEvent $event)
     {
-        $params = $this->buildPaymentParameter($event->request->getData());
+        $params = $this->buildRequestParameter($event->request->getData());
         $event->request->setData($params);
     }
 
@@ -213,8 +221,30 @@ abstract class Alipay extends Client implements ChannelInterface
                 throw new Exception('Signature verification error.');
             }
         } else {
-            throw new Exception ('Http request failed.');
+            //throw new Exception ($event->response->content);
         }
+    }
+
+    /**
+     * 支付回跳
+     * @param Request $request
+     * @param Response $response
+     * @return mixed
+     */
+    public function callback(Request $request, Response $response)
+    {
+        // TODO: Implement callback() method.
+    }
+
+    /**
+     * 服务端通知
+     * @param Request $request 请求实例类
+     * @param Response $response
+     * @return mixed
+     */
+    public function notice(Request $request, Response $response)
+    {
+        // TODO: Implement notice() method.
     }
 
     /**
@@ -276,7 +306,6 @@ abstract class Alipay extends Client implements ChannelInterface
      */
     protected function getSignContent(array $toBeSigned, $verify = false)
     {
-        ksort($toBeSigned);
         $stringToBeSigned = '';
         foreach ($toBeSigned as $k => $v) {
             if ($verify && $k != 'sign' && $k != 'sign_type') {
