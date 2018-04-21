@@ -25,7 +25,7 @@ class m180412_062949_create_transaction_refunds_table extends Migration
         $this->createTable($this->tableName, [
             'id' => $this->string(50)->notNull()->comment('ID'),
             'user_id' => $this->unsignedInteger()->notNull()->comment('User Id'),
-            'amount' => $this->unsignedInteger()->notNull(),//退款金额大于 0, 单位为对应币种的最小货币单位，例如：人民币为分（如退款金额为 1 元，此处请填 100）。必须小于等于可退款金额，默认为全额退款。
+            'amount' => $this->decimal(12, 2)->notNull(),//退款金额大于 0, 必须小于等于可退款金额，默认为全额退款。
             'succeed' => $this->boolean()->defaultValue(false),//退款是否成功。
             'status' => $this->unsignedSmallInteger(1)->defaultValue(0),//退款状态（目前支持三种状态: pending: 处理中; succeeded: 成功; failed: 失败）。
             'description' => $this->string(255)->notNull(),//退款详情，最多 255 个 Unicode 字符。

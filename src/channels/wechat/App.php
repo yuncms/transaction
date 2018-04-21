@@ -32,7 +32,7 @@ class App extends Wechat
         $response = $this->sendRequest('POST', 'pay/unifiedorder', [
             'body' => $charge->body,
             'out_trade_no' => $charge->outTradeNo,
-            'total_fee' => $charge->amount,
+            'total_fee' => bcmul($charge->amount, 100),
             'fee_type' => $charge->currency,
             'trade_type' => 'APP',
             'notify_url' => $this->getNoticeUrl(),

@@ -28,9 +28,9 @@ class m180412_062921_create_transaction_charges_table extends Migration
             'paid' => $this->boolean()->defaultValue(false),//boolean 是否已付款
             'refunded' => $this->boolean()->defaultValue(false),//boolean 是否存在退款信息
             'reversed' => $this->boolean()->defaultValue(false),//boolean 订单是否撤销
-            'channel' => $this->string(64)->notNull()->unique()->comment('Channel Identity'),//付款渠道
+            'channel' => $this->string(64)->notNull()->comment('Channel Identity'),//付款渠道
             'order_no' => $this->string()->notNull(),//商户订单号，适配每个渠道对此参数的要求，必须在商户的系统内唯一
-            'amount' => $this->unsignedInteger()->notNull(),//订单总金额（必须大于 0），单位为对应币种的最小货币单位，人民币为分
+            'amount' => $this->decimal(12, 2)->notNull(),//订单总金额（必须大于 0)
             'currency' => $this->string(3)->notNull(),//3 位 ISO 货币代码，人民币为  cny 。
             'subject' => $this->string(32)->notNull(),//商品标题，该参数最长为 32 个 Unicode 字符
             'body' => $this->string(128)->notNull(),//商品描述信息，该参数最长为 128 个 Unicode 字符
@@ -39,7 +39,7 @@ class m180412_062921_create_transaction_charges_table extends Migration
             'time_paid' => $this->unixTimestamp(),//订单支付完成时的 Unix 时间戳。（银联支付成功时间为接收异步通知的时间）
             'time_expire' => $this->unixTimestamp(),//订单失效时间
             'transaction_no' => $this->string(64),//支付渠道返回的交易流水号。
-            'amount_refunded' => $this->unsignedInteger()->notNull()->defaultValue(0),//已退款总金额，单位为对应币种的最小货币单位，例如：人民币为分。
+            'amount_refunded' => $this->decimal(12, 2)->notNull()->defaultValue('0.00'),//已退款总金额，单位为对应币种的最小货币单位，例如：人民币为分。
             'failure_code' => $this->string(),//订单的错误码
             'failure_msg' => $this->string(),//订单的错误消息的描述。
             'metadata' => $this->text(),//metadata 参数 数组，一些源数据。

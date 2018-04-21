@@ -199,8 +199,8 @@ abstract class Wechat extends Client implements ChannelInterface
             'out_trade_no' => $refund->charge_id,
             'out_refund_no' => $refund->id,
             'refund_account' => $this->getRefundAccount($refund->funding_source),
-            'total_fee' => 1,
-            'refund_fee' => 1,
+            'total_fee' => bcmul($refund->charge->amount, 100),
+            'refund_fee' => bcmul($refund->amount, 100),
         ]);
         if ($response['return_code'] == 'SUCCESS') {
             if ($response['result_code'] == 'SUCCESS') {
