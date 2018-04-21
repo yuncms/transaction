@@ -24,7 +24,7 @@ class m180413_014650_create_transaction_balance_bonus_table extends Migration
         }
         //创建打赏表
         $this->createTable($this->tableName, [
-            'id' => $this->bigPrimaryKey()->unsigned(),
+            'id' => $this->bigPrimaryKey()->unsigned(),//主ID
             'user_id' => $this->unsignedInteger()->notNull()->comment('User Id'),//受赠的  user 对象的  id 。
             'amount' => $this->unsignedInteger()->notNull(),//受赠金额
             'order_no' => $this->string(64)->notNull(),//模块订单号，必须在模块的系统内唯一，64 位以内。
