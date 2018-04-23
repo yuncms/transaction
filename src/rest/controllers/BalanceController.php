@@ -13,6 +13,7 @@ use yii\web\ServerErrorHttpException;
 use yuncms\rest\Controller;
 use yuncms\transaction\rest\models\TransactionBalanceBonus;
 use yuncms\transaction\rest\models\TransactionBalanceTransaction;
+use yuncms\transaction\rest\models\TransactionBalanceTransfer;
 use yuncms\transaction\rest\models\TransactionSettleAccount;
 use yuncms\transaction\rest\models\TransactionWithdrawal;
 
@@ -103,10 +104,12 @@ class BalanceController extends Controller
 
     /**
      * 余额转账
+     * @throws \yii\base\InvalidConfigException
+     * @throws ServerErrorHttpException
      */
     public function actionTransfer()
     {
-        $model = new TransactionBalanceBonus();
+        $model = new TransactionBalanceTransfer();
         $model->load(Yii::$app->getRequest()->getBodyParams(), '');
         if (($model->save()) != false) {
             Yii::$app->getResponse()->setStatusCode(201);

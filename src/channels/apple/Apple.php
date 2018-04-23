@@ -7,7 +7,6 @@
 
 namespace yuncms\transaction\channels\apple;
 
-
 use yii\base\InvalidConfigException;
 use yii\base\Model;
 use yii\httpclient\Client;
@@ -25,31 +24,42 @@ use yuncms\web\Response;
  * @author Tongle Xu <xutongle@gmail.com>
  * @since 3.0
  */
-class Apple extends Client implements ChannelInterface
+abstract class Apple extends Client implements ChannelInterface
 {
     use ChannelTrait;
 
-    /**
-     * @var string 正式时使用
-     */
-    public $baseUrl = 'https://buy.itunes.apple.com/verifyReceipt';
+    /** @var string 沙盒地址 */
+    protected $sandboxBaseUrl = 'https://sandbox.itunes.apple.com';
+
+    /** @var string 正式地址i */
+    protected $baseUrl = 'https://buy.itunes.apple.com';
+
+    /** @var bool 是否使用沙盒 */
+    public $sandbox = false;
+
+    /** @var string 商户号 */
+    public $merId;
 
     /**
-     * @var string 凭证
+     * @var array 查询方法
      */
-    public $receipt;
-
-    /**
-     * @var string 密码
-     */
-    public $password;
+    protected $methods = [
+        'query' => 'verifyReceipt',
+    ];
 
     /**
      * 初始化
+     * @throws InvalidConfigException
      */
     public function init()
     {
         parent::init();
+        if (empty ($this->merId)) {
+            throw new InvalidConfigException ('The "merId" property must be set.');
+        }
+        if ($this->sandbox) {
+            $this->baseUrl = $this->sandboxBaseUrl;
+        }
         $this->requestConfig['format'] = Client::FORMAT_JSON;
         $this->responseConfig['format'] = Client::FORMAT_JSON;
         $this->on(Client::EVENT_BEFORE_SEND, [$this, 'RequestEvent']);
@@ -59,12 +69,10 @@ class Apple extends Client implements ChannelInterface
      * 请求事件
      * @param RequestEvent $event
      * @return void
-     * @throws InvalidConfigException
      */
     public function RequestEvent(RequestEvent $event)
     {
         $params = $event->request->getData();
-        $params['password'] = $this->password;
         $event->request->setData($params);
     }
 
@@ -75,16 +83,6 @@ class Apple extends Client implements ChannelInterface
     public static function getSettingsModel()
     {
         return new SettingsModel();
-    }
-
-    /**
-     * 发起支付
-     * @param TransactionCharge $charge
-     * @return TransactionCharge
-     */
-    public function charge(TransactionCharge $charge)
-    {
-        return $charge;
     }
 
     /**
