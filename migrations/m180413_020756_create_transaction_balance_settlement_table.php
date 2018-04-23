@@ -40,10 +40,8 @@ class m180413_020756_create_transaction_balance_settlement_table extends Migrati
             'succeeded_at' => $this->unixTimestamp()->comment('Succeeded At'),//结算完成时间。
             'created_at' => $this->unixTimestamp()->comment('Created At'),//创建时间
         ], $tableOptions);
-
-
         $this->addForeignKey('transaction_balance_settlement_fk_1', $this->tableName, 'user_id', '{{%user}}', 'id', 'CASCADE', 'RESTRICT');
-
+        $this->addForeignKey('transaction_balance_settlement_fk_2', $this->tableName, 'charge_id', '{{%transaction_charges}}', 'id', 'CASCADE', 'RESTRICT');
     }
 
     /**
