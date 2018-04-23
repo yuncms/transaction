@@ -22,7 +22,7 @@ class m180413_020756_create_transaction_balance_settlement_table extends Migrati
             // http://stackoverflow.com/questions/766809/whats-the-difference-between-utf8-general-ci-and-utf8-unicode-ci
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
-        // 余额结算表 当一笔订单设定了余额结算信息参数时，支付完成后，
+        //余额结算表 当一笔订单设定了余额结算信息参数时，支付完成后，
         //系统将自动将扣除手续费（user_fee）后的支付金额结算到指定的用户余额账户并生成 balance_settlement 对象。
         //通常使用该对象查询一笔或多笔订单余额结算的状态。注意： 结算的入账状态是系统处理的一个中间状态，一般不需要关心。
         $this->createTable($this->tableName, [
@@ -36,6 +36,8 @@ class m180413_020756_create_transaction_balance_settlement_table extends Migrati
             'charge_order_no' => $this->string(64),//付款订单号
             'charge_transaction_no' => $this->string(64),//付款流水号
             'failure_msg' => $this->string(),//失败消息
+            'credited_at' => $this->unixTimestamp()->comment('Credited At'),//入账完成时间。
+            'succeeded_at' => $this->unixTimestamp()->comment('Succeeded At'),//结算完成时间。
             'created_at' => $this->unixTimestamp()->comment('Created At'),//创建时间
         ], $tableOptions);
 

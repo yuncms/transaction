@@ -133,17 +133,14 @@ class TransactionBalanceBonus extends ActiveRecord
     {
         parent::afterSave($insert, $changedAttributes);
         if ($insert) {//保存后开始赠送余额
-            $availableBalance = bcadd($this->user->available_balance, $this->amount);
-            if (($balanceTransaction = TransactionBalanceTransaction::create([
+            if (($transaction = TransactionBalanceTransaction::create([
                 'user_id' => $this->user_id,
                 'type' => TransactionBalanceTransaction::TYPE_RECEIPTS_EXTRA,
                 'description' => $this->description,
                 'source' => $this->id,
                 'amount' => $this->amount,
-                'available_balance' => $availableBalance
             ]))) {
-                $this->user->updateAttributes(['available_balance' => $availableBalance]);
-                $this->updateAttributes(['paid' => true, 'time_paid' => time(), 'balance_transaction_id' => $balanceTransaction->id]);
+                $this->updateAttributes(['paid' => true, 'time_paid' => time(), 'balance_transaction_id' => $transaction->id]);
             }
         }
     }

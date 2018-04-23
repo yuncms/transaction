@@ -32,8 +32,8 @@ class TransactionBalanceTransaction extends ActiveRecord
     const TYPE_RECHARGE_REFUND = 'recharge_refund';//充值退款
     const TYPE_RECHARGE_REFUND_FAILED = 'recharge_refund_failed';//充值退款失败
     const TYPE_WITHDRAWAL = 'withdrawal';//提现申请
-    const TYPE__WITHDRAWAL_FAILED = 'withdrawal_failed';
-    const TYPE__WITHDRAWAL_REVOKED = 'withdrawal_revoked';
+    const TYPE__WITHDRAWAL_FAILED = 'withdrawal_failed';//提现失败
+    const TYPE__WITHDRAWAL_REVOKED = 'withdrawal_revoked';//提现撤销
     const TYPE_PAYMENT = 'payment';//支付/收款
     const TYPE_PAYMENT_REFUND = 'payment_refund';
     const TYPE_TRANSFER = 'transfer';//转账/收到转账
@@ -124,67 +124,26 @@ class TransactionBalanceTransaction extends ActiveRecord
         return new TransactionBalanceTransactionQuery(get_called_class());
     }
 
+//increase
+//decrease
+
     /**
-     * 是否是作者
-     * @return bool
+     * 记录保存后执行操作
+     * @param bool $insert
+     * @param array $changedAttributes
      */
-    public function getIsAuthor()
+    public function afterSave($insert, $changedAttributes)
     {
-        return $this->user_id == Yii::$app->user->id;
+        parent::afterSave($insert, $changedAttributes);
+        //计算用户可用余额
+        if ($this->type == self::TYPE_RECEIPTS_EXTRA) {
+            $availableBalance = bcadd($this->user->available_balance, $this->amount);
+            $this->updateAttributes(['available_balance' => $availableBalance]);
+            $this->user->updateAttributes(['available_balance' => $availableBalance]);
+        } else {//计算可提现余额
+            $WithdrawableBalance = bcadd($this->user->withdrawable_balance, $this->amount);
+            $this->updateAttributes(['available_balance' => $WithdrawableBalance]);
+            $this->user->updateAttributes(['withdrawable_balance' => $WithdrawableBalance]);
+        }
     }
-//    public function afterFind()
-//    {
-//        parent::afterFind();
-//        // ...custom code here...
-//    }
-
-    /**
-     * @inheritdoc
-     */
-//    public function beforeSave($insert)
-//    {
-//        if (!parent::beforeSave($insert)) {
-//            return false;
-//        }
-//
-//        // ...custom code here...
-//        return true;
-//    }
-
-    /**
-     * @inheritdoc
-     */
-//    public function afterSave($insert, $changedAttributes)
-//    {
-//        parent::afterSave($insert, $changedAttributes);
-//        Yii::$app->queue->push(new ScanTextJob([
-//            'modelId' => $this->getPrimaryKey(),
-//            'modelClass' => get_class($this),
-//            'scenario' => $this->isNewRecord ? 'new' : 'edit',
-//            'category'=>'',
-//        ]));
-//        // ...custom code here...
-//    }
-
-    /**
-     * @inheritdoc
-     */
-//    public function beforeDelete()
-//    {
-//        if (!parent::beforeDelete()) {
-//            return false;
-//        }
-//        // ...custom code here...
-//        return true;
-//    }
-
-    /**
-     * @inheritdoc
-     */
-//    public function afterDelete()
-//    {
-//        parent::afterDelete();
-//
-//        // ...custom code here...
-//    }
 }
