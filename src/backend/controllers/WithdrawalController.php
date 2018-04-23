@@ -6,15 +6,15 @@ use Yii;
 use yii\filters\VerbFilter;
 use yii\bootstrap\ActiveForm;
 use yii\web\NotFoundHttpException;
-use yuncms\transaction\models\TransactionChannel;
-use yuncms\transaction\backend\models\TransactionChannelSearch;
+use yuncms\transaction\models\TransactionWithdrawal;
+use yuncms\transaction\backend\models\TransactionWithdrawalSearch;
 use yuncms\web\Controller;
 use yuncms\web\Response;
 
 /**
- * ChannelController implements the CRUD actions for TransactionChannel model.
+ * WithdrawalController implements the CRUD actions for TransactionWithdrawal model.
  */
-class ChannelController extends Controller
+class WithdrawalController extends Controller
 {
     /**
      * @inheritdoc
@@ -33,12 +33,12 @@ class ChannelController extends Controller
     }
 
     /**
-     * Lists all TransactionChannel models.
+     * Lists all TransactionWithdrawal models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new TransactionChannelSearch();
+        $searchModel = new TransactionWithdrawalSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -48,7 +48,7 @@ class ChannelController extends Controller
     }
 
     /**
-     * Displays a single TransactionChannel model.
+     * Displays a single TransactionWithdrawal model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException
@@ -61,13 +61,13 @@ class ChannelController extends Controller
     }
 
     /**
-     * Creates a new TransactionChannel model.
+     * Creates a new TransactionWithdrawal model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new TransactionChannel();
+        $model = new TransactionWithdrawal();
         if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             Yii::$app->response->format = Response::FORMAT_JSON;
             return ActiveForm::validate($model);
@@ -83,7 +83,7 @@ class ChannelController extends Controller
     }
 
     /**
-     * Updates an existing TransactionChannel model.
+     * Updates an existing TransactionWithdrawal model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -107,33 +107,7 @@ class ChannelController extends Controller
     }
 
     /**
-     * Configuration an existing TransactionChannel model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException
-     */
-    public function actionConfiguration($id)
-    {
-        $channel = $this->findModel($id);
-        $model = $channel->getSettingsModel();
-        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post(), '')) {
-            Yii::$app->response->format = Response::FORMAT_JSON;
-            return ActiveForm::validate($model);
-        }
-        if ($model->load(Yii::$app->request->post(), '') && $model->save()) {
-            Yii::$app->getSession()->setFlash('success', Yii::t('yuncms/transaction', 'Configuration success.'));
-            return $this->redirect(['view', 'id' => $id]);
-        } else {
-            return $this->render('configuration', [
-                'model' => $model,
-                'channel' => $channel
-            ]);
-        }
-    }
-
-    /**
-     * Deletes an existing TransactionChannel model.
+     * Deletes an existing TransactionWithdrawal model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -147,15 +121,14 @@ class ChannelController extends Controller
         Yii::$app->getSession()->setFlash('success', Yii::t('yuncms', 'Delete success.'));
         return $this->redirect(['index']);
     }
-
-    /**
-     * Batch Delete existing TransactionChannel model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @return mixed
-     * @throws NotFoundHttpException
-     * @throws \Throwable
-     * @throws \yii\db\StaleObjectException
-     */
+     /**
+      * Batch Delete existing TransactionWithdrawal model.
+      * If deletion is successful, the browser will be redirected to the 'index' page.
+      * @return mixed
+      * @throws NotFoundHttpException
+      * @throws \Throwable
+      * @throws \yii\db\StaleObjectException
+      */
     public function actionBatchDelete()
     {
         if (($ids = Yii::$app->request->post('ids', null)) != null) {
@@ -171,15 +144,15 @@ class ChannelController extends Controller
     }
 
     /**
-     * Finds the TransactionChannel model based on its primary key value.
+     * Finds the TransactionWithdrawal model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return TransactionChannel the loaded model
+     * @return TransactionWithdrawal the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = TransactionChannel::findOne($id)) !== null) {
+        if (($model = TransactionWithdrawal::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException (Yii::t('yii', 'The requested page does not exist.'));

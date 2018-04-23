@@ -141,6 +141,7 @@ class TransactionBalanceBonus extends ActiveRecord
                 'amount' => $this->amount,
                 'balance' => $balance,
             ]))) {
+                $this->user->updateAttributes(['balance' => $balance]);
                 $this->updateAttributes(['paid' => true, 'time_paid' => time(), 'balance_transaction_id' => $transaction->id]);
             }
         }

@@ -3,16 +3,17 @@
 namespace yuncms\transaction\models;
 
 use Yii;
+use yii\base\Model;
+use yii\behaviors\BlameableBehavior;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
-use yii\behaviors\BlameableBehavior;
 use yuncms\behaviors\JsonBehavior;
 use yuncms\user\models\User;
 use yuncms\validators\JsonValidator;
 
 /**
  * This is the model class for table "{{%transaction_withdrawals}}".
- * 提现明细表
+ * 余额提现明细表
  *
  * @property integer $id
  * @property integer $user_id
@@ -118,8 +119,8 @@ class TransactionWithdrawal extends ActiveRecord
             'metadata' => Yii::t('yuncms/transaction', 'Metadata'),
             'extra' => Yii::t('yuncms/transaction', 'Extra'),
             'created_at' => Yii::t('yuncms/transaction', 'Created At'),
-            'canceled_at' => Yii::t('yuncms/transaction', 'Updated At'),
-            'succeeded_at' => Yii::t('yuncms/transaction', 'Updated At'),
+            'canceled_at' => Yii::t('yuncms/transaction', 'Canceled At'),
+            'succeeded_at' => Yii::t('yuncms/transaction', 'Succeeded At'),
         ];
     }
 
