@@ -3,11 +3,11 @@
 namespace yuncms\transaction\models;
 
 /**
- * This is the ActiveQuery class for [[TransactionBalanceBonus]].
+ * This is the ActiveQuery class for [[TransactionWithdrawal]].
  *
- * @see TransactionBalanceBonus
+ * @see TransactionWithdrawal
  */
-class TransactionBalanceBonusQuery extends \yii\db\ActiveQuery
+class TransactionWithdrawalQuery extends \yii\db\ActiveQuery
 {
     /*public function active()
     {
@@ -16,12 +16,12 @@ class TransactionBalanceBonusQuery extends \yii\db\ActiveQuery
 
     /*public function active()
     {
-        return $this->andWhere(['status' => TransactionBalanceBonus::STATUS_PUBLISHED]);
+        return $this->andWhere(['status' => TransactionWithdrawal::STATUS_PUBLISHED]);
     }*/
 
     /**
      * @inheritdoc
-     * @return TransactionBalanceBonus[]|array
+     * @return TransactionWithdrawal[]|array
      */
     public function all($db = null)
     {
@@ -30,7 +30,7 @@ class TransactionBalanceBonusQuery extends \yii\db\ActiveQuery
 
     /**
      * @inheritdoc
-     * @return TransactionBalanceBonus|array|null
+     * @return TransactionWithdrawal|array|null
      */
     public function one($db = null)
     {

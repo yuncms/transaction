@@ -35,7 +35,7 @@ class TransactionBalanceTransaction extends ActiveRecord
     const TYPE__WITHDRAWAL_FAILED = 'withdrawal_failed';//提现失败
     const TYPE__WITHDRAWAL_REVOKED = 'withdrawal_revoked';//提现撤销
     const TYPE_PAYMENT = 'payment';//支付/收款
-    const TYPE_PAYMENT_REFUND = 'payment_refund';
+    const TYPE_PAYMENT_REFUND = 'payment_refund';//退款/收到退款
     const TYPE_TRANSFER = 'transfer';//转账/收到转账
     const TYPE_RECEIPTS_EXTRA = 'receipts_extra';//赠送
     const TYPE_ROYALTY = 'royalty';//分润/收到分润
@@ -122,28 +122,5 @@ class TransactionBalanceTransaction extends ActiveRecord
     public static function find()
     {
         return new TransactionBalanceTransactionQuery(get_called_class());
-    }
-
-//increase
-//decrease
-
-    /**
-     * 记录保存后执行操作
-     * @param bool $insert
-     * @param array $changedAttributes
-     */
-    public function afterSave($insert, $changedAttributes)
-    {
-        parent::afterSave($insert, $changedAttributes);
-        //计算用户可用余额
-        if ($this->type == self::TYPE_RECEIPTS_EXTRA) {
-            $availableBalance = bcadd($this->user->available_balance, $this->amount);
-            $this->updateAttributes(['available_balance' => $availableBalance]);
-            $this->user->updateAttributes(['available_balance' => $availableBalance]);
-        } else {//计算可提现余额
-            $WithdrawableBalance = bcadd($this->user->withdrawable_balance, $this->amount);
-            $this->updateAttributes(['available_balance' => $WithdrawableBalance]);
-            $this->user->updateAttributes(['withdrawable_balance' => $WithdrawableBalance]);
-        }
     }
 }
