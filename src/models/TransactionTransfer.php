@@ -34,11 +34,11 @@ use yuncms\helpers\ArrayHelper;
 class TransactionTransfer extends ActiveRecord
 {
 
-    //状态定义
-    const STATUS_DRAFT = 0b0;//草稿
-    const STATUS_REVIEW = 0b1;//待审核
-    const STATUS_REJECTED = 0b10;//拒绝
-    const STATUS_PUBLISHED = 0b11;//发布
+    //付款状态
+    const STATUS_SCHEDULED = 0b0;//scheduled: 待发送
+    const STATUS_PENDING = 0b1;//pending: 处理中
+    const STATUS_PAID = 0b10;//paid: 付款成功
+    const STATUS_FAILED = 0b11;//failed: 付款失败
 
     //事件定义
     const BEFORE_PUBLISHED = 'beforePublished';
@@ -62,7 +62,7 @@ class TransactionTransfer extends ActiveRecord
     {
         $behaviors = parent::behaviors();
         $behaviors['timestamp'] = [
-            'class' => TimestampBehavior::className(),
+            'class' => TimestampBehavior::class,
             'attributes' => [
                 ActiveRecord::EVENT_BEFORE_INSERT => ['created_at']
             ],
@@ -73,33 +73,20 @@ class TransactionTransfer extends ActiveRecord
     /**
      * @inheritdoc
      */
-    public function scenarios()
-    {
-        $scenarios = parent::scenarios();
-        return ArrayHelper::merge($scenarios, [
-            static::SCENARIO_CREATE => [],
-            static::SCENARIO_UPDATE => [],
-        ]);
-    }
-
-
-    /**
-     * @inheritdoc
-     */
     public function rules()
     {
         return [
             [['type', 'channel', 'order_no', 'amount', 'currency', 'recipient', 'description'], 'required'],
-            [['status', 'created_at', 'transferred_at'], 'integer'],
             [['amount'], 'number'],
             [['metadata', 'extra'], 'string'],
             [['type'], 'string', 'max' => 5],
             [['channel', 'order_no', 'transaction_no'], 'string', 'max' => 64],
             [['currency'], 'string', 'max' => 3],
             [['recipient', 'description', 'failure_msg'], 'string', 'max' => 255],
+
             // status rule
-            ['status', 'default', 'value' => self::STATUS_REVIEW],
-            ['status', 'in', 'range' => [self::STATUS_DRAFT, self::STATUS_REVIEW, self::STATUS_REJECTED, self::STATUS_PUBLISHED]],];
+            ['status', 'default', 'value' => self::STATUS_SCHEDULED],
+            ['status', 'in', 'range' => [self::STATUS_SCHEDULED, self::STATUS_PENDING, self::STATUS_PAID, self::STATUS_FAILED]]];
     }
 
     /**
@@ -136,33 +123,6 @@ class TransactionTransfer extends ActiveRecord
     }
 
     /**
-     * 是否是作者
-     * @return bool
-     */
-    public function getIsAuthor()
-    {
-        return $this->user_id == Yii::$app->user->id;
-    }
-
-    /**
-     * 是否草稿状态
-     * @return bool
-     */
-    public function isDraft()
-    {
-        return $this->status == static::STATUS_DRAFT;
-    }
-
-    /**
-     * 是否发布状态
-     * @return bool
-     */
-    public function isPublished()
-    {
-        return $this->status == static::STATUS_PUBLISHED;
-    }
-
-    /**
      * 审核通过
      * @return int
      */
@@ -185,19 +145,5 @@ class TransactionTransfer extends ActiveRecord
         $rows = $this->updateAttributes(['status' => static::STATUS_REJECTED, 'failed_reason' => $failedReason]);
         $this->trigger(self::AFTER_REJECTED);
         return $rows;
-    }
-
-    /**
-     * 获取状态列表
-     * @return array
-     */
-    public static function getStatusList()
-    {
-        return [
-            self::STATUS_DRAFT => Yii::t('yuncms/transaction', 'Draft'),
-            self::STATUS_REVIEW => Yii::t('yuncms/transaction', 'Review'),
-            self::STATUS_REJECTED => Yii::t('yuncms/transaction', 'Rejected'),
-            self::STATUS_PUBLISHED => Yii::t('yuncms/transaction', 'Published'),
-        ];
     }
 }

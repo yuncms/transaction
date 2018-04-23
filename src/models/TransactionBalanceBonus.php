@@ -5,7 +5,6 @@ namespace yuncms\transaction\models;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
-use yii\behaviors\BlameableBehavior;
 use yuncms\helpers\ArrayHelper;
 use yuncms\user\models\User;
 
