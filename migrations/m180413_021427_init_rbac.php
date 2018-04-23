@@ -42,20 +42,6 @@ class m180413_021427_init_rbac extends Migration
             ['/transaction/refund/index', 2, $time, $time],
             ['/transaction/refund/update', 2, $time, $time],
             ['/transaction/refund/view', 2, $time, $time],
-
-            ['/transaction/recharge/*', 2, $time, $time],
-            ['/transaction/recharge/create', 2, $time, $time],
-            ['/transaction/recharge/delete', 2, $time, $time],
-            ['/transaction/recharge/index', 2, $time, $time],
-            ['/transaction/recharge/update', 2, $time, $time],
-            ['/transaction/recharge/view', 2, $time, $time],
-
-            ['/transaction/withdrawal/*', 2, $time, $time],
-            ['/transaction/withdrawal/create', 2, $time, $time],
-            ['/transaction/withdrawal/delete', 2, $time, $time],
-            ['/transaction/withdrawal/index', 2, $time, $time],
-            ['/transaction/withdrawal/update', 2, $time, $time],
-            ['/transaction/withdrawal/view', 2, $time, $time],
         ]);
 
         $this->batchInsert('{{%admin_auth_item}}', ['name', 'type', 'rule_name', 'created_at', 'updated_at'], [
@@ -126,62 +112,12 @@ class m180413_021427_init_rbac extends Migration
             ['退款管理', '退款列表'],
         ]);
 
-        $this->batchInsert('{{%admin_auth_item}}', ['name', 'type', 'rule_name', 'created_at', 'updated_at'], [
-            ['充值管理', 2, 'RouteRule', $time, $time],
-            ['充值列表', 2, 'RouteRule', $time, $time],
-            ['充值查看', 2, 'RouteRule', $time, $time],
-            ['充值创建', 2, 'RouteRule', $time, $time],
-            ['充值删除', 2, 'RouteRule', $time, $time],
-            ['充值修改', 2, 'RouteRule', $time, $time],
-        ]);
-        $this->batchInsert('{{%admin_auth_item_child}}', ['parent', 'child'], [
-            ['充值创建', '/transaction/recharge/create'],
-            ['充值删除', '/transaction/recharge/delete'],
-            ['充值列表', '/transaction/recharge/index'],
-            ['充值修改', '/transaction/recharge/update'],
-            ['充值查看', '/transaction/recharge/view'],
-
-            ['充值管理', '/transaction/recharge/*'],
-            ['充值管理', '充值创建'],
-            ['充值管理', '充值删除'],
-            ['充值管理', '充值查看'],
-            ['充值管理', '充值修改'],
-            ['充值管理', '充值列表'],
-        ]);
-
-        $this->batchInsert('{{%admin_auth_item}}', ['name', 'type', 'rule_name', 'created_at', 'updated_at'], [
-            ['提现管理', 2, 'RouteRule', $time, $time],
-            ['提现列表', 2, 'RouteRule', $time, $time],
-            ['提现查看', 2, 'RouteRule', $time, $time],
-            ['提现创建', 2, 'RouteRule', $time, $time],
-            ['提现删除', 2, 'RouteRule', $time, $time],
-            ['提现修改', 2, 'RouteRule', $time, $time],
-        ]);
-        $this->batchInsert('{{%admin_auth_item_child}}', ['parent', 'child'], [
-            ['提现创建', '/transaction/withdrawal/create'],
-            ['提现删除', '/transaction/withdrawal/delete'],
-            ['提现列表', '/transaction/withdrawal/index'],
-            ['提现修改', '/transaction/withdrawal/update'],
-            ['提现查看', '/transaction/withdrawal/view'],
-
-            ['提现管理', '/transaction/withdrawal/*'],
-            ['提现管理', '提现创建'],
-            ['提现管理', '提现删除'],
-            ['提现管理', '提现查看'],
-            ['提现管理', '提现修改'],
-            ['提现管理', '提现列表'],
-        ]);
-
         $this->insert('{{%admin_auth_item_child}}', ['parent' => 'Super Financial', 'child' => '支付渠道管理']);
         $this->insert('{{%admin_auth_item_child}}', ['parent' => 'Super Financial', 'child' => '支付管理']);
-        $this->insert('{{%admin_auth_item_child}}', ['parent' => 'Super Financial', 'child' => '充值管理']);
-        $this->insert('{{%admin_auth_item_child}}', ['parent' => 'Super Financial', 'child' => '提现管理']);
         $this->insert('{{%admin_auth_item_child}}', ['parent' => 'Super Financial', 'child' => '退款管理']);
         $this->insert('{{%admin_auth_item_child}}', ['parent' => 'Financial', 'child' => '支付渠道列表']);
         $this->insert('{{%admin_auth_item_child}}', ['parent' => 'Financial', 'child' => '支付渠道查看']);
         $this->insert('{{%admin_auth_item_child}}', ['parent' => 'Financial', 'child' => '支付管理']);
-        $this->insert('{{%admin_auth_item_child}}', ['parent' => 'Financial', 'child' => '充值管理']);
-        $this->insert('{{%admin_auth_item_child}}', ['parent' => 'Financial', 'child' => '提现管理']);
         $this->insert('{{%admin_auth_item_child}}', ['parent' => 'Financial', 'child' => '退款管理']);
     }
 
