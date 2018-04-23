@@ -27,7 +27,7 @@ class m180413_013158_create_transaction_balance_transaction_table extends Migrat
             'id' => $this->bigPrimaryKey()->unsigned(),
             'user_id' => $this->unsignedInteger()->notNull()->comment('User Id'),
             'amount' => $this->decimal(12, 2)->notNull(),//订单总金额（必须大于 0），单位为对应币种的最小货币单位，人民币为分
-            'available_balance' => $this->decimal(12, 2),//该笔交易发生后，用户的可用余额。
+            'balance' => $this->decimal(12, 2),//该笔交易发生后，用户的余额。
             'description' => $this->string(255),
             'source' => $this->unsignedBigInteger()->notNull()->comment('Source Id'),//关联对象的 ID
             'type' => $this->string(30)->notNull()->comment('Transaction Type'),//交易类型 交易类型。

@@ -15,7 +15,7 @@ use yuncms\db\ActiveRecord;
  * @property string $id 流水号
  * @property integer $user_id 对应 User 对象的  id
  * @property integer $amount 订单总金额（必须大于 0）
- * @property string $available_balance 该笔交易发生后，用户的可用余额。
+ * @property string $balance 该笔交易发生后，用户的可用余额。
  * @property string $description 描述
  * @property string $source 关联对象的 ID
  * @property string $type 交易类型
@@ -75,7 +75,7 @@ class TransactionBalanceTransaction extends ActiveRecord
         return [
             [['user_id', 'amount', 'source', 'type'], 'required'],
             [['user_id', 'source'], 'integer'],
-            [['available_balance', 'amount',], 'number'],
+            [['balance', 'amount',], 'number'],
             [['description'], 'string', 'max' => 255],
             [['type'], 'string', 'max' => 30],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
@@ -91,7 +91,7 @@ class TransactionBalanceTransaction extends ActiveRecord
             'id' => Yii::t('yuncms/transaction', 'ID'),
             'user_id' => Yii::t('yuncms/transaction', 'User Id'),
             'amount' => Yii::t('yuncms/transaction', 'Amount'),
-            'available_balance' => Yii::t('yuncms/transaction', 'Available Balance'),
+            'balance' => Yii::t('yuncms/transaction', 'Balance'),
             'description' => Yii::t('yuncms/transaction', 'Description'),
             'source' => Yii::t('yuncms/transaction', 'Source Id'),
             'type' => Yii::t('yuncms/transaction', 'Transaction Type'),

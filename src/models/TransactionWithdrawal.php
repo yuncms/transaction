@@ -6,11 +6,13 @@ use Yii;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
 use yii\behaviors\BlameableBehavior;
+use yuncms\behaviors\JsonBehavior;
 use yuncms\user\models\User;
+use yuncms\validators\JsonValidator;
 
 /**
  * This is the model class for table "{{%transaction_withdrawals}}".
- * 提现处理
+ * 提现明细表
  *
  * @property integer $id
  * @property integer $user_id
@@ -27,11 +29,21 @@ use yuncms\user\models\User;
  */
 class TransactionWithdrawal extends ActiveRecord
 {
+    const STATUS_CREATED = 0b0;//已申请： created
+    const STATUS_PENDING = 0b1;//处理中： pending
+    const STATUS_SUCCEEDED = 0b10;//完成： succeeded
+    const STATUS_FAILED = 0b11;//失败： failed
+    const STATUS_CANCELED = 0b100;//取消： canceled
+
     //事件定义
-    const BEFORE_PUBLISHED = 'beforePublished';
-    const AFTER_PUBLISHED = 'afterPublished';
-    const BEFORE_REJECTED = 'beforeRejected';
-    const AFTER_REJECTED = 'afterRejected';
+    const BEFORE_SUCCEEDED = 'beforeSucceeded';
+    const AFTER_SUCCEEDED = 'afterSucceeded';
+
+    const BEFORE_FAILED = 'beforeFailed';
+    const AFTER_FAILED = 'afterReFailed';
+
+    const BEFORE_CANCELED = 'beforeCanceled';
+    const AFTER_CANCELED = 'afterReCanceled';
 
     /**
      * @inheritdoc
@@ -54,11 +66,9 @@ class TransactionWithdrawal extends ActiveRecord
                 ActiveRecord::EVENT_BEFORE_INSERT => ['created_at']
             ],
         ];
-        $behaviors['user'] = [
-            'class' => BlameableBehavior::class,
-            'attributes' => [
-                ActiveRecord::EVENT_BEFORE_INSERT => ['user_id']
-            ],
+        $behaviors['configuration'] = [
+            'class' => JsonBehavior::class,
+            'attributes' => ['metadata', 'extra'],
         ];
         return $behaviors;
     }
@@ -69,15 +79,29 @@ class TransactionWithdrawal extends ActiveRecord
     public function rules()
     {
         return [
-            [['user_id', 'amount', 'channel'], 'required'],
-            [['user_id', 'status', 'created_at', 'canceled_at', 'succeeded_at'], 'integer'],
+            [['amount', 'channel'], 'required'],
             [['amount'], 'number'],
             [['metadata', 'extra'], 'string'],
             [['channel'], 'string', 'max' => 64],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+            ['amount', 'balanceValidate'],
+
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
+
+            [['metadata', 'extra'], JsonValidator::class],
             // status rule
-            ['status', 'default', 'value' => self::STATUS_REVIEW],
-            ['status', 'in', 'range' => [self::STATUS_DRAFT, self::STATUS_REVIEW, self::STATUS_REJECTED, self::STATUS_PUBLISHED]],];
+            ['status', 'default', 'value' => self::STATUS_CREATED],
+            ['status', 'in', 'range' => [self::STATUS_CREATED, self::STATUS_PENDING, self::STATUS_SUCCEEDED, self::STATUS_FAILED, self::STATUS_CANCELED]],];
+    }
+
+    /**
+     * Validate balance
+     */
+    public function balanceValidate()
+    {
+        if (bcsub($this->user->balance, $this->amount) < 0) {
+            $message = Yii::t('yuncms/transaction', 'Insufficient balance.');
+            $this->addError('amount', $message);
+        }
     }
 
     /**
@@ -117,50 +141,91 @@ class TransactionWithdrawal extends ActiveRecord
     }
 
     /**
-     * 是否是作者
+     * 设置提现完成
      * @return bool
      */
-    public function getIsAuthor()
+    public function setSucceeded()
     {
-        return $this->user_id == Yii::$app->user->id;
+        $this->trigger(self::BEFORE_SUCCEEDED);
+        $succeeded = (bool)$this->updateAttributes(['status' => static::STATUS_SUCCEEDED, 'succeeded_at' => time()]);
+        $this->trigger(self::AFTER_SUCCEEDED);
+        return $succeeded;
     }
 
     /**
-     * 审核通过
-     * @return int
+     * 设置提现失败
+     * @return bool
      */
-    public function setPublished()
+    public function setFailed()
     {
-        $this->trigger(self::BEFORE_PUBLISHED);
-        $rows = $this->updateAttributes(['status' => static::STATUS_PUBLISHED, 'published_at' => time()]);
-        $this->trigger(self::AFTER_PUBLISHED);
-        return $rows;
+        $this->trigger(self::BEFORE_FAILED);
+        $succeeded = (bool)$this->updateAttributes(['status' => static::STATUS_FAILED]);
+        if ($succeeded) {
+            $balance = bcadd($this->user->balance, $this->amount);
+            if (($transaction = TransactionBalanceTransaction::create([
+                'user_id' => $this->user_id,
+                'type' => TransactionBalanceTransaction::TYPE__WITHDRAWAL_FAILED,
+                'description' => Yii::t('yuncms/transaction', 'Withdrawal Failed'),
+                'source' => $this->id,
+                'amount' => $this->amount,
+                'balance' => $balance,
+            ]))) {
+                $this->user->updateAttributes(['balance' => $balance]);
+            }
+        }
+        $this->trigger(self::AFTER_FAILED);
+        return $succeeded;
     }
 
     /**
-     * 拒绝通过
-     * @param string $failedReason 拒绝原因
-     * @return int
+     * 设置提现取消
+     * @return bool
      */
-    public function setRejected($failedReason)
+    public function setCanceled()
     {
-        $this->trigger(self::BEFORE_REJECTED);
-        $rows = $this->updateAttributes(['status' => static::STATUS_REJECTED, 'failed_reason' => $failedReason]);
-        $this->trigger(self::AFTER_REJECTED);
-        return $rows;
+        $this->trigger(self::BEFORE_CANCELED);
+        $succeeded = (bool)$this->updateAttributes(['status' => static::STATUS_CANCELED, 'canceled_at' => time()]);
+        if ($succeeded) {
+            $balance = bcadd($this->user->balance, $this->amount);
+            if (($transaction = TransactionBalanceTransaction::create([
+                'user_id' => $this->user_id,
+                'type' => TransactionBalanceTransaction::TYPE__WITHDRAWAL_REVOKED,
+                'description' => Yii::t('yuncms/transaction', 'Withdrawal Revoked'),
+                'source' => $this->id,
+                'amount' => $this->amount,
+                'balance' => $balance,
+            ]))) {
+                $this->user->updateAttributes(['balance' => $balance]);
+            }
+        }
+        $this->trigger(self::AFTER_CANCELED);
+        return $succeeded;
     }
 
     /**
-     * 获取状态列表
-     * @return array
+     * 保存前先扣钱
+     * @param bool $insert
+     * @return bool
      */
-    public static function getStatusList()
+    public function beforeSave($insert)
     {
-        return [
-            self::STATUS_DRAFT => Yii::t('yuncms/transaction', 'Draft'),
-            self::STATUS_REVIEW => Yii::t('yuncms/transaction', 'Review'),
-            self::STATUS_REJECTED => Yii::t('yuncms/transaction', 'Rejected'),
-            self::STATUS_PUBLISHED => Yii::t('yuncms/transaction', 'Published'),
-        ];
+        if (!parent::beforeSave($insert)) {
+            return false;
+        }
+        if ($insert) {
+            $balance = bcsub($this->user->balance, $this->amount);
+            if (($transaction = TransactionBalanceTransaction::create([
+                'user_id' => $this->user_id,
+                'type' => TransactionBalanceTransaction::TYPE_WITHDRAWAL,
+                'description' => Yii::t('yuncms/transaction', 'Withdrawal'),
+                'source' => $this->id,
+                'amount' => $this->amount,
+                'balance' => $balance,
+            ]))) {
+                $this->user->updateAttributes(['balance' => $balance]);
+            }
+        }
+
+        return true;
     }
 }

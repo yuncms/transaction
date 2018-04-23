@@ -13,6 +13,7 @@ use yii\web\ServerErrorHttpException;
 use yuncms\rest\Controller;
 use yuncms\transaction\rest\models\TransactionBalanceBonus;
 use yuncms\transaction\rest\models\TransactionBalanceTransaction;
+use yuncms\transaction\rest\models\TransactionWithdrawal;
 
 /**
  * 余额操作控制器
@@ -55,6 +56,24 @@ class BalanceController extends Controller
     public function actionBonus()
     {
         $model = new TransactionBalanceBonus();
+        $model->load(Yii::$app->getRequest()->getBodyParams(), '');
+        if (($model->save()) != false) {
+            Yii::$app->getResponse()->setStatusCode(201);
+        } elseif (!$model->hasErrors()) {
+            throw new ServerErrorHttpException('Failed to create the object for unknown reason.');
+        }
+        return $model;
+    }
+
+    /**
+     * 余额提现
+     * @return TransactionWithdrawal
+     * @throws ServerErrorHttpException
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function actionWithdrawal()
+    {
+        $model = new TransactionWithdrawal();
         $model->load(Yii::$app->getRequest()->getBodyParams(), '');
         if (($model->save()) != false) {
             Yii::$app->getResponse()->setStatusCode(201);
