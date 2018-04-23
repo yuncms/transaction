@@ -5,8 +5,9 @@ namespace yuncms\transaction\models;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\behaviors\BlameableBehavior;
-use yuncms\helpers\ArrayHelper;
+use yuncms\behaviors\JsonBehavior;
 use yuncms\user\models\User;
+use yuncms\validators\JsonValidator;
 
 /**
  * This is the model class for table "{{%transaction_settle_account}}".
@@ -41,6 +42,10 @@ class TransactionSettleAccount extends ActiveRecord
                 ActiveRecord::EVENT_BEFORE_INSERT => ['user_id']
             ],
         ];
+        $behaviors['recipient'] = [
+            'class' => JsonBehavior::class,
+            'attributes' => ['recipient'],
+        ];
         return $behaviors;
     }
 
@@ -53,9 +58,9 @@ class TransactionSettleAccount extends ActiveRecord
         return [
             [['user_id', 'channel'], 'required'],
             [['user_id'], 'integer'],
-            [['recipient'], 'string'],
             [['channel'], 'string', 'max' => 64],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
+            [['recipient'], JsonValidator::class],
         ];
     }
 

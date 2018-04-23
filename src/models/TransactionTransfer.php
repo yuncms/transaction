@@ -27,9 +27,6 @@ use yuncms\helpers\ArrayHelper;
  * @property integer $created_at
  * @property integer $transferred_at
  *
- * @property-read boolean $isAuthor 是否是作者
- * @property-read boolean $isDraft 是否草稿
- * @property-read boolean $isPublished 是否发布
  */
 class TransactionTransfer extends ActiveRecord
 {
