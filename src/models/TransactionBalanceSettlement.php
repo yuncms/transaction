@@ -26,11 +26,16 @@ use yuncms\user\models\User;
  * @property integer $credited_at 入账完成时间。
  * @property integer $succeeded_at 结算完成时间。
  * @property integer $created_at 创建时间，用 Unix 时间戳表示。
+ * @property integer $status 结算状态
  *
  * @property User $user
  */
 class TransactionBalanceSettlement extends ActiveRecord
 {
+
+    const STATUS_CREATED = 0b0;//待结算： created （表示余额还未到结算用户余额账户）
+    const STATUS_CREDITED = 0b1;//已入账： credited （表示余额已到账但不可用）
+    const STATUS_SUCCEEDED = 0b10;//已结算： succeeded （表示余额到账且可用）
 
     /**
      * @inheritdoc
@@ -57,6 +62,24 @@ class TransactionBalanceSettlement extends ActiveRecord
     }
 
     /**
+     * 是否已经入账
+     * @return bool
+     */
+    public function isCredited()
+    {
+        return $this->status == self::STATUS_CREDITED;
+    }
+
+    /**
+     * 是否已经结算
+     * @return bool
+     */
+    public function isSucceeded()
+    {
+        return $this->status == self::STATUS_SUCCEEDED;
+    }
+
+    /**
      * @inheritdoc
      */
     public function rules()
@@ -70,6 +93,7 @@ class TransactionBalanceSettlement extends ActiveRecord
             [['charge_order_no', 'charge_transaction_no'], 'string', 'max' => 64],
             [['failure_msg'], 'string', 'max' => 255],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
+            [['charge_id'], 'exist', 'skipOnError' => true, 'targetClass' => TransactionCharge::class, 'targetAttribute' => ['charge_id' => 'id']],
         ];
     }
 

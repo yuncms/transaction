@@ -36,10 +36,12 @@ class m180413_020756_create_transaction_balance_settlement_table extends Migrati
             'charge_order_no' => $this->string(64),//付款订单号
             'charge_transaction_no' => $this->string(64),//付款流水号
             'failure_msg' => $this->string(),//失败消息
+            'status' => $this->unsignedSmallInteger(1)->defaultValue(0),//结算状态。待结算： created （表示余额还未到结算用户余额账户），已入账： credited （表示余额已到账但不可用），已结算： succeeded （表示余额到账且可用）。
             'credited_at' => $this->unixTimestamp()->comment('Credited At'),//入账完成时间。
             'succeeded_at' => $this->unixTimestamp()->comment('Succeeded At'),//结算完成时间。
             'created_at' => $this->unixTimestamp()->comment('Created At'),//创建时间
         ], $tableOptions);
+
         $this->addForeignKey('transaction_balance_settlement_fk_1', $this->tableName, 'user_id', '{{%user}}', 'id', 'CASCADE', 'RESTRICT');
         $this->addForeignKey('transaction_balance_settlement_fk_2', $this->tableName, 'charge_id', '{{%transaction_charges}}', 'id', 'CASCADE', 'RESTRICT');
     }
