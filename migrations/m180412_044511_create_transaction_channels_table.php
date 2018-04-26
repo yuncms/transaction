@@ -23,7 +23,7 @@ class m180412_044511_create_transaction_channels_table extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
         $this->createTable($this->tableName, [
-            'id' => $this->primaryKey()->unsigned()->comment('Id'),
+            'id' => $this->primaryKey()->comment('Id'),
             'identity' => $this->string(64)->notNull()->unique()->comment('Channel Identity'),
             'name' => $this->string(64)->notNull()->comment('Channel Name'),
             'title' => $this->string(64)->notNull()->comment('Channel Title'),
