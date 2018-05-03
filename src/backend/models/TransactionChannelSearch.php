@@ -4,13 +4,13 @@ namespace yuncms\transaction\backend\models;
 
 use Yii;
 use yii\data\ActiveDataProvider;
-use yuncms\transaction\models\TransactionChannel as TransactionChannelModel;
+use yuncms\transaction\models\TransactionChannel;
 use yii\base\Model;
 
 /**
  * TransactionChannel represents the model behind the search form about `yuncms\transaction\models\TransactionChannel`.
  */
-class TransactionChannelSearch extends TransactionChannelModel
+class TransactionChannelSearch extends TransactionChannel
 {
     /**
      * @inheritdoc
@@ -41,7 +41,7 @@ class TransactionChannelSearch extends TransactionChannelModel
      */
     public function search($params)
     {
-        $query = TransactionChannelModel::find();
+        $query = TransactionChannel::find();
 
         // add conditions that should always apply here
 

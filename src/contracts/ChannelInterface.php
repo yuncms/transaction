@@ -86,7 +86,7 @@ interface ChannelInterface
      * 支付回跳
      * @param Request $request
      * @param Response $response
-     * @return mixed
+     * @return TransactionCharge
      */
     public function callback(Request $request, Response $response);
 

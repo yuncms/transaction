@@ -21,7 +21,9 @@ use yuncms\web\Controller;
 class ChargeController extends Controller
 {
     /**
-     * @param $id
+     * @param string $id
+     * @return string|\yii\web\Response
+     * @throws NotFoundHttpException
      */
     public function actionPay($id)
     {

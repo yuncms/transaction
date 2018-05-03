@@ -38,17 +38,15 @@ class ResponseController extends Controller
      */
     public function actionCallback($channel)
     {
-        $model = $this->findModel($id);
-        $channel = $model->getChannelObject();
-        $channel->callback(Yii::$app->request, $this->paymentId, $this->money, $this->message, $this->payId);
-        return $this->redirect(['/payment/default/return', 'id' => $this->paymentId]);
+        $channel = TransactionChannel::getChannelByIdentity($channel);
+        $charge = $channel->callback(Yii::$app->request, Yii::$app->response);
+        return $this->redirect(['/payment/default/return', 'id' => $charge->id]);
     }
 
     /**
      * 服务器端通知
      * @param string $channel 渠道标识
      * @return Response
-     * @throws NotFoundHttpException
      * @throws \yii\base\InvalidConfigException
      * @throws \yii\base\UnknownClassException
      */
