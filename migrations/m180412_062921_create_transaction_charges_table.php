@@ -30,6 +30,7 @@ class m180412_062921_create_transaction_charges_table extends Migration
             'reversed' => $this->boolean()->defaultValue(false),//boolean 订单是否撤销
             'channel' => $this->string(64)->notNull()->comment('Channel Identity'),//付款渠道
             'order_no' => $this->string(64)->notNull(),//商户订单号，适配每个渠道对此参数的要求，必须在商户的系统内唯一
+            'order_class' => $this->string()->comment('Order Class'),
             'amount' => $this->decimal(12, 2)->notNull(),//订单总金额（必须大于 0)
             'currency' => $this->string(3)->notNull(),//3 位 ISO 货币代码，人民币为  cny 。
             'subject' => $this->string(32)->notNull(),//商品标题，该参数最长为 32 个 Unicode 字符

@@ -15,6 +15,7 @@ use yuncms\db\ActiveRecord;
 use yuncms\helpers\ArrayHelper;
 use yuncms\helpers\Json;
 use yuncms\transaction\contracts\ChannelInterface;
+use yuncms\transaction\contracts\OrderInterface;
 use yuncms\user\models\User;
 use yuncms\validators\JsonValidator;
 
@@ -33,6 +34,7 @@ use yuncms\validators\JsonValidator;
  * @property string $currency
  * @property string $subject
  * @property string $body
+ * @property string $order_class
  * @property JsonObject $extra
  * @property int $time_paid
  * @property int $time_expire
@@ -218,13 +220,27 @@ class TransactionCharge extends ActiveRecord
     }
 
     /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getSource()
+    {
+        return $this->hasOne($this->order_class, ['id' => 'order_no']);
+    }
+
+    /**
      * 设置已付款状态
      * @param string $transactionNo 支付渠道返回的交易流水号。
      * @return bool
      */
     public function setPaid($transactionNo)
     {
+        if ($this->paid) {
+            return true;
+        }
         $paid = (bool)$this->updateAttributes(['transaction_no' => $transactionNo, 'time_paid' => time(), 'paid' => true]);
+        if (!empty($this->order_class) && $this->order_class instanceof OrderInterface) {//回调订单模型
+            call_user_func_array([$this->order_class, 'setPaid'], [$this->order_no, $this->id, $this->metadata]);
+        }
         $this->trigger(self::EVENT_AFTER_SUCCEEDED);
         return $paid;
     }
