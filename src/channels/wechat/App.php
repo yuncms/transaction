@@ -52,7 +52,7 @@ class App extends Wechat
                     'timestamp' => time(),
                 ];
                 $tradeParams['sign'] = $this->generateSignature($tradeParams);
-                $charge->setTransactionCredential($response['prepay_id'], $tradeParams);
+                $charge->setCredential($response['prepay_id'], $tradeParams);
             } else {
                 $charge->setFailure($response['err_code'], $response['err_code_des']);
             }

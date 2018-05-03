@@ -24,6 +24,7 @@ use yuncms\validators\JsonValidator;
  * @property JsonObject $configuration Channel configuration
  * @property boolean $status
  * @property int $created_at Created At
+ * @property \yuncms\transaction\models\SettingsModel $settingsModel
  * @property int $updated_at Updated At
  */
 class TransactionChannel extends ActiveRecord

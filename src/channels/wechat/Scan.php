@@ -48,7 +48,7 @@ class Scan extends Wechat
                     'code_url' => $response['code_url'],
                     'prepayid' => $response['prepay_id'],
                 ];
-                $charge->setTransactionCredential($response['prepay_id'], $tradeParams);
+                $charge->setCredential($response['prepay_id'], $tradeParams);
             } else {
                 $charge->setFailure($response['err_code'], $response['err_code_des']);
             }

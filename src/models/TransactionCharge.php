@@ -50,6 +50,8 @@ use yuncms\validators\JsonValidator;
  * @property-read string outTradeNo
  *
  * @property TransactionRefund[] $refunds
+ * @property \yuncms\transaction\contracts\ChannelInterface $channelObject
+ * @property User $user
  */
 class TransactionCharge extends ActiveRecord
 {
@@ -109,7 +111,7 @@ class TransactionCharge extends ActiveRecord
             [['paid', 'refunded', 'reversed',], 'boolean'],
             [['paid', 'refunded', 'reversed',], 'default', 'value' => false],
 
-            [['amount', 'time_paid', 'amount_refunded'], 'integer'],
+            [['user_id', 'amount', 'time_paid', 'amount_refunded'], 'integer'],
             [['order_no', 'amount', 'currency', 'subject', 'body'], 'required'],
             [['metadata'], 'string'],
             [['channel'], 'string', 'max' => 50],
@@ -124,6 +126,8 @@ class TransactionCharge extends ActiveRecord
 
             //支付凭证
             [['credential', 'metadata', 'extra'], JsonValidator::class],
+
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
 
             //最晚付款时间
             [['time_expire'], 'integer', 'min' => time() + 900],
@@ -229,7 +233,7 @@ class TransactionCharge extends ActiveRecord
      * @param array $credential 支付凭证
      * @return bool
      */
-    public function setTransactionCredential($transactionNo, $credential)
+    public function setCredential($transactionNo, $credential)
     {
         return (bool)$this->updateAttributes(['transaction_no' => $transactionNo, 'credential' => Json::encode($credential)]);
     }

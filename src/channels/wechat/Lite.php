@@ -43,7 +43,7 @@ class Lite extends Wechat
         ];
         if (isset($charge->metadata['openid'])) {
             $params['openid'] = $charge->metadata['openid'];
-        } else if (isset($trade->user->socialAccounts['wechat'])) {
+        } else if (isset($charge->user->socialAccounts['wechat'])) {
             $weParams = $charge->user->socialAccounts['wechat']->getDecodedData();
             $params['openid'] = $weParams['openid'];
         } else {
@@ -60,7 +60,7 @@ class Lite extends Wechat
                     'signType' => 'MD5',
                 ];
                 $tradeParams['paySign'] = $this->generateSignature($tradeParams);
-                $charge->setTransactionCredential($response['prepay_id'], $tradeParams);
+                $charge->setCredential($response['prepay_id'], $tradeParams);
             } else {
                 $charge->setFailure($response['err_code'], $response['err_code_des']);
             }

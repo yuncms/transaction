@@ -61,7 +61,7 @@ class Pub extends Wechat
                     'signType' => 'MD5',
                 ];
                 $tradeParams['paySign'] = $this->generateSignature($tradeParams);
-                $charge->setTransactionCredential($response['prepay_id'], $tradeParams);
+                $charge->setCredential($response['prepay_id'], $tradeParams);
             } else {
                 $charge->setFailure($response['err_code'], $response['err_code_des']);
             }

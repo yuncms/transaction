@@ -31,8 +31,8 @@ class ChargeController extends Controller
         if (Yii::$app->request->isAjax) {
 
         }
-        return $this->redirect(['/payment/default/index', 'id' => $payment->id]);
-        return $this->render('pay', ['payment' => $payment, 'paymentParams' => $paymentParams]);
+        return $this->redirect(['/payment/default/index', 'id' => $model->id]);
+        return $this->render('pay', ['model' => $model, 'paymentParams' => $paymentParams]);
     }
 
     /**
