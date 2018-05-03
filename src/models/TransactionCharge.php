@@ -108,11 +108,13 @@ class TransactionCharge extends ActiveRecord
     public function rules()
     {
         return [
+            [['user_id', 'order_no', 'channel', 'amount', 'currency', 'subject', 'body'], 'required'],
+
             [['paid', 'refunded', 'reversed',], 'boolean'],
             [['paid', 'refunded', 'reversed',], 'default', 'value' => false],
 
             [['user_id', 'amount', 'time_paid', 'amount_refunded'], 'integer'],
-            [['order_no', 'amount', 'currency', 'subject', 'body'], 'required'],
+
             [['metadata'], 'string'],
             [['channel'], 'string', 'max' => 50],
             [['order_no', 'failure_code', 'failure_msg', 'description'], 'string', 'max' => 255],
