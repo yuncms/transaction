@@ -26,6 +26,7 @@ use yuncms\validators\JsonValidator;
  * @property int $paid
  * @property int $refunded
  * @property int $reversed
+ * @property int $user_id
  * @property string $channel
  * @property string $order_no
  * @property string $client_ip

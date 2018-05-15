@@ -36,7 +36,7 @@ class Wap extends Alipay
         $bizContent = ArrayHelper::merge($bizContent, $charge->extra->toArray());
         $tradeParams = $this->buildRequestParameter(['method' => 'alipay.trade.app.pay', 'biz_content' => $bizContent]);
 
-        $charge->setTransactionCredential(null, [
+        $charge->setCredential(null, [
             'isShowPayLoading' => true,
             'payInfo' => http_build_query($tradeParams)
         ]);
