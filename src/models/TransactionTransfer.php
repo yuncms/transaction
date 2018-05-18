@@ -5,7 +5,6 @@ namespace yuncms\transaction\models;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
-use yuncms\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "{{%transaction_transfer}}".
@@ -117,30 +116,5 @@ class TransactionTransfer extends ActiveRecord
     public static function find()
     {
         return new TransactionTransferQuery(get_called_class());
-    }
-
-    /**
-     * 审核通过
-     * @return int
-     */
-    public function setPublished()
-    {
-        $this->trigger(self::BEFORE_PUBLISHED);
-        $rows = $this->updateAttributes(['status' => static::STATUS_PUBLISHED, 'published_at' => time()]);
-        $this->trigger(self::AFTER_PUBLISHED);
-        return $rows;
-    }
-
-    /**
-     * 拒绝通过
-     * @param string $failedReason 拒绝原因
-     * @return int
-     */
-    public function setRejected($failedReason)
-    {
-        $this->trigger(self::BEFORE_REJECTED);
-        $rows = $this->updateAttributes(['status' => static::STATUS_REJECTED, 'failed_reason' => $failedReason]);
-        $this->trigger(self::AFTER_REJECTED);
-        return $rows;
     }
 }

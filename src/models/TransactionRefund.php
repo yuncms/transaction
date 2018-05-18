@@ -216,22 +216,4 @@ class TransactionRefund extends ActiveRecord
     {
         return new TransactionRefundQuery(get_called_class());
     }
-
-    /**
-     * 生成交易流水号
-     * @return string
-     */
-    protected function generateId()
-    {
-        $i = rand(0, 9999);
-        do {
-            if (9999 == $i) {
-                $i = 0;
-            }
-            $i++;
-            $id = time() . str_pad($i, 4, '0', STR_PAD_LEFT);
-            $row = (new Query())->from(static::tableName())->where(['id' => $id])->exists();
-        } while ($row);
-        return $id;
-    }
 }
