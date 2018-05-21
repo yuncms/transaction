@@ -39,12 +39,12 @@ class SettingsModel extends \yuncms\transaction\models\SettingsModel
     /**
      * @var string
      */
-    public $noticeRoute;
+    public $noticeUrl;
 
     /**
      * @var string
      */
-    public $callbackRoute;
+    public $returnUrl;
 
     /**
      * @return array
@@ -52,8 +52,11 @@ class SettingsModel extends \yuncms\transaction\models\SettingsModel
     public function rules()
     {
         return ArrayHelper::merge(parent::rules(), [
-            'string' => [['appId', 'apiKey', 'mchId', 'privateKey', 'publicKey', 'signType', 'noticeRoute', 'callbackRoute'], 'string'],
-            'required' => [['appId', 'apiKey', 'mchId', 'privateKey', 'publicKey', 'signType', 'noticeRoute'], 'required'],
+            'string' => [['appId', 'apiKey', 'mchId', 'privateKey', 'publicKey', 'signType', 'noticeUrl', 'returnUrl'], 'string'],
+            'required' => [['appId', 'apiKey', 'mchId', 'privateKey', 'publicKey', 'signType', 'noticeUrl'], 'required'],
+
+            'noticeUrlDefault' => ['noticeUrl','default','value' => '/transaction/response/notice'],
+            'returnUrlDefault' => ['returnUrl','default','value' => '/transaction/response/callback'],
         ]);
     }
 
