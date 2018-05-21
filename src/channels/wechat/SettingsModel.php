@@ -37,13 +37,23 @@ class SettingsModel extends \yuncms\transaction\models\SettingsModel
     public $signType;
 
     /**
+     * @var string
+     */
+    public $noticeRoute;
+
+    /**
+     * @var string
+     */
+    public $callbackRoute;
+
+    /**
      * @return array
      */
     public function rules()
     {
         return ArrayHelper::merge(parent::rules(), [
-            'string' => [['appId', 'apiKey', 'mchId', 'privateKey', 'publicKey', 'signType'], 'string'],
-            'required' => [['appId', 'apiKey', 'mchId', 'privateKey', 'publicKey', 'signType'], 'required'],
+            'string' => [['appId', 'apiKey', 'mchId', 'privateKey', 'publicKey', 'signType', 'noticeRoute', 'callbackRoute'], 'string'],
+            'required' => [['appId', 'apiKey', 'mchId', 'privateKey', 'publicKey', 'signType', 'noticeRoute'], 'required'],
         ]);
     }
 

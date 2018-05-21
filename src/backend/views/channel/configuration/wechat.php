@@ -27,3 +27,9 @@ use yuncms\transaction\channels\wechat\Wechat;
 
 <?= $form->field($model, 'publicKey')->textInput(['maxlength' => true]) ?>
 <div class="hr-line-dashed"></div>
+
+<?= $form->field($model, 'noticeRoute')->textInput(['maxlength' => true]) ?>
+<div class="hr-line-dashed"></div>
+
+<?= $form->field($model, 'callbackRoute')->textInput(['maxlength' => true]) ?>
+<div class="hr-line-dashed"></div>
