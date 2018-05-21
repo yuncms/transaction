@@ -49,6 +49,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 'channel' => $channel
             ]) ?>
 
+            <?= $form->field($model, 'noticeUrl')->textInput(['maxlength' => true]) ?>
+            <div class="hr-line-dashed"></div>
+
+            <?= $form->field($model, 'returnUrl')->textInput(['maxlength' => true]) ?>
+            <div class="hr-line-dashed"></div>
+
             <?= $form->field($model, 'timeout')->textInput() ?>
             <div class="hr-line-dashed"></div>
 
