@@ -24,6 +24,8 @@ use yuncms\web\Response;
  *
  * @author Tongle Xu <xutongle@gmail.com>
  * @since 3.0
+ *
+ * @property string $title
  */
 abstract class Wechat extends Client implements ChannelInterface
 {
@@ -109,7 +111,7 @@ abstract class Wechat extends Client implements ChannelInterface
         $this->requestConfig['format'] = Client::FORMAT_XML;
         $this->requestConfig['options']['timeout'] = $this->timeout;
         $this->requestConfig['options']['sslCafile'] = __DIR__ . '/ca.pem';
-        $this->requestConfig['options']['sslVerifyPeer'] = true;
+        $this->requestConfig['options']['sslVerifyPeer'] = false;
         $this->requestConfig['options']['sslLocalCert'] = $this->publicKey;
         $this->requestConfig['options']['sslLocalPk'] = $this->privateKey;
         $this->responseConfig['format'] = Client::FORMAT_XML;
