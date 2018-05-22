@@ -15,7 +15,6 @@ use yuncms\db\ActiveRecord;
 use yuncms\helpers\ArrayHelper;
 use yuncms\helpers\Json;
 use yuncms\transaction\contracts\ChannelInterface;
-use yuncms\transaction\contracts\OrderInterface;
 use yuncms\user\models\User;
 use yuncms\validators\JsonValidator;
 
@@ -241,7 +240,8 @@ class TransactionCharge extends ActiveRecord
             return true;
         }
         $paid = (bool)$this->updateAttributes(['transaction_no' => $transactionNo, 'time_paid' => time(), 'paid' => true]);
-        if (!empty($this->order_class) && $this->order_class instanceof OrderInterface) {//回调订单模型
+        if (!empty($this->order_class) && is_subclass_of($this->order_class,'yuncms\transaction\contracts\OrderInterface')) {//回调订单模型
+            Yii::info('Callback order model:' . $this->order_class, __METHOD__);
             call_user_func_array([$this->order_class, 'setPaid'], [$this->order_no, $this->id, $this->metadata]);
         }
         $this->trigger(self::EVENT_AFTER_SUCCEEDED);
