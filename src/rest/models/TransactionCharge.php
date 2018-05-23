@@ -26,9 +26,9 @@ class TransactionCharge extends \yuncms\transaction\models\TransactionCharge
         return [
             'id',
             'user_id',
-            'paid',
-            'refunded',
-            'reversed',
+            'isPaid',
+            'isRefunded',
+            'isReversed',
             'channel',
             'order_no',
             'currency',

@@ -53,6 +53,7 @@ use yuncms\validators\JsonValidator;
  *
  * @property TransactionRefund[] $refunds
  * @property \yuncms\transaction\contracts\ChannelInterface $channelObject
+ * @property \yii\db\ActiveQuery $source
  * @property User $user
  */
 class TransactionCharge extends ActiveRecord
@@ -119,7 +120,6 @@ class TransactionCharge extends ActiveRecord
 
             [['amount', 'amount_refunded'], 'number'],
 
-            [['metadata'], 'string'],
             [['channel'], 'string', 'max' => 50],
             [['order_no', 'failure_code', 'failure_msg', 'description'], 'string', 'max' => 255],
             [['client_ip'], 'string', 'max' => 45],
@@ -196,6 +196,33 @@ class TransactionCharge extends ActiveRecord
     }
 
     /**
+     * 是否已经付款
+     * @return bool
+     */
+    public function getIsPaid()
+    {
+        return (bool)$this->paid;
+    }
+
+    /**
+     * 是否有退款
+     * @return bool
+     */
+    public function getIsRefunded()
+    {
+        return (bool)$this->refunded;
+    }
+
+    /**
+     * 订单是否撤销
+     * @return bool
+     */
+    public function getIsReversed()
+    {
+        return (bool)$this->reversed;
+    }
+
+    /**
      * 商户订单号
      * @return int
      */
@@ -240,7 +267,7 @@ class TransactionCharge extends ActiveRecord
             return true;
         }
         $paid = (bool)$this->updateAttributes(['transaction_no' => $transactionNo, 'time_paid' => time(), 'paid' => true]);
-        if (!empty($this->order_class) && is_subclass_of($this->order_class,'yuncms\transaction\contracts\OrderInterface')) {//回调订单模型
+        if (!empty($this->order_class) && is_subclass_of($this->order_class, 'yuncms\transaction\contracts\OrderInterface')) {//回调订单模型
             Yii::info('Callback order model:' . $this->order_class, __METHOD__);
             call_user_func_array([$this->order_class, 'setPaid'], [$this->order_no, $this->id, $this->metadata]);
         }
