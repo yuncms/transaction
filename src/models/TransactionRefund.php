@@ -129,15 +129,20 @@ class TransactionRefund extends ActiveRecord
     public function chargeValidate()
     {
         if (($charge = TransactionCharge::findOne(['id' => $this->charge_id])) != null) {
-            if (bcsub($charge->amount, $charge->amount_refunded) < $this->amount) {
-                $message = Yii::t('yuncms/transaction', 'Exceeded the maximum refund amount.');
-                $this->addError('className', $message);
+            if ($charge->isPaid) {
+                if (bcsub($charge->amount, $charge->amount_refunded) < $this->amount) {
+                    $message = Yii::t('yuncms/transaction', 'Exceeded the maximum refund amount.');
+                    $this->addError('charge_id', $message);
+                } else {
+                    $this->charge_order_no = $charge->order_no;
+                }
             } else {
-                $this->charge_order_no = $charge->order_no;
+                $message = Yii::t('yuncms/transaction', "Change transaction has not yet been paid and cannot be refunded.");
+                $this->addError('charge_id', $message);
             }
         } else {
             $message = Yii::t('yuncms/transaction', "Unknown charge '{charge}'", ['charge' => $this->charge_id]);
-            $this->addError('className', $message);
+            $this->addError('charge_id', $message);
         }
     }
 

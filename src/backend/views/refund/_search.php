@@ -20,7 +20,7 @@ use yuncms\admin\widgets\ActiveForm;
 
     <?= $form->field($model, 'amount') ?>
 
-    <?= $form->field($model, 'succeed') ?>
+    <?= $form->field($model, 'succeed')->dropDownListBool(['prompt' => $model->getAttributeLabel('succeed')]) ?>
 
     <?php // echo $form->field($model, 'status') ?>
 
