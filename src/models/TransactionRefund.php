@@ -100,7 +100,7 @@ class TransactionRefund extends ActiveRecord
             [['amount', 'description', 'charge_id'], 'required'],
             [['charge_id'], 'integer'],
 
-            [['amount'], 'number', 'max' => 0.01],
+            [['amount'], 'number', 'min' => 0.01],
 
             [['description'], 'string', 'max' => 255],
 
