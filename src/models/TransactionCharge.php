@@ -300,6 +300,20 @@ class TransactionCharge extends ActiveRecord
     }
 
     /**
+     * 从交易里直接发起退款
+     * @param string $description
+     * @return bool
+     */
+    public function setRefund($description)
+    {
+        $refund = new TransactionRefund(['amount' => $this->amount, 'description' => $description]);
+        if ($refund->save() && $this->setReversed()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * 设置订单状态以撤销
      * @return bool
      */
