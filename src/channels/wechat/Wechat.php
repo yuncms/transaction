@@ -289,22 +289,44 @@ abstract class Wechat extends Client implements ChannelInterface
         $response->format = Response::FORMAT_XML;
         $xml = $request->getRawBody();
         try {
-            file_put_contents('aa.txt',$xml);
             $params = $this->convertXmlToArray($xml);
             if ($params['return_code'] == 'SUCCESS') {
+                $xml = $this->refundDecode($params['req_info']);
+                $params = $this->convertXmlToArray($xml);
+                if (($refund = $this->getRefundById($params['out_refund_no'])) != null) {
+                    if ($params['refund_status'] == 'SUCCESS') {//退款成功
+                        $refund->setRefundSucceeded(strtotime($params['success_time']));
+                    } else {
+                        $refund->setFailure($params['refund_status'], $this->getRefundStatus($params['refund_status']));
+                    }
+                }
                 $response->content = '<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>';
-            } else {
-
-            }
-            if ($params['return_code'] == 'SUCCESS' && $params['sign'] == $this->generateSignature($params)) {
-                $response->content = '<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>';
-                //$refund = $this->getRefundById($params['out_refund_no']);
-                //$refund->setPaid($params['transaction_id']);
+                return;
             }
         } catch (\Exception $e) {
             Yii::error($e->getMessage(), __CLASS__);
         }
         $response->content = '<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[Signature verification failed.]]></return_msg></xml>';
+    }
+
+    /**
+     * 退款失败原因
+     * @param string $refundStatus
+     * @return string
+     */
+    protected function getRefundStatus($refundStatus)
+    {
+        switch ($refundStatus) {
+            case 'CHANGE':
+                $status = Yii::t('yuncms/transaction', 'Refund Change');
+                break;
+            case 'REFUNDCLOSE':
+                $status = Yii::t('yuncms/transaction', 'Refund Close');
+                break;
+            default:
+                $status = '';
+        }
+        return $status;
     }
 
     /**
@@ -342,6 +364,16 @@ abstract class Wechat extends Client implements ChannelInterface
             throw new InvalidConfigException ('This encryption is not supported');
         }
         return strtoupper($sign);
+    }
+
+    /**
+     * 解密退款通知
+     * @param string $string
+     * @return string
+     */
+    protected function refundDecode($string)
+    {
+        return openssl_decrypt(base64_decode($string), 'aes-256-ecb', md5($this->apiKey), OPENSSL_RAW_DATA);
     }
 
     /**

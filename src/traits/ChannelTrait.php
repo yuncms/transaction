@@ -59,6 +59,11 @@ trait ChannelTrait
 
 
     /**
+     * @var string 后端退款通知地址
+     */
+    private $_refundUrl;
+
+    /**
      * @param string $id service identity.
      */
     public function setIdentity($id)
@@ -195,6 +200,25 @@ trait ChannelTrait
     }
 
     /**
+     * @param string $noticeUrl return URL
+     */
+    public function setRefundUrl($noticeUrl)
+    {
+        $this->_noticeUrl = $noticeUrl;
+    }
+
+    /**
+     * @return string return URL.
+     */
+    public function getRefundUrl()
+    {
+        if ($this->_refundUrl === null) {
+            $this->_refundUrl = $this->defaultRefundUrl();
+        }
+        return Url::to([$this->_refundUrl, 'channel' => $this->getIdentity()], true);
+    }
+
+    /**
      * 获取BaseUri
      * @return string|null
      */
@@ -242,6 +266,15 @@ trait ChannelTrait
     public function defaultNoticeUrl()
     {
         return '/transaction/response/notice';
+    }
+
+    /**
+     * Composes default [[refundUrl]] value.
+     * @return string return URL.
+     */
+    public function defaultRefundUrl()
+    {
+        return '/transaction/response/refund';
     }
 
     /**

@@ -68,6 +68,8 @@ return [
     'Refund Notice Route' => '退款通知路由',
     'Charge Return Route' => '交易返回路由',
     'Time Settle' => '',
+    'Refund Change' => '退款异常',
+    'Refund Close' => '退款关闭',
     'Time Succeed' => '成功时间',
     'Transaction No' => '支付渠道流水号',
     'Update Transaction Channel' => '更新渠道配置',

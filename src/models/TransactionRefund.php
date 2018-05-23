@@ -133,7 +133,7 @@ class TransactionRefund extends ActiveRecord
             if ($charge->isPaid) {
                 if (bcsub($charge->amount, $charge->amount_refunded) < $this->amount) {
                     $message = Yii::t('yuncms/transaction', 'Exceeded the maximum refund amount.');
-                    $this->addError('charge_id', $message);
+                    $this->addError('amount', $message);
                 } else {
                     $this->charge_order_no = $charge->order_no;
                 }
@@ -173,10 +173,10 @@ class TransactionRefund extends ActiveRecord
     {
         switch ($this->funding_source) {
             case self::FUNDING_SOURCE_UNSETTLED:
-                $genderName = Yii::t('yuncms/transaction','Unsettled Funds');
+                $genderName = Yii::t('yuncms/transaction', 'Unsettled Funds');
                 break;
             case self::FUNDING_SOURCE_RECHARGE:
-                $genderName = Yii::t('yuncms/transaction','Recharge Funds');
+                $genderName = Yii::t('yuncms/transaction', 'Recharge Funds');
                 break;
             default:
                 throw new \RuntimeException('Your database is not supported!');
@@ -219,6 +219,16 @@ class TransactionRefund extends ActiveRecord
     public function setFailure($code, $msg)
     {
         return (bool)$this->updateAttributes(['status' => self::STATUS_FAILED, 'failure_code' => $code, 'failure_msg' => $msg]);
+    }
+
+    /**
+     * 设置退款成功
+     * @param string $successTime
+     * @return bool
+     */
+    public function setRefundSucceeded($successTime)
+    {
+        return (bool)$this->updateAttributes(['status' => self::STATUS_SUCCEEDED, 'succeed' => true, 'time_succeed' => $successTime]);
     }
 
     /**
