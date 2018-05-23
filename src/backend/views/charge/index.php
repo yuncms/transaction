@@ -69,8 +69,6 @@ $this->registerJs("jQuery(\"#batch_deletion\").on(\"click\", function () {
                     //'client_ip',
                     'transaction_no',
                     'amount_refunded',
-                    'failure_code',
-                    'failure_msg',
                     // 'metadata:ntext',
                     // 'description',
                     [
@@ -114,13 +112,19 @@ $this->registerJs("jQuery(\"#batch_deletion\").on(\"click\", function () {
                     ],
                     [
                         'class' => 'yuncms\grid\ActionColumn',
-                        'template' => '{view} {update} {delete}',
-                        //'buttons' => [
-                        //    'update' => function ($url, $model, $key) {
-                        //        return $model->status === 'editable' ? Html::a('Update', $url) : '';
-                        //    },
-                        //],
-                    ],
+                        'header' => Yii::t('yuncms', 'Operation'),
+                        'template' => '{refund} {view} {update} {delete}',
+                        'buttons' => ['refund' => function ($url, $model, $key) {
+                            return Html::a('<span class="fa fa-reply"></span>',
+                                Url::toRoute(['refund/create', 'charge_id' => $model->id]), [
+                                    'title' => Yii::t('yuncms/transaction', 'Refund'),
+                                    'aria-label' => Yii::t('yuncms/transaction', 'Refund'),
+                                    'data-pjax' => '0',
+                                    'class' => 'btn btn-sm btn-default',
+                                ]);
+                        }]
+                    ]
+
                 ],
             ]); ?>
             <?php Box::end(); ?>

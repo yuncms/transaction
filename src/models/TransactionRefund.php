@@ -30,6 +30,7 @@ use yuncms\validators\JsonValidator;
  * @property string $funding_source
  * @property int $created_at
  *
+ * @property mixed $statusText
  * @property TransactionCharge $charge
  */
 class TransactionRefund extends ActiveRecord
@@ -166,6 +167,39 @@ class TransactionRefund extends ActiveRecord
             'funding_source' => Yii::t('yuncms/transaction', 'Funding Source'),
             'created_at' => Yii::t('yuncms', 'Created At'),
         ];
+    }
+
+    public function getFundingSourceText()
+    {
+        switch ($this->funding_source) {
+            case self::FUNDING_SOURCE_UNSETTLED:
+                $genderName = Yii::t('yuncms/transaction','Unsettled Funds');
+                break;
+            case self::FUNDING_SOURCE_RECHARGE:
+                $genderName = Yii::t('yuncms/transaction','Recharge Funds');
+                break;
+            default:
+                throw new \RuntimeException('Your database is not supported!');
+        }
+        return $genderName;
+    }
+
+    public function getStatusText()
+    {
+        switch ($this->status) {
+            case self::STATUS_PENDING:
+                $genderName = Yii::t('yuncms/transaction', 'Pending');
+                break;
+            case self::STATUS_SUCCEEDED:
+                $genderName = Yii::t('yuncms/transaction', 'Succeeded');
+                break;
+            case self::STATUS_FAILED:
+                $genderName = Yii::t('yuncms/transaction', 'Failed');
+                break;
+            default:
+                throw new \RuntimeException('Your database is not supported!');
+        }
+        return $genderName;
     }
 
     /**

@@ -8,6 +8,7 @@ use yuncms\admin\widgets\Toolbar;
 use yuncms\admin\widgets\Alert;
 use yuncms\grid\GridView;
 use yii\widgets\Pjax;
+use yuncms\transaction\models\TransactionRefund;
 
 /* @var $this yii\web\View */
 /* @var $searchModel yuncms\transaction\backend\models\TransactionRefundSearch */
@@ -68,15 +69,48 @@ $this->registerJs("jQuery(\"#batch_deletion\").on(\"click\", function () {
                     'id',
                     'amount',
                     'succeed:boolean',
-                    'status',
-                    'time_succeed:datetime',
+                    [
+                        'label' => Yii::t('yuncms/transaction', 'Status'),
+                        'attribute' => 'status',
+                        'value' => function ($model) {
+                            return $model->statusText;
+                        },
+                        'filter' => [
+                            TransactionRefund::STATUS_PENDING => Yii::t('yuncms/transaction', 'Pending'),
+                            TransactionRefund::STATUS_SUCCEEDED => Yii::t('yuncms/transaction', 'Succeeded'),
+                            TransactionRefund::STATUS_FAILED => Yii::t('yuncms/transaction', 'Failed'),
+                        ]
+                    ],
                     'description',
                     'failure_code',
                     'failure_msg',
                     'charge_id',
                     'charge_order_no',
                     'transaction_no',
-                    'funding_source',
+                    [
+                        'label' => Yii::t('yuncms/transaction', 'Funding Source'),
+                        'attribute' => 'funding_source',
+                        'value' => function ($model) {
+                            return $model->fundingSourceText;
+                        },
+                        'filter' => [
+                            TransactionRefund::FUNDING_SOURCE_UNSETTLED => Yii::t('yuncms/transaction','Unsettled Funds'),
+                            TransactionRefund::FUNDING_SOURCE_RECHARGE => Yii::t('yuncms/transaction','Recharge Funds')
+                        ]
+                    ],
+                    [
+                        'attribute' => 'time_succeed',
+                        'format' => 'datetime',
+                        'filter' => \yii\jui\DatePicker::widget([
+                            'model' => $searchModel,
+                            'options' => [
+                                'class' => 'form-control'
+                            ],
+                            'attribute' => 'time_succeed',
+                            'name' => 'time_succeed',
+                            'dateFormat' => 'yyyy-MM-dd'
+                        ]),
+                    ],
                     [
                         'attribute' => 'created_at',
                         'format' => 'datetime',
