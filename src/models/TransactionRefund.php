@@ -232,7 +232,7 @@ class TransactionRefund extends ActiveRecord
     public function setRefundSucceeded($successTime, $params = [])
     {
         if ((bool)$this->updateAttributes(['status' => self::STATUS_SUCCEEDED, 'succeed' => true, 'time_succeed' => $successTime, 'extra' => Json::encode($params)])) {
-            $this->charge->updateAttributes(['amount_refunded' => $this->amount]);
+            $this->charge->updateAttributes(['amount_refunded' => bcadd($this->charge->amount_refunded, $this->amount, 2)]);
         }
         return true;
     }
