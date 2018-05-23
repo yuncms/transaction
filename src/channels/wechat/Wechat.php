@@ -280,6 +280,33 @@ abstract class Wechat extends Client implements ChannelInterface
     }
 
     /**
+     * 退款服务端通知
+     * @param Request $request
+     * @param Response $response
+     */
+    public function refundNotice(Request $request, Response $response)
+    {
+        $response->format = Response::FORMAT_XML;
+        $xml = $request->getRawBody();
+        try {
+            $params = $this->convertXmlToArray($xml);
+            if ($params['return_code'] == 'SUCCESS') {
+                $response->content = '<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>';
+            } else {
+
+            }
+            if ($params['return_code'] == 'SUCCESS' && $params['sign'] == $this->generateSignature($params)) {
+                $response->content = '<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>';
+                //$refund = $this->getRefundById($params['out_refund_no']);
+                //$refund->setPaid($params['transaction_id']);
+            }
+        } catch (\Exception $e) {
+            Yii::error($e->getMessage(), __CLASS__);
+        }
+        $response->content = '<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[Signature verification failed.]]></return_msg></xml>';
+    }
+
+    /**
      * 支付响应
      * @param Request $request
      * @param Response $response

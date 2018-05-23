@@ -97,4 +97,12 @@ interface ChannelInterface
      * @return mixed
      */
     public function notice(Request $request, Response $response);
+
+    /**
+     * 服务端退款通知
+     * @param Request $request 请求实例类
+     * @param Response $response
+     * @return mixed
+     */
+    public function refundNotice(Request $request, Response $response);
 }

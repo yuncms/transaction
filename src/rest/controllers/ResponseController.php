@@ -43,6 +43,20 @@ class ResponseController extends Controller
     }
 
     /**
+     * 服务器端退款通知
+     * @param string $channel 渠道标识
+     * @return Response
+     * @throws \yii\base\InvalidConfigException
+     * @throws \yii\base\UnknownClassException
+     */
+    public function actionRefund($channel)
+    {
+        $channel = TransactionChannel::getChannelByIdentity($channel);
+        $channel->refundNotice(Yii::$app->request, Yii::$app->response);
+        return Yii::$app->response;
+    }
+
+    /**
      * 获取模型
      * @param int $id
      * @return TransactionCharge
