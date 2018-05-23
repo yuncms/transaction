@@ -42,6 +42,20 @@ class TransactionCharge extends \yuncms\transaction\models\TransactionCharge
         ];
     }
 
+    public function behaviors()
+    {
+        $behaviors = parent::behaviors();
+        unset($behaviors['jsonAttributes']);
+        return $behaviors;
+    }
+
+    public function rules()
+    {
+        $rules = parent::rules();
+        unset($rules['jsonField']);
+        return $rules;
+    }
+
     /**
      * @return \yii\db\ActiveQuery
      */
