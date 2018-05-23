@@ -42,11 +42,7 @@ $this->registerJs("jQuery(\"#batch_deletion\").on(\"click\", function () {
                             'label' => Yii::t('yuncms/transaction', 'Create Transaction Charge'),
                             'url' => ['create'],
                         ],
-                        [
-                            'options' => ['id' => 'batch_deletion', 'class' => 'btn btn-sm btn-danger'],
-                            'label' => Yii::t('yuncms/transaction', 'Batch Deletion'),
-                            'url' => 'javascript:void(0);',
-                        ]
+
                     ]]); ?>
                 </div>
                 <div class="col-sm-8 m-b-xs">
@@ -60,11 +56,6 @@ $this->registerJs("jQuery(\"#batch_deletion\").on(\"click\", function () {
                 'layout' => "{items}\n{summary}\n{pager}",
                 'filterModel' => $searchModel,
                 'columns' => [
-                    [
-                        'class' => 'yii\grid\CheckboxColumn',
-                        "name" => "id",
-                    ],
-                    //['class' => 'yii\grid\SerialColumn'],
                     'id',
                     'paid:boolean',
                     'refunded:boolean',
@@ -73,17 +64,41 @@ $this->registerJs("jQuery(\"#batch_deletion\").on(\"click\", function () {
                     'order_no',
                     'amount',
                     'currency',
-                    // 'subject',
+                    'subject',
                     // 'body',
-                    'client_ip',
-                    'time_paid:datetime',
-                    // 'time_expire:datetime',
-                    // 'transaction_no',
-                    // 'amount_refunded',
-                    // 'failure_code',
-                    // 'failure_msg',
+                    //'client_ip',
+                    'transaction_no',
+                    'amount_refunded',
+                    'failure_code',
+                    'failure_msg',
                     // 'metadata:ntext',
                     // 'description',
+                    [
+                        'attribute' => 'time_paid',
+                        'format' => 'datetime',
+                        'filter' => \yii\jui\DatePicker::widget([
+                            'model' => $searchModel,
+                            'options' => [
+                                'class' => 'form-control'
+                            ],
+                            'attribute' => 'time_paid',
+                            'name' => 'time_paid',
+                            'dateFormat' => 'yyyy-MM-dd'
+                        ]),
+                    ],
+                    [
+                        'attribute' => 'time_expire',
+                        'format' => 'datetime',
+                        'filter' => \yii\jui\DatePicker::widget([
+                            'model' => $searchModel,
+                            'options' => [
+                                'class' => 'form-control'
+                            ],
+                            'attribute' => 'time_expire',
+                            'name' => 'time_expire',
+                            'dateFormat' => 'yyyy-MM-dd'
+                        ]),
+                    ],
                     [
                         'attribute' => 'created_at',
                         'format' => 'datetime',

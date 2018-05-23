@@ -18,8 +18,9 @@ class TransactionRefundSearch extends TransactionRefund
     public function rules()
     {
         return [
+            ['succeed', 'boolean'],
             [['id', 'amount', 'time_succeed'], 'integer'],
-            [['succeed', 'status', 'description', 'failure_code', 'failure_msg', 'charge_id', 'charge_order_no', 'transaction_no', 'funding_source', 'created_at'], 'safe'],
+            [['status', 'description', 'failure_code', 'failure_msg', 'charge_id', 'charge_order_no', 'transaction_no', 'funding_source', 'created_at'], 'safe'],
         ];
     }
 
@@ -61,22 +62,26 @@ class TransactionRefundSearch extends TransactionRefund
         $query->andFilterWhere([
             'id' => $this->id,
             'amount' => $this->amount,
-            'time_succeed' => $this->time_succeed,
+            'succeed' => $this->succeed,
+            'status' => $this->status,
+            'charge_id' => $this->charge_id,
+            'charge_order_no' => $this->charge_order_no,
+            'transaction_no' => $this->transaction_no,
+
         ]);
 
-        if ($this->created_at !== null) {
+        if (!empty($this->created_at)) {
             $date = strtotime($this->created_at);
             $query->andWhere(['between', 'created_at', $date, $date + 3600 * 24]);
         }
+        if (!empty($this->time_succeed)) {
+            $date = strtotime($this->time_succeed);
+            $query->andWhere(['between', 'time_succeed', $date, $date + 3600 * 24]);
+        }
 
-        $query->andFilterWhere(['like', 'succeed', $this->succeed])
-            ->andFilterWhere(['like', 'status', $this->status])
-            ->andFilterWhere(['like', 'description', $this->description])
+        $query->andFilterWhere(['like', 'description', $this->description])
             ->andFilterWhere(['like', 'failure_code', $this->failure_code])
             ->andFilterWhere(['like', 'failure_msg', $this->failure_msg])
-            ->andFilterWhere(['like', 'charge_id', $this->charge_id])
-            ->andFilterWhere(['like', 'charge_order_no', $this->charge_order_no])
-            ->andFilterWhere(['like', 'transaction_no', $this->transaction_no])
             ->andFilterWhere(['like', 'funding_source', $this->funding_source]);
 
         return $dataProvider;
