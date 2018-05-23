@@ -59,6 +59,7 @@ return [
     'Paid' => '已付款',
     'Refunded' => '存在退款',
     'Reversed' => '已撤销',
+    'Exceeded the maximum refund amount.'=>'操作最高退款金额。',
     'Status' => '状态',
     'Alipay PublicKey' => '支付宝公钥',
     'Succeed' => '成功',
