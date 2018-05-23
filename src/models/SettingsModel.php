@@ -41,6 +41,11 @@ class SettingsModel extends Model
     /**
      * @var string
      */
+    public $refundUrl;
+
+    /**
+     * @var string
+     */
     public $returnUrl;
 
     /** @var TransactionChannel */
@@ -52,7 +57,7 @@ class SettingsModel extends Model
     public function rules()
     {
         return [
-            [['identity', 'name', 'title', 'class', 'noticeUrl', 'returnUrl'], 'string'],
+            [['identity', 'name', 'title', 'class', 'noticeUrl', 'refundUrl', 'returnUrl'], 'string'],
             [['timeout'], 'number', 'max' => 30, 'min' => 1],
             [['timeout'], 'default', 'value' => 5],
 
@@ -108,8 +113,9 @@ class SettingsModel extends Model
     {
         return [
             'timeout' => Yii::t('yuncms/transaction', 'Timeout'),
-            'noticeUrl' => Yii::t('yuncms/transaction', 'Notice Url'),
-            'returnUrl' => Yii::t('yuncms/transaction', 'Return Url'),
+            'noticeUrl' => Yii::t('yuncms/transaction', 'Charge Notice Route'),
+            'refundUrl' => Yii::t('yuncms/transaction', 'Refund Notice Route'),
+            'returnUrl' => Yii::t('yuncms/transaction', 'Charge Return Route'),
         ];
     }
 

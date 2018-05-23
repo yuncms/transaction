@@ -52,6 +52,9 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= $form->field($model, 'noticeUrl')->textInput(['maxlength' => true]) ?>
             <div class="hr-line-dashed"></div>
 
+            <?= $form->field($model, 'refundUrl')->textInput(['maxlength' => true]) ?>
+            <div class="hr-line-dashed"></div>
+
             <?= $form->field($model, 'returnUrl')->textInput(['maxlength' => true]) ?>
             <div class="hr-line-dashed"></div>
 

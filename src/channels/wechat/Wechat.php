@@ -289,6 +289,7 @@ abstract class Wechat extends Client implements ChannelInterface
         $response->format = Response::FORMAT_XML;
         $xml = $request->getRawBody();
         try {
+            file_put_contents('aa.txt',$xml);
             $params = $this->convertXmlToArray($xml);
             if ($params['return_code'] == 'SUCCESS') {
                 $response->content = '<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>';
