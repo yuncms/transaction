@@ -226,11 +226,12 @@ class TransactionRefund extends ActiveRecord
     /**
      * 设置退款成功
      * @param string $successTime
+     * @param array $params
      * @return bool
      */
-    public function setRefundSucceeded($successTime)
+    public function setRefundSucceeded($successTime, $params = [])
     {
-        if ((bool)$this->updateAttributes(['status' => self::STATUS_SUCCEEDED, 'succeed' => true, 'time_succeed' => $successTime])) {
+        if ((bool)$this->updateAttributes(['status' => self::STATUS_SUCCEEDED, 'succeed' => true, 'time_succeed' => $successTime, 'extra' => Json::encode($params)])) {
             $this->charge->updateAttributes(['amount_refunded' => $this->amount]);
         }
         return true;
