@@ -18,11 +18,11 @@ use yuncms\admin\widgets\ActiveForm;
 
     <?= $form->field($model, 'id') ?>
 
-    <?= $form->field($model, 'paid') ?>
+    <?= $form->field($model, 'paid')->dropDownListBool(['prompt' => $model->getAttributeLabel('paid')]) ?>
 
-    <?= $form->field($model, 'refunded') ?>
+    <?= $form->field($model, 'refunded')->dropDownListBool(['prompt' => $model->getAttributeLabel('refunded')]) ?>
 
-    <?php // echo $form->field($model, 'reversed') ?>
+    <?= $form->field($model, 'reversed')->dropDownListBool(['prompt' => $model->getAttributeLabel('reversed')]) ?>
 
     <?php // echo $form->field($model, 'channel_id') ?>
 
