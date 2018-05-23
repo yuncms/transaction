@@ -100,7 +100,7 @@ class TransactionRefund extends ActiveRecord
             [['amount', 'description', 'charge_id'], 'required'],
             [['charge_id'], 'integer'],
 
-            [['amount'], 'number','max' => 0.01],
+            [['amount'], 'number', 'max' => 0.01],
 
             [['description'], 'string', 'max' => 255],
 
@@ -133,7 +133,7 @@ class TransactionRefund extends ActiveRecord
     {
         if (($charge = TransactionCharge::findOne(['id' => $this->charge_id])) != null) {
             if ($charge->isPaid) {
-                if (bcsub($charge->amount, $charge->amount_refunded) < $this->amount) {
+                if (bcsub($charge->amount, $charge->amount_refunded, 2) < $this->amount) {
                     $message = Yii::t('yuncms/transaction', 'Exceeded the maximum refund amount.');
                     $this->addError('amount', $message);
                 } else {
@@ -230,7 +230,10 @@ class TransactionRefund extends ActiveRecord
      */
     public function setRefundSucceeded($successTime)
     {
-        return (bool)$this->updateAttributes(['status' => self::STATUS_SUCCEEDED, 'succeed' => true, 'time_succeed' => $successTime]);
+        if ((bool)$this->updateAttributes(['status' => self::STATUS_SUCCEEDED, 'succeed' => true, 'time_succeed' => $successTime])) {
+            $this->charge->updateAttributes(['amount_refunded' => $this->amount]);
+        }
+        return true;
     }
 
     /**

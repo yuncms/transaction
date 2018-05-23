@@ -7,7 +7,6 @@ use yii\base\InvalidConfigException;
 use yii\base\UnknownClassException;
 use yii\behaviors\AttributeBehavior;
 use yii\behaviors\TimestampBehavior;
-use yii\db\Query;
 use yuncms\base\JsonObject;
 use yuncms\behaviors\IpBehavior;
 use yuncms\behaviors\JsonBehavior;
