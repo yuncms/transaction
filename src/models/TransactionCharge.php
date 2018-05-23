@@ -54,6 +54,9 @@ use yuncms\validators\JsonValidator;
  * @property TransactionRefund[] $refunds
  * @property \yuncms\transaction\contracts\ChannelInterface $channelObject
  * @property \yii\db\ActiveQuery $source
+ * @property bool $isReversed 订单是否撤销
+ * @property bool $isRefunded 是否有退款
+ * @property bool $isPaid 付款是否成功
  * @property User $user
  */
 class TransactionCharge extends ActiveRecord
