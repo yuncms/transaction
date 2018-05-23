@@ -57,19 +57,19 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= DetailView::widget([
                 'model' => $model,
                 'attributes' => [
-                                'id',
+                    'id',
                     'amount',
-                    'succeed',
-                    'status',
-                    'time_succeed:datetime',
+                    'succeed:boolean',
+                    'statusText',
                     'description',
                     'failure_code',
                     'failure_msg',
                     'charge_id',
                     'charge_order_no',
                     'transaction_no',
-                    'funding_source',
-                    'created_at',
+                    'fundingSourceText',
+                    'time_succeed:datetime',
+                    'created_at:datetime',
                 ],
             ]) ?>
             <?php Box::end(); ?>
