@@ -8,8 +8,8 @@
 namespace yuncms\transaction\channels\alipay;
 
 use yuncms\helpers\ArrayHelper;
-use yuncms\transaction\Exception;
 use yuncms\transaction\models\TransactionCharge;
+
 
 /**
  * Class App

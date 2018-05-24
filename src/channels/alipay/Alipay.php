@@ -17,6 +17,7 @@ use yuncms\transaction\contracts\ChannelInterface;
 use yuncms\transaction\Exception;
 use yuncms\transaction\models\TransactionCharge;
 use yuncms\transaction\traits\ChannelTrait;
+use yuncms\transaction\models\TransactionRefund;
 use yuncms\web\Request;
 use yuncms\web\Response;
 
@@ -286,6 +287,27 @@ abstract class Alipay extends Client implements ChannelInterface
         } else {
             throw new Exception($response['return_msg']);
         }
+    }
+
+    /**
+     * 发起退款
+     * @param TransactionRefund $refund
+     * @return TransactionRefund
+     */
+    public function refund(TransactionRefund $refund)
+    {
+        // TODO: Implement refund() method.
+    }
+
+    /**
+     * 服务端退款通知
+     * @param Request $request 请求实例类
+     * @param Response $response
+     * @return mixed
+     */
+    public function refundNotice(Request $request, Response $response)
+    {
+        // TODO: Implement refundNotice() method.
     }
 
     /**
