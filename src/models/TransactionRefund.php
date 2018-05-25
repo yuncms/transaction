@@ -6,7 +6,6 @@ use Yii;
 use yii\behaviors\AttributeBehavior;
 use yii\behaviors\BlameableBehavior;
 use yii\behaviors\TimestampBehavior;
-use yii\db\Query;
 use yuncms\behaviors\JsonBehavior;
 use yuncms\db\ActiveRecord;
 use yuncms\helpers\ArrayHelper;
@@ -16,22 +15,23 @@ use yuncms\validators\JsonValidator;
 /**
  * This is the model class for table "{{%transaction_refunds}}".
  *
- * @property int $id
- * @property int $amount
- * @property int $succeed
- * @property string $status
- * @property int $time_succeed
- * @property string $description
- * @property string $failure_code
- * @property string $failure_msg
- * @property int $charge_id
- * @property string $charge_order_no
- * @property string $transaction_no
- * @property string $funding_source
- * @property int $created_at
+ * @property int $id 退款序号
+ * @property int $amount 退款金额
+ * @property int $status 状态值
+ * @property int $time_succeed 退款成功时间
+ * @property string $description 退款描述
+ * @property string $failure_code 失败代码
+ * @property string $failure_msg 失败文案
+ * @property int $charge_id 付款id
+ * @property string $charge_order_no 付款订单号
+ * @property string $transaction_no 交易平台退款流水号
+ * @property string $funding_source 退款资金来源
+ * @property int $created_at 创建时间
  *
- * @property mixed $statusText
- * @property TransactionCharge $charge
+ * @property string $statusText 状态文案
+ * @property string $fundingSourceText 退款失败文案
+ * @property bool $succeed 退款是否成功
+ * @property TransactionCharge $charge 付款对象
  */
 class TransactionRefund extends ActiveRecord
 {
@@ -115,10 +115,6 @@ class TransactionRefund extends ActiveRecord
 
             //附加信息
             [['metadata', 'extra'], JsonValidator::class],
-
-            //退款是否成功
-            ['succeed', 'boolean'],
-            ['succeed', 'default', 'value' => false],
 
             //退款状态
             ['status', 'default', 'value' => self::STATUS_PENDING],
@@ -213,6 +209,15 @@ class TransactionRefund extends ActiveRecord
     }
 
     /**
+     * 退款是否成功
+     * @return bool
+     */
+    public function getSucceed()
+    {
+        return $this->status == self::STATUS_SUCCEEDED;
+    }
+
+    /**
      * 设置退款错误
      * @param string $code
      * @param string $msg
@@ -220,7 +225,8 @@ class TransactionRefund extends ActiveRecord
      */
     public function setFailure($code, $msg)
     {
-        return (bool)$this->updateAttributes(['status' => self::STATUS_FAILED, 'failure_code' => $code, 'failure_msg' => $msg]);
+        $succeed = (bool)$this->updateAttributes(['status' => self::STATUS_FAILED, 'failure_code' => $code, 'failure_msg' => $msg]);
+        return $succeed;
     }
 
     /**
@@ -229,12 +235,20 @@ class TransactionRefund extends ActiveRecord
      * @param array $params
      * @return bool
      */
-    public function setRefundSucceeded($successTime, $params = [])
+    public function setRefunded($successTime, $params = [])
     {
-        if ((bool)$this->updateAttributes(['status' => self::STATUS_SUCCEEDED, 'succeed' => true, 'time_succeed' => $successTime, 'extra' => Json::encode($params)])) {
-            $this->charge->updateAttributes(['amount_refunded' => bcadd($this->charge->amount_refunded, $this->amount, 2)]);
+        if ($this->succeed) {
+            return true;
         }
-        return true;
+        $succeed = (bool)$this->updateAttributes(['status' => self::STATUS_SUCCEEDED, 'succeed' => true, 'time_succeed' => $successTime, 'extra' => Json::encode($params)]);
+        $this->charge->updateAttributes(['amount_refunded' => bcadd($this->charge->amount_refunded, $this->amount, 2)]);
+        //回调订单模型
+        if (!empty($this->charge->order_class) && is_subclass_of($this->charge->order_class, 'yuncms\transaction\contracts\OrderInterface')) {//回调订单模型
+            Yii::info('Callback order model:' . $this->charge->order_class, __METHOD__);
+            call_user_func_array([$this->charge->order_class, 'setRefunded'], [$this->charge->order_no, $this->charge->id, $this->charge->metadata]);
+        }
+        $this->trigger(self::EVENT_AFTER_SUCCEEDED);
+        return $succeed;
     }
 
     /**

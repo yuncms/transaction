@@ -20,42 +20,44 @@ use yuncms\validators\JsonValidator;
 /**
  * This is the model class for table "{{%transaction_charges}}".
  *
- * @property int $id
- * @property int $paid
- * @property int $refunded
- * @property int $reversed
- * @property int $user_id
- * @property string $channel
- * @property string $order_no
- * @property string $client_ip
+ * @property int $id 付款流水号
+ * @property int $paid 是否支付成功
+ * @property int $refunded 是否有退款
+ * @property int $reversed 订单是否撤销
+ * @property int $user_id 用户ID
+ * @property string $channel 付款渠道
+ * @property string $order_no 订单号
+ * @property string $client_ip 用户IP
  * @property int $amount
  * @property int $amount_settle
- * @property string $currency
- * @property string $subject
- * @property string $body
- * @property string $order_class
+ * @property string $currency 币种
+ * @property string $subject 订单标题
+ * @property string $body 订单内容
+ * @property string $order_class 订单类
  * @property JsonObject $extra
- * @property int $time_paid
- * @property int $time_expire
- * @property int $time_settle
- * @property string $transaction_no
- * @property int $amount_refunded
- * @property string $failure_code
- * @property string $failure_msg
+ * @property int $time_paid 付款时间
+ * @property int $time_expire 过期时间
+ * @property int $time_settle 清算时间
+ * @property string $transaction_no 交易平台流水号
+ * @property int $amount_refunded 已经退款的钱数
+ * @property string $failure_code  失败代码
+ * @property string $failure_msg 失败消息
  * @property JsonObject $metadata
- * @property string $description
- * @property array $credential
- * @property int $created_at
+ * @property string $description 描述
+ * @property array $credential 客户端交易凭证
+ * @property int $created_at 创建时间
  *
  *
- * @property-read string outTradeNo
+ * @property-read string outTradeNo 订单号
  *
- * @property TransactionRefund[] $refunds
+ * @property TransactionRefund[] $refunds 管理的退款对象
  * @property \yuncms\transaction\contracts\ChannelInterface $channelObject
  * @property \yii\db\ActiveQuery $source
  * @property bool $isReversed 订单是否撤销
  * @property bool $isRefunded 是否有退款
  * @property bool $isPaid 付款是否成功
+ * @property string $refund
+ * @property \yii\db\ActiveQuery $order
  * @property User $user
  */
 class TransactionCharge extends ActiveRecord
@@ -248,6 +250,14 @@ class TransactionCharge extends ActiveRecord
     public function getRefunds()
     {
         return $this->hasMany(TransactionRefund::class, ['charge_id' => 'id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getOrder()
+    {
+        return $this->hasOne($this->order_class, ['id' => 'order_no']);
     }
 
     /**

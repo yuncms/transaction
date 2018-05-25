@@ -295,7 +295,7 @@ abstract class Wechat extends Client implements ChannelInterface
                 $params = $this->convertXmlToArray($xml);
                 if (($refund = $this->getRefundById($params['out_refund_no'])) != null) {
                     if ($params['refund_status'] == 'SUCCESS') {//退款成功
-                        $refund->setRefundSucceeded(strtotime($params['success_time']), $params);
+                        $refund->setRefunded(strtotime($params['success_time']), $params);
                     } else {
                         $refund->setFailure($params['refund_status'], $this->getRefundStatus($params['refund_status']));
                     }
