@@ -44,7 +44,6 @@ class m180412_062949_create_transaction_refunds_table extends Migration
 
         $this->addPrimaryKey('transaction_refunds_pk', $this->tableName, 'id');
         $this->createIndex('transaction_refunds_index_status', $this->tableName, 'status');
-        $this->createIndex('transaction_refunds_index_succeed', $this->tableName, 'succeed');
 
         $this->addForeignKey('transaction_refunds_fk_1', $this->tableName, 'charge_id', '{{%transaction_charges}}', 'id', 'CASCADE', 'RESTRICT');
         $this->addForeignKey('transaction_refunds_fk_2', $this->tableName, 'user_id', '{{%user}}', 'id', 'CASCADE', 'RESTRICT');
