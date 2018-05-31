@@ -29,6 +29,9 @@ class TransactionCharge extends \yuncms\transaction\models\TransactionCharge
             'isPaid',
             'isRefunded',
             'isReversed',
+            'paid',
+            'refunded',
+            'reversed',
             'channel',
             'order_no',
             'currency',
@@ -38,6 +41,8 @@ class TransactionCharge extends \yuncms\transaction\models\TransactionCharge
             'amount_refunded',
             'credential',
             'metadata',
+            'failure_code',
+            'failure_msg',
             'extra'
         ];
     }
