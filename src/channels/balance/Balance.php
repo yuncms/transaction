@@ -7,6 +7,7 @@
 
 namespace yuncms\transaction\channels\balance;
 
+use Yii;
 use yii\base\BaseObject;
 use yii\base\Model;
 use yuncms\balance\models\BalanceTransaction;
@@ -24,7 +25,7 @@ use yuncms\web\Response;
 class Balance extends BaseObject implements ChannelInterface
 {
     use ChannelTrait;
-    
+
     /**
      * 获取设置模型
      * @return Model
@@ -32,6 +33,14 @@ class Balance extends BaseObject implements ChannelInterface
     public static function getSettingsModel()
     {
         return new SettingsModel();
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle(): string
+    {
+        return Yii::t('yuncms/transaction', 'Balance');
     }
 
     /**
@@ -50,6 +59,8 @@ class Balance extends BaseObject implements ChannelInterface
             } else {
                 $charge->setFailure(1, '余额不足');
             }
+        } else {
+            $charge->setFailure(1, '余额不足');
         }
         return $charge;
     }
@@ -77,11 +88,17 @@ class Balance extends BaseObject implements ChannelInterface
     /**
      * 发起退款
      * @param TransactionRefund $refund
-     * @return TransactionRefund
+     * @return void
+     * @throws \yii\db\Exception
      */
     public function refund(TransactionRefund $refund)
     {
-        return $refund;
+        if (($transaction_id = \yuncms\balance\models\Balance::increase($refund->user, $refund->charge->amount, BalanceTransaction::TYPE_PAYMENT_REFUND, $refund->description)) !== false) {
+            //交易成功
+            $refund->setRefund($transaction_id, []);
+        } else {
+            $refund->setFailure(1, '退款失败');
+        }
     }
 
     /**
