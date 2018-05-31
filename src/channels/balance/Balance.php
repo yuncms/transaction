@@ -24,23 +24,14 @@ use yuncms\web\Response;
 class Balance extends BaseObject implements ChannelInterface
 {
     use ChannelTrait;
-
-    /**
-     *
-     */
-    public function init()
-    {
-        parent::init();
-
-    }
-
+    
     /**
      * 获取设置模型
      * @return Model
      */
     public static function getSettingsModel()
     {
-        // TODO: Implement getSettingsModel() method.
+        return new SettingsModel();
     }
 
     /**
