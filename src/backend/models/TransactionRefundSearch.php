@@ -18,7 +18,6 @@ class TransactionRefundSearch extends TransactionRefund
     public function rules()
     {
         return [
-            ['succeed', 'boolean'],
             [['id', 'amount', 'time_succeed'], 'integer'],
             [['status', 'description', 'failure_code', 'failure_msg', 'charge_id', 'charge_order_no', 'transaction_no', 'funding_source', 'created_at'], 'safe'],
         ];
@@ -68,7 +67,6 @@ class TransactionRefundSearch extends TransactionRefund
         $query->andFilterWhere([
             'id' => $this->id,
             'amount' => $this->amount,
-            'succeed' => $this->succeed,
             'status' => $this->status,
             'charge_id' => $this->charge_id,
             'charge_order_no' => $this->charge_order_no,
