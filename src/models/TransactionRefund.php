@@ -10,6 +10,7 @@ use yuncms\behaviors\JsonBehavior;
 use yuncms\db\ActiveRecord;
 use yuncms\helpers\ArrayHelper;
 use yuncms\helpers\Json;
+use yuncms\user\models\User;
 use yuncms\validators\JsonValidator;
 
 /**
@@ -98,7 +99,7 @@ class TransactionRefund extends ActiveRecord
     {
         return [
             [['amount', 'description', 'charge_id'], 'required'],
-            [['charge_id'], 'integer'],
+            [['charge_id', 'user_id'], 'integer'],
 
             [['amount'], 'number', 'min' => 0.01],
 
@@ -119,6 +120,8 @@ class TransactionRefund extends ActiveRecord
             //退款状态
             ['status', 'default', 'value' => self::STATUS_PENDING],
             ['status', 'in', 'range' => [self::STATUS_PENDING, self::STATUS_SUCCEEDED, self::STATUS_FAILED]],
+
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
 
@@ -206,6 +209,14 @@ class TransactionRefund extends ActiveRecord
     public function getCharge()
     {
         return $this->hasOne(TransactionCharge::class, ['id' => 'charge_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getUser()
+    {
+        return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
     /**
