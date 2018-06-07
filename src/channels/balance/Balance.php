@@ -12,6 +12,7 @@ use yii\base\BaseObject;
 use yii\base\Model;
 use yuncms\balance\models\BalanceTransaction;
 use yuncms\transaction\contracts\ChannelInterface;
+use yuncms\transaction\jobs\NoticeCallBack;
 use yuncms\transaction\models\TransactionCharge;
 use yuncms\transaction\models\TransactionRefund;
 use yuncms\transaction\traits\ChannelTrait;
@@ -53,8 +54,9 @@ class Balance extends BaseObject implements ChannelInterface
     {
         //检查余额
         if (($transaction_id = \yuncms\balance\models\Balance::decrease($charge->user, $charge->amount, BalanceTransaction::TYPE_PAYMENT, $charge->body)) !== false) {
-            //交易成功
-            $charge->setPaid($transaction_id);
+            Yii::$app->queue->push(
+                new NoticeCallBack(['url' => $this->getNoticeUrl(), 'chargeId' => $charge->id, 'transactionId' => $transaction_id]);
+        );
         } else {
             $charge->setFailure(1, '余额不足');
         }
@@ -116,7 +118,15 @@ class Balance extends BaseObject implements ChannelInterface
      */
     public function notice(Request $request, Response $response)
     {
-        // TODO: Implement notice() method.
+        try {
+            $transaction_id = $request->post('transaction_id');
+            $charge_id = $request->post('charge_id');
+            $charge = $this->getChargeById($charge_id);
+            $charge->setPaid($transaction_id);
+        } catch (\Exception $e) {
+            Yii::error($e->getMessage(), __CLASS__);
+        }
+        $response->content = 'ok';
     }
 
     /**
