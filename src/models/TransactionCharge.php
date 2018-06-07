@@ -108,8 +108,8 @@ class TransactionCharge extends ActiveRecord
         return [
             [['user_id', 'order_no', 'channel', 'amount', 'currency', 'subject', 'body'], 'required'],
 
-            [['paid', 'refunded', 'reversed',], 'boolean'],
-            [['paid', 'refunded', 'reversed',], 'default', 'value' => false],
+            [['paid', 'refunded', 'reversed',], 'integer'],
+            [['paid', 'refunded', 'reversed',], 'default', 'value' => 0],
 
             ['order_class', 'string'],
             [['user_id', 'time_paid'], 'integer'],
