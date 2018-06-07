@@ -12,7 +12,6 @@ use yii\base\BaseObject;
 use yii\base\Model;
 use yuncms\balance\models\BalanceTransaction;
 use yuncms\transaction\contracts\ChannelInterface;
-use yuncms\transaction\jobs\NoticeCallBack;
 use yuncms\transaction\models\TransactionCharge;
 use yuncms\transaction\models\TransactionRefund;
 use yuncms\transaction\traits\ChannelTrait;
