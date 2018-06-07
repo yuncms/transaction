@@ -52,13 +52,9 @@ class Balance extends BaseObject implements ChannelInterface
     public function charge(TransactionCharge $charge)
     {
         //检查余额
-        if ($charge->user->balance >= $charge->amount) {
-            if (($transaction_id = \yuncms\balance\models\Balance::decrease($charge->user, $charge->amount, BalanceTransaction::TYPE_PAYMENT, $charge->body)) !== false) {
-                //交易成功
-                $charge->setPaid($transaction_id);
-            } else {
-                $charge->setFailure(1, '余额不足');
-            }
+        if (($transaction_id = \yuncms\balance\models\Balance::decrease($charge->user, $charge->amount, BalanceTransaction::TYPE_PAYMENT, $charge->body)) !== false) {
+            //交易成功
+            $charge->setPaid($transaction_id);
         } else {
             $charge->setFailure(1, '余额不足');
         }
@@ -95,7 +91,7 @@ class Balance extends BaseObject implements ChannelInterface
     {
         if (($transaction_id = \yuncms\balance\models\Balance::increase($refund->user, $refund->charge->amount, BalanceTransaction::TYPE_PAYMENT_REFUND, $refund->description)) !== false) {
             //交易成功
-            $refund->setRefund($transaction_id, []);
+            $refund->setRefunded($transaction_id, []);
         } else {
             $refund->setFailure(1, '退款失败');
         }
