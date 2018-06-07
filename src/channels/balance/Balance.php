@@ -54,9 +54,7 @@ class Balance extends BaseObject implements ChannelInterface
     {
         //检查余额
         if (($transaction_id = \yuncms\balance\models\Balance::decrease($charge->user, $charge->amount, BalanceTransaction::TYPE_PAYMENT, $charge->body)) !== false) {
-            Yii::$app->queue->push(
-                new NoticeCallBack(['url' => $this->getNoticeUrl(), 'chargeId' => $charge->id, 'transactionId' => $transaction_id])
-        );
+            $charge->setPaid($transaction_id);
         } else {
             $charge->setFailure(1, '余额不足');
         }
@@ -118,15 +116,7 @@ class Balance extends BaseObject implements ChannelInterface
      */
     public function notice(Request $request, Response $response)
     {
-        try {
-            $transaction_id = $request->post('transaction_id');
-            $charge_id = $request->post('charge_id');
-            $charge = $this->getChargeById($charge_id);
-            $charge->setPaid($transaction_id);
-        } catch (\Exception $e) {
-            Yii::error($e->getMessage(), __CLASS__);
-        }
-        $response->content = 'ok';
+
     }
 
     /**
