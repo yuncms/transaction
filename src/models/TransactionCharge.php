@@ -81,15 +81,6 @@ class TransactionCharge extends ActiveRecord
     {
         $behaviors = parent::behaviors();
         return ArrayHelper::merge($behaviors, [
-            'id' => [
-                'class' => AttributeBehavior::class,
-                'attributes' => [
-                    ActiveRecord::EVENT_BEFORE_INSERT => 'id',
-                ],
-                'value' => function ($event) {
-                    return $event->sender->generateId();
-                }
-            ],
             'timestamp' => [
                 'class' => TimestampBehavior::class,
                 'attributes' => [
@@ -364,6 +355,17 @@ class TransactionCharge extends ActiveRecord
     public function getChannelObject()
     {
         return TransactionChannel::getChannelByIdentity($this->channel);
+    }
+
+    public function beforeSave($insert)
+    {
+        if (!parent::beforeSave($insert)) {
+            return false;
+        }
+        if($insert){
+            $this->id = $this->generateId();
+        }
+        return true;
     }
 
     /**
