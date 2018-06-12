@@ -5,7 +5,6 @@ namespace yuncms\transaction\models;
 use Yii;
 use yii\base\InvalidConfigException;
 use yii\base\UnknownClassException;
-use yii\behaviors\AttributeBehavior;
 use yii\behaviors\TimestampBehavior;
 use yuncms\base\JsonObject;
 use yuncms\behaviors\IpBehavior;
@@ -197,7 +196,7 @@ class TransactionCharge extends ActiveRecord
      */
     public function getIsPaid()
     {
-        return (bool)$this->paid;
+        return $this->paid == 1;
     }
 
     /**
@@ -267,10 +266,10 @@ class TransactionCharge extends ActiveRecord
      */
     public function setPaid($transactionNo)
     {
-        if ($this->paid) {
+        if ($this->isPaid) {
             return true;
         }
-        $paid = (bool)$this->updateAttributes(['transaction_no' => $transactionNo, 'time_paid' => time(), 'paid' => true]);
+        $paid = (bool)$this->updateAttributes(['transaction_no' => $transactionNo, 'time_paid' => time(), 'paid' => 1]);
         if (!empty($this->order_class) && is_subclass_of($this->order_class, 'yuncms\transaction\contracts\OrderInterface')) {//回调订单模型
             Yii::info('Callback order model:' . $this->order_class, __METHOD__);
             call_user_func_array([$this->order_class, 'setPaid'], [$this->order_no, $this->id, $this->metadata]);
@@ -358,7 +357,7 @@ class TransactionCharge extends ActiveRecord
     }
 
     /**
-     * @param $insert
+     * @param bool $insert
      * @return bool
      * @throws \yii\base\NotSupportedException
      */
@@ -367,7 +366,7 @@ class TransactionCharge extends ActiveRecord
         if (!parent::beforeSave($insert)) {
             return false;
         }
-        if($insert){
+        if ($insert) {
             $this->id = $this->generateId();
         }
         return true;
