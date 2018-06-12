@@ -357,6 +357,11 @@ class TransactionCharge extends ActiveRecord
         return TransactionChannel::getChannelByIdentity($this->channel);
     }
 
+    /**
+     * @param $insert
+     * @return bool
+     * @throws \yii\base\NotSupportedException
+     */
     public function beforeSave($insert)
     {
         if (!parent::beforeSave($insert)) {
