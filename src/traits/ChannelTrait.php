@@ -200,11 +200,11 @@ trait ChannelTrait
     }
 
     /**
-     * @param string $noticeUrl return URL
+     * @param string $refundUrl return URL
      */
-    public function setRefundUrl($noticeUrl)
+    public function setRefundUrl($refundUrl)
     {
-        $this->_noticeUrl = $noticeUrl;
+        $this->_refundUrl = $refundUrl;
     }
 
     /**
