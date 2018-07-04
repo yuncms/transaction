@@ -43,8 +43,8 @@ class Lite extends Wechat
         ];
         if (isset($charge->metadata['openid'])) {
             $params['openid'] = $charge->metadata['openid'];
-        } else if (isset($charge->user->socialAccounts['wechat'])) {
-            $weParams = $charge->user->socialAccounts['wechat']->getDecodedData();
+        } else if (isset($charge->user->socialAccounts['wechat_mini'])) {
+            $weParams = $charge->user->socialAccounts['wechat_mini']->getDecodedData();
             $params['openid'] = $weParams['openid'];
         } else {
             throw new Exception ('Non-WeChat authorized login.');
