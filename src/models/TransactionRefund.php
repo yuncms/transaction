@@ -251,7 +251,7 @@ class TransactionRefund extends ActiveRecord
         if ($this->succeed) {
             return true;
         }
-        $succeed = (bool)$this->updateAttributes(['status' => self::STATUS_SUCCEEDED, 'succeed' => true, 'time_succeed' => $successTime, 'extra' => Json::encode($params)]);
+        $succeed = (bool)$this->updateAttributes(['status' => self::STATUS_SUCCEEDED, 'time_succeed' => $successTime, 'extra' => Json::encode($params)]);
         $this->charge->updateAttributes(['amount_refunded' => bcadd($this->charge->amount_refunded, $this->amount, 2)]);
         //回调订单模型
         if (!empty($this->charge->order_class) && is_subclass_of($this->charge->order_class, 'yuncms\transaction\contracts\OrderInterface')) {//回调订单模型
