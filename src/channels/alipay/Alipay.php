@@ -245,7 +245,17 @@ abstract class Alipay extends Client implements ChannelInterface
      */
     public function notice(Request $request, Response $response)
     {
-        // TODO: Implement notice() method.
+        try {
+            $params = $request->get();
+            if ($params['return_code'] == 'SUCCESS' && $params['sign'] == $this->generateSignature($params)) {
+                $response->content = '<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>';
+                $charge = $this->getChargeById($params['out_trade_no']);
+                $charge->setPaid($params['transaction_id']);
+            }
+        } catch (\Exception $e) {
+            Yii::error($e->getMessage(), __CLASS__);
+        }
+        $response->content = 'success';
     }
 
     /**
@@ -260,7 +270,7 @@ abstract class Alipay extends Client implements ChannelInterface
             'out_trade_no' => $charge->outTradeNo,//商户订单号
         ]]);
 
-        if ($response['return_code'] == 'SUCCESS') {
+        if ($response['code'] == '10000' && $response['msg'] == 'Success') {
             $charge->setReversed();
             return $charge;
         } else {
