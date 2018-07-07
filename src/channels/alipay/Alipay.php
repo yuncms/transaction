@@ -279,13 +279,11 @@ abstract class Alipay extends Client implements ChannelInterface
         $response = $this->sendRequest('POST', ['method' => 'alipay.trade.query', 'biz_content' => [
             'out_trade_no' => $charge->outTradeNo,//商户订单号
         ]]);
-        print_r($response);
-        exit;
 
-        if ($response['return_code'] == 'SUCCESS') {
+        if ($response['code'] == '10000' && $response['msg'] == 'Success') {
             return $charge;
         } else {
-            throw new Exception($response['return_msg']);
+            throw new Exception($response['msg']);
         }
     }
 
@@ -293,10 +291,19 @@ abstract class Alipay extends Client implements ChannelInterface
      * 发起退款
      * @param TransactionRefund $refund
      * @return TransactionRefund
+     * @throws Exception
      */
     public function refund(TransactionRefund $refund)
     {
-        // TODO: Implement refund() method.
+        $response = $this->sendRequest('POST', ['method' => 'alipay.trade.refund', 'biz_content' => [
+            'trade_no' => $refund->charge_id,//支付宝交易号
+        ]]);
+        if ($response['code'] == '10000' && $response['msg'] == 'Success') {
+            $refund->setRefund($response['trade_no'], $response);
+        } else {
+            $refund->setFailure($response['code'], $response['msg']);
+        }
+        return $refund;
     }
 
     /**
