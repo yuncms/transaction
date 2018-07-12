@@ -238,6 +238,20 @@ abstract class Alipay extends Client implements ChannelInterface
     }
 
     /**
+     * 验证支付宝支付宝通知
+     * @param array $data 通知数据
+     * @param null $sign 数据签名
+     * @param bool $sync
+     * @return array|bool
+     */
+    public function verify($data, $sign = null, $sync = false)
+    {
+        $sign = is_null($sign) ? $data['sign'] : $sign;
+        $toVerify = $sync ? json_encode($data) : $this->getSignContent($data, true);
+        return openssl_verify($toVerify, base64_decode($sign), $this->publicKey, OPENSSL_ALGO_SHA256) === 1 ? $data : false;
+    }
+
+    /**
      * 服务端通知
      * @param Request $request 请求实例类
      * @param Response $response
@@ -246,16 +260,33 @@ abstract class Alipay extends Client implements ChannelInterface
     public function notice(Request $request, Response $response)
     {
         try {
-            $params = $request->get();
-            if ($params['return_code'] == 'SUCCESS' && $params['sign'] == $this->generateSignature($params)) {
-                $response->content = '<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>';
-                $charge = $this->getChargeById($params['out_trade_no']);
-                $charge->setPaid($params['transaction_id']);
+            $requestParams = Yii::$app->getRequest()->getBodyParams();
+            if (empty($requestParams)) {
+                $requestParams = Yii::$app->getRequest()->getQueryParams();
             }
+
+            Yii::info($requestParams, __METHOD__);
+
+            //if ($this->verify($requestParams)) {
+                if ($requestParams['notify_type'] == 'trade_status_sync') {
+                    if ($requestParams['trade_status'] == 'TRADE_SUCCESS' || $requestParams['trade_status'] == 'TRADE_FINISHED') {
+                        $response->content = 'success';
+                        $charge = $this->getChargeById($requestParams['out_trade_no']);
+                        $charge->setPaid($requestParams['trade_no']);
+                    } else {
+                        $response->content = 'failure';
+                    }
+                } else {
+                    $response->content = 'failure';
+                }
+//            } else {
+//                $response->content = 'failure';
+//                Yii::error('Signature verification error.', __METHOD__);
+//            }
         } catch (\Exception $e) {
-            Yii::error($e->getMessage(), __CLASS__);
+            Yii::error($e->getMessage(), __METHOD__);
+            $response->content = 'failure';
         }
-        $response->content = 'success';
     }
 
     /**
@@ -324,22 +355,29 @@ abstract class Alipay extends Client implements ChannelInterface
      */
     public function refundNotice(Request $request, Response $response)
     {
-        // TODO: Implement refundNotice() method.
+        try {
+            $requestParams = Yii::$app->getRequest()->getBodyParams();
+            if (empty($requestParams)) {
+                $requestParams = Yii::$app->getRequest()->getQueryParams();
+            }
+
+            Yii::info($requestParams, __METHOD__);
+
+            //if ($this->verify($requestParams)) {
+            if (($refund = $this->getRefundById($requestParams['out_refund_no'])) != null) {
+                if ($requestParams['refund_status'] == 'SUCCESS') {//退款成功
+                    $refund->setRefunded(strtotime($requestParams['success_time']), $requestParams);
+                } else {
+                    $refund->setFailure($requestParams['refund_status'], $this->getRefundStatus($requestParams['refund_status']));
+                }
+            }
+        } catch (\Exception $e) {
+            Yii::error($e->getMessage(), __METHOD__);
+            $response->content = 'failure';
+        }
     }
 
-    /**
-     * 验证支付宝支付宝通知
-     * @param array $data 通知数据
-     * @param null $sign 数据签名
-     * @param bool $sync
-     * @return array|bool
-     */
-    public function verify($data, $sign = null, $sync = false)
-    {
-        $sign = is_null($sign) ? $data['sign'] : $sign;
-        $toVerify = $sync ? json_encode($data) : $this->getSignContent($data, true);
-        return openssl_verify($toVerify, base64_decode($sign), $this->publicKey, OPENSSL_ALGO_SHA256) === 1 ? $data : false;
-    }
+
 
     /**
      * @return string
