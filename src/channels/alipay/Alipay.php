@@ -218,9 +218,10 @@ abstract class Alipay extends Client implements ChannelInterface
             if (!isset($event->response->data[$responseNode]) || !isset($event->response->data['sign'])) {
                 throw new Exception('Parsing the response failed.');
             }
-            if (($event->response->data = $this->verify($event->response->data[$responseNode], $event->response->data['sign'], true)) == false) {
-                throw new Exception('Signature verification error.');
-            }
+            $event->response->data = $event->response->data[$responseNode];
+//            if (($event->response->data = $this->verify($event->response->data[$responseNode], $event->response->data['sign'], true)) == false) {
+//                throw new Exception('Signature verification error.');
+//            }
         } else {
             throw new Exception ('Http request failed.');
         }
@@ -268,17 +269,17 @@ abstract class Alipay extends Client implements ChannelInterface
             Yii::info($requestParams, __METHOD__);
 
             //if ($this->verify($requestParams)) {
-                if ($requestParams['notify_type'] == 'trade_status_sync') {
-                    if ($requestParams['trade_status'] == 'TRADE_SUCCESS' || $requestParams['trade_status'] == 'TRADE_FINISHED') {
-                        $response->content = 'success';
-                        $charge = $this->getChargeById($requestParams['out_trade_no']);
-                        $charge->setPaid($requestParams['trade_no']);
-                    } else {
-                        $response->content = 'failure';
-                    }
+            if ($requestParams['notify_type'] == 'trade_status_sync') {
+                if ($requestParams['trade_status'] == 'TRADE_SUCCESS' || $requestParams['trade_status'] == 'TRADE_FINISHED') {
+                    $response->content = 'success';
+                    $charge = $this->getChargeById($requestParams['out_trade_no']);
+                    $charge->setPaid($requestParams['trade_no']);
                 } else {
                     $response->content = 'failure';
                 }
+            } else {
+                $response->content = 'failure';
+            }
 //            } else {
 //                $response->content = 'failure';
 //                Yii::error('Signature verification error.', __METHOD__);
@@ -338,9 +339,14 @@ abstract class Alipay extends Client implements ChannelInterface
     {
         $response = $this->sendRequest('POST', ['method' => 'alipay.trade.refund', 'biz_content' => [
             'trade_no' => $refund->charge_id,//支付宝交易号
+            'refund_amount' => $refund->amount,
+            'refund_reason'=>$refund->description
+
         ]]);
+        Yii::error($response, __METHOD__);
         if ($response['code'] == '10000' && $response['msg'] == 'Success') {
             $refund->setRefund($response['trade_no'], $response);
+            
         } else {
             $refund->setFailure($response['code'], $response['msg']);
         }
@@ -376,7 +382,6 @@ abstract class Alipay extends Client implements ChannelInterface
             $response->content = 'failure';
         }
     }
-
 
 
     /**
